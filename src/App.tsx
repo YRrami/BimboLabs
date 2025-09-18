@@ -38,14 +38,14 @@ import {
   Shield,
   Phone,
 } from "lucide-react";
-
+import logo from "./logo.png"; // Example PNG logo import
 /* =====================================================
    CONFIG — edit these to customize
 ===================================================== */
 const SITE = {
   name: "Bimbo",
   logo: {
-    src: "./logo.png", // 👉 Put your PNG in /public and set the path
+    src: logo, // 👉 Put your PNG in /public and set the path
     alt: "Bimbo logo",
     width: 160, // intrinsic width (helps layout stability)
     height: 160, // intrinsic height
