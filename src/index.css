@@ -1,0 +1,48 @@
+
+@import url("https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&display=swap");
+@import "tailwindcss";
+/* Brand palette: enable `bg-magenta-500` etc. */
+@theme {
+  --color-magenta-400: #e879f9; /* fuchsia-400 */
+  --color-magenta-500: #d946ef; /* fuchsia-500 */
+  --color-magenta-600: #c026d3; /* fuchsia-600 */
+}
+
+/* Custom animations used by App.tsx */
+@layer utilities {
+  @keyframes shimmer {
+    0%, 100% { background-position: 0% 50%; }
+    50%      { background-position: 100% 50%; }
+  }
+  .animate-shimmer { background-size: 200% 200%; animation: shimmer 3s ease-in-out infinite; }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0) rotate(var(--tw-rotate)); }
+    50%      { transform: translateY(-18px) rotate(var(--tw-rotate)); }
+  }
+  .animate-float         { animation: float 6s ease-in-out infinite; }
+  .animate-float-delayed { animation: float 6s ease-in-out infinite 2s; }
+
+  @keyframes fade-in {
+    from { opacity: 0; transform: translateY(30px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .animate-fade-in { animation: fade-in 0.9s ease-out both; }
+}
+
+/* Respect reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .animate-shimmer,
+  .animate-float,
+  .animate-float-delayed,
+  .animate-fade-in,
+  .animate-bounce,
+  .animate-pulse {
+    animation: none !important;
+  }
+}
+/* Apply JetBrains Mono as the default font */
+body {
+  @apply font-sans;
+  font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
+}
