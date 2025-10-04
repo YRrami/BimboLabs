@@ -142,7 +142,7 @@ export default function SolutionsPage() {
   );
 
   return (
-    <section className="relative py-20 sm:py-24 md:py-28 px-4 sm:px-6 md:px-10 lg:px-14">
+    <section className="relative py-16 sm:py-20 md:py-24 px-4 sm:px-6 md:px-8">
       {/* background glow + grid */}
       <div
         aria-hidden
@@ -163,28 +163,31 @@ export default function SolutionsPage() {
         }}
       />
 
-      <div className="mx-auto max-w-[95rem] space-y-10">
+      <div className="mx-auto w-full max-w-screen-2xl space-y-10">
         {/* Header */}
-        <header className="text-center space-y-4">
+        <header className="text-center space-y-4 px-1">
           <span className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 py-1 text-[11px] uppercase tracking-[0.22em] text-white/70">
             Solutions
           </span>
-          <h1 className="text-4xl sm:text-5xl font-extrabold text-white">
-            Pods that <span className="bg-gradient-to-r from-[#4F46E5] via-[#A855F7] to-[#4F46E5] bg-clip-text text-transparent">move fast</span>
+          <h1 className="text-3xl sm:text-5xl font-extrabold text-white break-words">
+            Pods that{" "}
+            <span className="bg-gradient-to-r from-[#4F46E5] via-[#A855F7] to-[#4F46E5] bg-clip-text text-transparent">
+              move fast
+            </span>
           </h1>
-          <p className="mx-auto max-w-[70ch] text-white/70 text-[15px] sm:text-[16px]">
+          <p className="mx-auto max-w-[70ch] text-white/70 text-[15px] sm:text-[16px] px-2">
             Simple scopes. Weekly drops. Dashboards the exec team opens.
           </p>
         </header>
 
         {/* Quick metrics strip */}
-        <SectionShell className="py-8">
-          <div className="grid gap-3 sm:gap-4 md:grid-cols-3">
+        <SectionShell className="py-6 sm:py-8">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
             {STATS.map((s) => (
               <div
                 key={s.label}
-                className="rounded-2xl border border-white/12 px-5 py-4 text-center"
-                style={{ backgroundColor: withAlpha(COLORS.primary, 0.10) }}
+                className="rounded-2xl border border-white/12 px-4 sm:px-5 py-4 text-center"
+                style={{ backgroundColor: withAlpha(COLORS.primary, 0.1) }}
               >
                 <div className="text-2xl font-extrabold text-white">{s.value}</div>
                 <div className="text-xs uppercase tracking-[0.2em] text-white/60">
@@ -210,9 +213,9 @@ export default function SolutionsPage() {
           />
 
           {/* desktop layout */}
-          <div className="hidden md:grid grid-cols-[0.95fr_1.05fr] gap-8">
+          <div className="hidden md:grid grid-cols-1 lg:grid-cols-[0.95fr_1.05fr] gap-6 lg:gap-8">
             {/* left: glow rail pills */}
-            <nav aria-label="Solutions" className="flex flex-col gap-3">
+            <nav aria-label="Solutions" className="flex flex-col gap-3 min-w-0">
               {SOLUTIONS.map((s) => {
                 const isActive = s.id === activeId;
                 return (
@@ -225,8 +228,8 @@ export default function SolutionsPage() {
                         : "text-white/80 hover:text-white hover:border-white/25"
                     }`}
                     style={{
-                      backgroundColor: withAlpha(s.accent, isActive ? 0.20 : 0.10),
-                      borderColor: withAlpha(COLORS.text, isActive ? 0.30 : 0.16),
+                      backgroundColor: withAlpha(s.accent, isActive ? 0.2 : 0.1),
+                      borderColor: withAlpha(COLORS.text, isActive ? 0.3 : 0.16),
                     }}
                   >
                     {isActive && (
@@ -241,18 +244,18 @@ export default function SolutionsPage() {
                         aria-hidden
                       />
                     )}
-                    <span className="relative z-10 flex items-center gap-3">
+                    <span className="relative z-10 flex items-center gap-3 min-w-0">
                       <span
-                        className="grid h-10 w-10 place-items-center rounded-xl border border-white/20"
+                        className="grid h-10 w-10 shrink-0 place-items-center rounded-xl border border-white/20"
                         style={{ backgroundColor: withAlpha(s.accent, 0.22) }}
                       >
                         <s.icon className="h-5 w-5 text-white" />
                       </span>
                       <span className="min-w-0">
-                        <span className="block text-sm font-semibold">
+                        <span className="block text-sm font-semibold truncate">
                           {s.title}
                         </span>
-                        <span className="block text-xs text-white/60 line-clamp-1">
+                        <span className="block text-xs text-white/60 truncate">
                           {s.summary}
                         </span>
                       </span>
@@ -275,16 +278,16 @@ export default function SolutionsPage() {
                 onToggle={(e) => (e.currentTarget.open ? setActiveId(s.id) : null)}
                 className="group rounded-2xl border border-white/15 bg-white/[.06] backdrop-blur-xl overflow-hidden"
               >
-                <summary className="list-none cursor-pointer px-4 py-4 flex items-center gap-3">
+                <summary className="list-none cursor-pointer px-4 py-4 flex items-center gap-3 min-w-0">
                   <span
-                    className="grid h-10 w-10 place-items-center rounded-xl border border-white/20"
+                    className="grid h-10 w-10 shrink-0 place-items-center rounded-xl border border-white/20"
                     style={{ backgroundColor: withAlpha(s.accent, 0.22) }}
                   >
                     <s.icon className="h-5 w-5 text-white" />
                   </span>
                   <div className="min-w-0">
-                    <h3 className="text-white font-semibold">{s.title}</h3>
-                    <p className="text-xs text-white/60 line-clamp-1">{s.summary}</p>
+                    <h3 className="text-white font-semibold truncate">{s.title}</h3>
+                    <p className="text-xs text-white/60 truncate">{s.summary}</p>
                   </div>
                 </summary>
                 <div className="px-4 pb-4">
@@ -297,25 +300,17 @@ export default function SolutionsPage() {
 
         {/* Process */}
         <SectionShell>
-          <div className="grid lg:grid-cols-4 gap-4">
-            <Step
-              icon={Target}
-              title="Discover"
-              text="Goals, constraints, success metrics."
-            />
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <Step icon={Target} title="Discover" text="Goals, constraints, success metrics." />
             <Step icon={Rocket} title="Plan" text="4–8 week roadmap with milestones." />
             <Step icon={Code} title="Build" text="Weekly drops with QA + tracking." />
-            <Step
-              icon={CalendarCheck}
-              title="Scale"
-              text="Optimize funnels & add automations."
-            />
+            <Step icon={CalendarCheck} title="Scale" text="Optimize funnels & add automations." />
           </div>
         </SectionShell>
 
         {/* FAQ */}
         <SectionShell>
-          <div className="grid md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {FAQ.map((f, i) => (
               <details
                 key={i}
@@ -331,10 +326,10 @@ export default function SolutionsPage() {
         </SectionShell>
 
         {/* CTA */}
-        <div className="text-center">
+        <div className="text-center px-2">
           <Link
             to="/contact"
-            className="inline-flex items-center gap-2 rounded-xl border border-white/20 px-6 py-3 text-sm font-semibold text-white hover:translate-x-0.5 transition"
+            className="inline-flex items-center gap-2 rounded-xl border border-white/20 px-5 sm:px-6 py-3 text-sm font-semibold text-white hover:translate-x-0.5 transition"
             style={{ backgroundColor: withAlpha(COLORS.primary, 0.22) }}
           >
             Start a pod <ArrowRight className="h-4 w-4" />
@@ -350,51 +345,59 @@ export default function SolutionsPage() {
 function GlassPanel({ s }: { s: Solution }) {
   return (
     <div
-      className="relative rounded-3xl border border-white/12 bg-white/[.06] backdrop-blur-xl p-6"
+      className="relative rounded-3xl border border-white/12 bg-white/[.06] backdrop-blur-xl p-5 sm:p-6 min-w-0"
       style={{ boxShadow: "0 28px 60px -40px rgba(5,6,29,.85)" }}
     >
-      <header className="flex items-start justify-between gap-4">
-        <div className="flex items-center gap-3">
+      <header className="flex items-start justify-between gap-4 min-w-0">
+        <div className="flex items-center gap-3 min-w-0">
           <span
-            className="grid h-12 w-12 place-items-center rounded-xl border border-white/20"
+            className="grid h-12 w-12 shrink-0 place-items-center rounded-xl border border-white/20"
             style={{ backgroundColor: withAlpha(s.accent, 0.26) }}
           >
             <s.icon className="h-6 w-6 text-white" />
           </span>
-          <div>
-            <h2 className="text-2xl sm:text-3xl font-bold text-white">{s.title}</h2>
-            <p className="text-sm text-white/70 max-w-[48ch]">{s.summary}</p>
+          <div className="min-w-0">
+            <h2 className="text-2xl sm:text-3xl font-bold text-white break-words">
+              {s.title}
+            </h2>
+            <p className="text-sm text-white/70 max-w-[60ch] sm:max-w-[48ch] break-words">
+              {s.summary}
+            </p>
           </div>
         </div>
+        {/* keywords pill – hide on small, truncate on md */}
         <span
-          className="hidden lg:inline-flex h-8 p-7 min-w-[8rem] items-center justify-center rounded-full border border-white/15 text-xs text-white/80"
+          className="hidden md:inline-flex h-8 px-4 items-center justify-center rounded-full border border-white/15 text-[11px] text-white/80 max-w-[40%] truncate"
           style={{ backgroundColor: withAlpha(s.accent, 0.18) }}
+          title={s.keywords.join(" • ")}
         >
           {s.keywords.join(" • ")}
         </span>
       </header>
 
-      <div className="mt-6 grid gap-5 md:grid-cols-3">
+      <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
         {s.metrics.map((m) => (
           <div
             key={m.label}
             className="rounded-2xl border border-white/15 px-4 py-4 text-center"
             style={{ backgroundColor: withAlpha(s.accent, 0.14) }}
           >
-            <p className="text-xs uppercase tracking-[0.18em] text-white/70">{m.label}</p>
+            <p className="text-[11px] uppercase tracking-[0.18em] text-white/70">
+              {m.label}
+            </p>
             <p className="mt-1 text-lg font-semibold text-white">{m.value}</p>
           </div>
         ))}
       </div>
 
-      <div className="mt-6 grid gap-3 sm:grid-cols-2">
+      <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-3">
         {s.bullets.map((b) => (
           <div
             key={b}
-            className="rounded-xl border border-white/15 bg-white/5 px-4 py-3 text-sm text-white/85 flex items-start gap-2"
+            className="rounded-xl border border-white/15 bg-white/5 px-4 py-3 text-sm text-white/85 flex items-start gap-2 break-words"
           >
             <Check className="h-4 w-4 text-[#4F46E5] mt-0.5 shrink-0" />
-            <span>{b}</span>
+            <span className="min-w-0">{b}</span>
           </div>
         ))}
       </div>
@@ -413,7 +416,7 @@ function GlassPanel({ s }: { s: Solution }) {
         </div>
         <Link
           to="/contact"
-          className="group inline-flex items-center gap-2 rounded-xl border border-white/20 px-5 py-3 text-sm font-semibold text-white transition-transform duration-300 hover:translate-x-1"
+          className="group inline-flex items-center gap-2 rounded-xl border border-white/20 px-4 sm:px-5 py-3 text-sm font-semibold text-white transition-transform duration-300 hover:translate-x-1"
           style={{
             backgroundColor: withAlpha(s.accent, 0.26),
             backdropFilter: "blur(18px)",
@@ -431,7 +434,7 @@ function PanelInner({ s }: { s: Solution }) {
     <div className="space-y-4">
       <p className="text-sm text-white/75">{s.summary}</p>
 
-      <div className="grid gap-4 grid-cols-2">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {s.metrics.map((m) => (
           <div
             key={m.label}
@@ -450,10 +453,10 @@ function PanelInner({ s }: { s: Solution }) {
         {s.bullets.map((b) => (
           <li
             key={b}
-            className="flex items-start gap-2 text-sm text-white/85 rounded-xl border border-white/15 bg-white/5 px-3 py-2"
+            className="flex items-start gap-2 text-sm text-white/85 rounded-xl border border-white/15 bg-white/5 px-3 py-2 break-words"
           >
-            <Check className="h-4 w-4 text-[#4F46E5] mt-0.5" />
-            {b}
+            <Check className="h-4 w-4 text-[#4F46E5] mt-0.5 shrink-0" />
+            <span className="min-w-0">{b}</span>
           </li>
         ))}
       </ul>
@@ -482,14 +485,14 @@ function Step({
 }) {
   return (
     <div
-      className="rounded-2xl border border-white/12 p-5"
-      style={{ backgroundColor: withAlpha(COLORS.primary, 0.10) }}
+      className="rounded-2xl border border-white/12 p-4 sm:p-5"
+      style={{ backgroundColor: withAlpha(COLORS.primary, 0.1) }}
     >
-      <div className="flex items-center gap-3">
-        <span className="grid h-10 w-10 place-items-center rounded-xl border border-white/20 bg-white/10">
+      <div className="flex items-center gap-3 min-w-0">
+        <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl border border-white/20 bg-white/10">
           <Icon className="h-5 w-5 text-white" />
         </span>
-        <h3 className="text-white font-semibold">{title}</h3>
+        <h3 className="text-white font-semibold truncate">{title}</h3>
       </div>
       <p className="mt-2 text-sm text-white/70">{text}</p>
     </div>

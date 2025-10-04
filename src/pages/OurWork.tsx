@@ -1,4 +1,3 @@
- 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 // src/pages/WorkPage.tsx
 import React, { useEffect, useRef, useState } from "react";
@@ -57,7 +56,7 @@ function SectionShell({
 }) {
   return (
     <div
-      className={`rounded-3xl border border-white/10 backdrop-blur-xl px-6 sm:px-10 md:px-14 py-12 sm:py-16 ${className ?? ""}`}
+      className={`rounded-3xl border border-white/10 backdrop-blur-xl px-4 sm:px-8 md:px-12 py-10 sm:py-14 ${className ?? ""}`}
       style={{ background: gradientSoft(), boxShadow: "0 30px 80px -40px rgba(0,0,0,0.8)" }}
     >
       {children}
@@ -79,17 +78,17 @@ function ClientTicker() {
   ];
   const looped = [...clients, ...clients];
   return (
-    <div className="relative overflow-hidden rounded-3xl border border-white/12 bg-[rgba(8,12,32,0.82)] px-6 py-4">
-      <div className="pointer-events-none absolute inset-y-0 left-0 w-24 bg-gradient-to-r from-[#05061D] via-[#05061D]/80 to-transparent" />
-      <div className="pointer-events-none absolute inset-y-0 right-0 w-24 bg-gradient-to-l from-[#05061D] via-[#05061D]/80 to-transparent" />
-      <div className="ticker flex items-center gap-6 whitespace-nowrap text-sm sm:text-base text-white/70">
+    <div className="relative overflow-hidden rounded-3xl border border-white/12 bg-[rgba(8,12,32,0.82)] px-4 sm:px-6 py-4">
+      <div className="pointer-events-none absolute inset-y-0 left-0 w-16 sm:w-24 bg-gradient-to-r from-[#05061D] via-[#05061D]/80 to-transparent" />
+      <div className="pointer-events-none absolute inset-y-0 right-0 w-16 sm:w-24 bg-gradient-to-l from-[#05061D] via-[#05061D]/80 to-transparent" />
+      <div className="ticker flex items-center gap-4 sm:gap-6 whitespace-nowrap text-sm sm:text-base text-white/70 will-change-transform">
         {looped.map((client, idx) => (
           <span
             key={`${client.name}-${idx}`}
-            className="inline-flex items-center gap-3 rounded-full border border-white/10 bg-white/5 px-4 py-2 backdrop-blur"
+            className="inline-flex items-center gap-3 rounded-full border border-white/10 bg-white/5 px-3 sm:px-4 py-2 backdrop-blur"
           >
             <span
-              className={`grid h-9 w-9 place-items-center rounded-xl bg-gradient-to-br ${client.gradient} text-xs font-semibold uppercase text-white shadow-[0_12px_32px_-16px_rgba(79,70,229,0.65)]`}
+              className={`grid h-8 w-8 sm:h-9 sm:w-9 place-items-center rounded-xl bg-gradient-to-br ${client.gradient} text-[10px] sm:text-xs font-semibold uppercase text-white shadow-[0_12px_32px_-16px_rgba(79,70,229,0.65)]`}
             >
               {client.initials}
             </span>
@@ -115,19 +114,19 @@ function TestimonialsSection() {
   ] as const;
 
   return (
-    <div className="grid gap-5 sm:gap-6 md:grid-cols-2">
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5">
       {testimonials.map((t, idx) => (
         <div
           key={idx}
-          className="relative h-full rounded-3xl border border-white/12 p-6 sm:p-7"
+          className="relative h-full rounded-3xl border border-white/12 p-5 sm:p-7"
           style={{ backgroundColor: withAlpha(COLORS.primary, 0.1) }}
         >
           <Quote className="h-6 w-6 text-white/70" />
           <p className="mt-4 text-white/85 text-base leading-relaxed">"{t.quote}"</p>
-          <div className="mt-6 flex items-center justify-between gap-3">
-            <div>
-              <p className="text-sm font-semibold text-white">{t.name}</p>
-              <p className="text-xs uppercase tracking-[0.18em] text-white/50">{t.role}</p>
+          <div className="mt-6 flex items-center justify-between gap-3 min-w-0">
+            <div className="min-w-0">
+              <p className="text-sm font-semibold text-white truncate">{t.name}</p>
+              <p className="text-xs uppercase tracking-[0.18em] text-white/50 truncate">{t.role}</p>
             </div>
             <span className="inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-white/10 px-3 py-1 text-xs text-white/80">
               <Sparkles className="h-3.5 w-3.5" />
@@ -217,7 +216,8 @@ function Demos() {
       className="relative rounded-2xl overflow-hidden border border-white/10 bg-black/90"
       style={{ isolation: "isolate", transform: "translateZ(0)", contain: "paint" as any }}
     >
-      <div className="relative w-full aspect-[4/5] sm:aspect-[16/10] md:aspect-[16/9]">
+      {/* Aspect ratio: tall on xs -> wide on md+ */}
+      <div className="relative w-full aspect-[3/4] sm:aspect-[4/5] md:aspect-[16/10] lg:aspect-[16/9]">
         {projects.map((p, i) => {
           const isActive = active === i;
           const shouldRender = mounted[i];
@@ -230,7 +230,7 @@ function Demos() {
                 opacity: isActive ? 1 : 0,
                 pointerEvents: isActive ? "auto" : "none",
                 willChange: "opacity",
-                transition: "opacity 120ms linear",
+                transition: "opacity 140ms linear",
                 backfaceVisibility: "hidden",
                 transform: "translateZ(0)",
                 contain: "paint",
@@ -251,7 +251,12 @@ function Demos() {
                   onLoad={() =>
                     setLoaded((prev) => (prev[i] ? prev : Object.assign([...prev], { [i]: true })))
                   }
-                  style={{ border: 0, background: "black", display: "block", transform: "translateZ(0)" }}
+                  style={{
+                    border: 0,
+                    background: "black",
+                    display: "block",
+                    transform: "translateZ(0)",
+                  }}
                 />
               )}
               {!loaded[i] && (
@@ -270,63 +275,65 @@ function Demos() {
 
   return (
     <div className="space-y-8 sm:space-y-10 md:space-y-12">
-      {/* Tabs */}
+      {/* Tabs (scrollable on mobile) */}
       <div
-        className="flex flex-wrap justify-center gap-2 sm:gap-3"
+        className="relative -mx-2 px-2 sm:mx-0 sm:px-0 overflow-x-auto scrollbar-none snap-x snap-mandatory"
         role="tablist"
         aria-label="Live demos"
         ref={tabsRef}
         onKeyDown={onTabsKeyDown}
       >
-        {projects.map((p, idx) => {
-          const fav = faviconFor(p.url);
-          const activeTab = active === idx;
-          const tabStyle = activeTab
-            ? { backgroundImage: gradientPrimary() }
-            : ({ backgroundColor: withAlpha(COLORS.primary, 0.08) } as React.CSSProperties);
-        return (
-            <button
-              key={p.id}
-              onClick={() => setActive(idx)}
-              className={`relative px-4 sm:px-5 py-2.5 sm:py-3 rounded-xl text-sm sm:text-base font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#4F46E5]/60 ${
-                activeTab ? "text-white" : "text-[#A5ADCF] hover:text-white"
-              }`}
-              style={tabStyle}
-              title={p.title}
-              role="tab"
-              id={`tab-${p.id}`}
-              aria-selected={activeTab}
-              aria-controls={`panel-${p.id}`}
-            >
-              <span className="relative z-10 inline-flex items-center gap-2">
-                <img
-                  src={fav}
-                  alt=""
-                  className="h-4 w-4 rounded"
-                  onError={(e) => ((e.currentTarget.style as any).display = "none")}
-                />
-                <span className="text-lg leading-none">{p.emoji}</span>
-                <span className="truncate max-w-[12ch] sm:max-w-[18ch]">{p.title}</span>
-              </span>
-              {activeTab && <div className="absolute -inset-1 rounded-xl bg-white/10 blur-lg" />}
-            </button>
-          );
-        })}
+        <div className="flex w-max items-center gap-2 sm:gap-3">
+          {projects.map((p, idx) => {
+            const fav = faviconFor(p.url);
+            const activeTab = active === idx;
+            const tabStyle = activeTab
+              ? { backgroundImage: gradientPrimary() }
+              : ({ backgroundColor: withAlpha(COLORS.primary, 0.08) } as React.CSSProperties);
+            return (
+              <button
+                key={p.id}
+                onClick={() => setActive(idx)}
+                className={`snap-start relative px-3.5 sm:px-5 py-2.5 sm:py-3 rounded-xl text-sm sm:text-base font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#4F46E5]/60 ${
+                  activeTab ? "text-white" : "text-[#A5ADCF] hover:text-white"
+                }`}
+                style={tabStyle}
+                title={p.title}
+                role="tab"
+                id={`tab-${p.id}`}
+                aria-selected={activeTab}
+                aria-controls={`panel-${p.id}`}
+              >
+                <span className="relative z-10 inline-flex items-center gap-2 min-w-0">
+                  <img
+                    src={fav}
+                    alt=""
+                    className="h-4 w-4 rounded shrink-0"
+                    onError={(e) => ((e.currentTarget.style as any).display = "none")}
+                  />
+                  <span className="text-base leading-none">{p.emoji}</span>
+                  <span className="truncate max-w-[14ch] sm:max-w-[18ch]">{p.title}</span>
+                </span>
+                {activeTab && <div className="absolute -inset-1 rounded-xl bg-white/10 blur-lg" />}
+              </button>
+            );
+          })}
+        </div>
       </div>
 
-      {/* Preview + details */}
-      <div className="grid lg:grid-cols-2 gap-8 sm:gap-10 md:gap-12 items-center">
-        <div className="relative rounded-3xl p-[1px]" style={{ background: gradientSoft(130, 0.14, 0.12, 0.8) }}>
+      {/* Preview + details (single-column by default) */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 md:gap-10 items-start">
+        <div className="relative rounded-3xl p-[1px] min-w-0" style={{ background: gradientSoft(130, 0.14, 0.12, 0.8) }}>
           <div
             className="relative rounded-3xl p-4 sm:p-6"
             style={{ backgroundColor: withAlpha(COLORS.background, 0.92) }}
           >
-            <div className="mb-4 flex items-center justify-between gap-3">
+            <div className="mb-4 flex items-center justify-between gap-3 min-w-0">
               <div className="flex items-center gap-3 min-w-0">
                 <img
                   src={currentFavicon}
                   alt=""
-                  className="h-6 w-6 rounded"
+                  className="h-6 w-6 rounded shrink-0"
                   onError={(e) => ((e.currentTarget.style as any).display = "none")}
                 />
                 <div className="min-w-0">
@@ -336,7 +343,7 @@ function Demos() {
                   </p>
                 </div>
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 shrink-0">
                 <button
                   onClick={async () => {
                     try {
@@ -369,13 +376,15 @@ function Demos() {
           </div>
         </div>
 
-        <div className="space-y-6 sm:space-y-8">
+        <div className="space-y-5 sm:space-y-6">
           <div>
-            <h3 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-4">
+            <h3 className="text-2xl sm:text-3xl font-bold text-white mb-3 sm:mb-4">
               {current.title}
             </h3>
-            <p className="text-[#A5ADCF] text-lg leading-relaxed mb-6">{current.brief}</p>
-            <div className="flex flex-wrap gap-2 mb-8">
+            <p className="text-[#A5ADCF] text-base sm:text-lg leading-relaxed mb-5 sm:mb-6 break-words">
+              {current.brief}
+            </p>
+            <div className="flex flex-wrap gap-2.5 mb-6">
               {current.tags.map((t) => (
                 <span
                   key={t}
@@ -385,10 +394,10 @@ function Demos() {
                 </span>
               ))}
             </div>
-            <div className="flex gap-4">
+            <div className="flex flex-wrap gap-3">
               <a
                 href={current.url}
-                className="group inline-flex items-center gap-2 px-6 py-3 rounded-xl text-white font-semibold hover:scale-[1.02] transition-all shadow-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-[#4F46E5]/60"
+                className="group inline-flex items-center gap-2 px-5 sm:px-6 py-3 rounded-xl text-white font-semibold hover:scale-[1.02] transition-all shadow-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-[#4F46E5]/60"
                 style={{
                   backgroundColor: buttonGradient(0.26),
                   backdropFilter: "blur(16px)",
@@ -431,7 +440,7 @@ function Demos() {
       </div>
 
       <div className="mt-3 text-center text-xs text-[#A5ADCF]">
-        Tip: click a tab to switch demos
+        Tip: swipe tabs to switch demos
       </div>
     </div>
   );
@@ -512,14 +521,14 @@ export default function WorkPage() {
   return (
     <>
       {/* HERO + LOGO WALL */}
-      <section className="relative py-24 sm:py-28 md:py-32 px-4 sm:px-6 md:px-10 lg:px-14">
-        <div className="mx-auto max-w-[95rem]">
+      <section className="relative py-16 sm:py-20 md:py-24 px-4 sm:px-6 md:px-8">
+        <div className="mx-auto w-full max-w-screen-2xl">
           <SectionShell>
-            <div className="text-center mb-12 sm:mb-14">
-              <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold bg-gradient-to-r from-white via-gray-100 to-white bg-clip-text text-transparent">
+            <div className="text-center mb-10 sm:mb-12">
+              <h1 className="text-3xl sm:text-5xl md:text-6xl font-extrabold bg-gradient-to-r from-white via-gray-100 to-white bg-clip-text text-transparent break-words">
                 Our Work
               </h1>
-              <p className="mt-4 text-[#A5ADCF] text-[15px] sm:text-[16px] max-w-[68ch] mx-auto">
+              <p className="mt-4 text-[#A5ADCF] text-[15px] sm:text-[16px] max-w-[68ch] mx-auto px-2">
                 Explore active demos, partner results, and the infrastructure that keeps campaigns
                 and product releases on track. Everything shown here is production use, not concept decks.
               </p>
@@ -530,12 +539,12 @@ export default function WorkPage() {
       </section>
 
       {/* IMPACT SCOREBOARD */}
-      <section className="relative py-20 sm:py-24 md:py-28 px-4 sm:px-6 md:px-10 lg:px-14">
-        <div className="mx-auto max-w-[95rem]">
+      <section className="relative py-16 sm:py-20 md:py-24 px-4 sm:px-6 md:px-8">
+        <div className="mx-auto w-full max-w-screen-2xl">
           <SectionShell>
-            <div className="grid md:grid-cols-2 gap-10 items-start">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
               <div className="space-y-4">
-                <h2 className="text-3xl sm:text-4xl font-bold text-white">Impact scoreboard</h2>
+                <h2 className="text-2xl sm:text-4xl font-bold text-white">Impact scoreboard</h2>
                 <p className="text-[#A5ADCF] text-[15px] sm:text-[16px] leading-relaxed">
                   We measure every engagement against target metrics agreed up front. These are a few
                   snapshots pulled from partner dashboards.
@@ -565,11 +574,11 @@ export default function WorkPage() {
                 {impactStories.map(({ label, metric, detail }) => (
                   <div
                     key={label}
-                    className="rounded-2xl border border-white/12 p-6"
+                    className="rounded-2xl border border-white/12 p-5 sm:p-6"
                     style={{ backgroundColor: withAlpha(COLORS.primary, 0.1) }}
                   >
-                    <div className="flex items-center justify-between">
-                      <h3 className="text-lg font-semibold text-white">{label}</h3>
+                    <div className="flex items-center justify-between min-w-0">
+                      <h3 className="text-lg font-semibold text-white truncate">{label}</h3>
                       <span className="text-2xl font-extrabold text-white">{metric}</span>
                     </div>
                     <p className="mt-3 text-sm text-white/70 leading-relaxed">{detail}</p>
@@ -582,14 +591,14 @@ export default function WorkPage() {
       </section>
 
       {/* LIVE DEMOS */}
-      <section id="projects" className="relative py-24 sm:py-32 md:py-36 px-4 sm:px-6 md:px-10 lg:px-14">
-        <div className="mx-auto max-w-[95rem]">
+      <section id="projects" className="relative py-20 sm:py-28 md:py-32 px-4 sm:px-6 md:px-8">
+        <div className="mx-auto w-full max-w-screen-2xl">
           <SectionShell>
-            <div className="text-center mb-16 sm:mb-20 md:mb-24">
-              <h2 className="text-4xl sm:text-5xl md:text-6xl font-extrabold bg-gradient-to-r from-white via-gray-100 to-white bg-clip-text text-transparent mb-4 sm:mb-5">
+            <div className="text-center mb-12 sm:mb-16 md:mb-20">
+              <h2 className="text-3xl sm:text-5xl md:text-6xl font-extrabold bg-gradient-to-r from-white via-gray-100 to-white bg-clip-text text-transparent mb-3 sm:mb-4 break-words">
                 Live demos
               </h2>
-              <p className="max-w-[66ch] mx-auto text-[#A5ADCF] text-[15px] sm:text-[16px]">
+              <p className="max-w-[66ch] mx-auto text-[#A5ADCF] text-[15px] sm:text-[16px] px-2">
                 Try battle-tested blueprints you can deploy quickly. Every demo represents a packaged
                 engagement we can adapt to your brand.
               </p>
@@ -601,29 +610,29 @@ export default function WorkPage() {
       </section>
 
       {/* WHAT WE HAND OFF */}
-      <section className="relative py-20 sm:py-24 md:py-28 px-4 sm:px-6 md:px-10 lg:px-14">
-        <div className="mx-auto max-w-[95rem]">
+      <section className="relative py-16 sm:py-20 md:py-24 px-4 sm:px-6 md:px-8">
+        <div className="mx-auto w-full max-w-screen-2xl">
           <SectionShell>
-            <div className="text-center mb-10">
-              <h2 className="text-3xl sm:text-4xl font-bold text-white">What we hand off</h2>
-              <p className="mt-3 text-[#A5ADCF] text-[15px] sm:text-[16px] max-w-[66ch] mx-auto">
+            <div className="text-center mb-8 sm:mb-10">
+              <h2 className="text-2xl sm:text-4xl font-bold text-white">What we hand off</h2>
+              <p className="mt-3 text-[#A5ADCF] text-[15px] sm:text-[16px] max-w-[66ch] mx-auto px-2">
                 Beyond metrics, partners keep the playbook. Here is a sampling of the artefacts teams
                 receive when an engagement wraps.
               </p>
             </div>
-            <div className="grid md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
               {workflowExports.map(({ title, items }) => (
                 <div
                   key={title}
-                  className="rounded-2xl border border-white/12 p-6"
+                  className="rounded-2xl border border-white/12 p-5 sm:p-6"
                   style={{ backgroundColor: withAlpha(COLORS.primary, 0.08) }}
                 >
                   <h3 className="text-lg font-semibold text-white mb-3">{title}</h3>
                   <ul className="space-y-2 text-sm text-white/70">
                     {items.map((item) => (
                       <li key={item} className="flex items-start gap-2">
-                        <span className="h-2 w-2 rounded-full bg-[#4F46E5] mt-1" />
-                        <span>{item}</span>
+                        <span className="h-2 w-2 rounded-full bg-[#4F46E5] mt-1 shrink-0" />
+                        <span className="break-words">{item}</span>
                       </li>
                     ))}
                   </ul>
@@ -635,27 +644,27 @@ export default function WorkPage() {
       </section>
 
       {/* CASE STUDIES */}
-      <section className="relative py-20 sm:py-24 md:py-28 px-4 sm:px-6 md:px-10 lg:px-14">
-        <div className="mx-auto max-w-[95rem]">
+      <section className="relative py-16 sm:py-20 md:py-24 px-4 sm:px-6 md:px-8">
+        <div className="mx-auto w-full max-w-screen-2xl">
           <SectionShell>
-            <div className="flex items-center justify-between gap-4 mb-8">
-              <h2 className="text-3xl sm:text-4xl font-bold text-white">Case studies</h2>
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4 mb-6 sm:mb-8">
+              <h2 className="text-2xl sm:text-4xl font-bold text-white">Case studies</h2>
               <span className="inline-flex items-center gap-2 text-white/80 text-sm">
                 <Trophy className="h-4 w-4" />
                 Outcomes, not concept decks
               </span>
             </div>
-            <div className="grid md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
               {caseStudies.map((cs) => (
                 <a
                   key={cs.title}
                   href={cs.href}
-                  className="group rounded-2xl border border-white/12 p-6 transition hover:border-white/25"
+                  className="group rounded-2xl border border-white/12 p-5 sm:p-6 transition hover:border-white/25"
                   style={{ backgroundColor: withAlpha(COLORS.primary, 0.08) }}
                 >
-                  <div className="flex items-center justify-between">
-                    <h3 className="text-lg font-semibold text-white">{cs.title}</h3>
-                    <ExternalLink className="h-4 w-4 text-white/70 group-hover:text-white" />
+                  <div className="flex items-center justify-between gap-3 min-w-0">
+                    <h3 className="text-lg font-semibold text-white truncate">{cs.title}</h3>
+                    <ExternalLink className="h-4 w-4 text-white/70 shrink-0 group-hover:text-white" />
                   </div>
                   <p className="mt-2 text-sm text-white/70">{cs.summary}</p>
                 </a>
@@ -666,14 +675,14 @@ export default function WorkPage() {
       </section>
 
       {/* TESTIMONIALS */}
-      <section id="testimonials" className="relative py-24 sm:py-32 md:py-36 px-4 sm:px-6 md:px-10 lg:px-14">
-        <div className="mx-auto max-w-[95rem]">
+      <section id="testimonials" className="relative py-20 sm:py-28 md:py-32 px-4 sm:px-6 md:px-8">
+        <div className="mx-auto w-full max-w-screen-2xl">
           <SectionShell>
-            <div className="text-center mb-12 sm:mb-14 md:mb-16">
-              <h2 className="text-4xl sm:text-5xl md:text-6xl font-extrabold bg-gradient-to-r from-white via-gray-100 to-white bg-clip-text text-transparent mb-4 sm:mb-5">
+            <div className="text-center mb-10 sm:mb-12 md:mb-14">
+              <h2 className="text-3xl sm:text-5xl md:text-6xl font-extrabold bg-gradient-to-r from-white via-gray-100 to-white bg-clip-text text-transparent mb-3 sm:mb-4 break-words">
                 Partners in the work
               </h2>
-              <p className="max-w-[66ch] mx-auto text-[#A5ADCF] text-[15px] sm:text-[16px]">
+              <p className="max-w-[66ch] mx-auto text-[#A5ADCF] text-[15px] sm:text-[16px] px-2">
                 Strategic operators trust Anonvic to ship marketing and product wins. These
                 testimonials are permissioned quotes from recent collaborations.
               </p>
@@ -685,18 +694,18 @@ export default function WorkPage() {
       </section>
 
       {/* CTA → CONTACT */}
-      <section className="relative py-16 sm:py-20 md:py-24 px-4 sm:px-6 md:px-10 lg:px-14">
-        <div className="mx-auto max-w-[95rem]">
+      <section className="relative py-14 sm:py-18 md:py-22 px-4 sm:px-6 md:px-8">
+        <div className="mx-auto w-full max-w-screen-2xl">
           <SectionShell>
             <div className="flex flex-col items-center text-center gap-4">
               <h3 className="text-2xl sm:text-3xl font-bold text-white">Ready to collaborate?</h3>
-              <p className="text-[#A5ADCF] max-w-[62ch]">
+              <p className="text-[#A5ADCF] max-w-[62ch] px-2">
                 Share your goals and constraints. We’ll reply with a short plan, timeline, and
                 resourcing recommendations.
               </p>
               <a
                 href="/contact"
-                className="inline-flex items-center gap-2 rounded-xl border border-white/20 px-6 py-3 text-sm font-semibold text-white hover:translate-x-1 transition"
+                className="inline-flex items-center gap-2 rounded-xl border border-white/20 px-5 sm:px-6 py-3 text-sm font-semibold text-white hover:translate-x-1 transition"
                 style={{
                   backgroundColor: withAlpha(COLORS.primary, 0.22),
                   backdropFilter: "blur(12px)",
@@ -712,7 +721,6 @@ export default function WorkPage() {
       {/* JSON-LD */}
       <script
         type="application/ld+json"
-    
         dangerouslySetInnerHTML={{
           __html: JSON.stringify({
             "@context": "https://schema.org",
