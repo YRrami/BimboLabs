@@ -1,3 +1,4 @@
+ 
 /* eslint-disable react-refresh/only-export-components */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -22,10 +23,7 @@ import {
   Facebook,
   ArrowRight,
   Sparkles,        // copilot avatar glyph
-  Send,            // send icon
-  Paperclip,       // attach placeholder
-  Loader2,         // spinner fallback (kept, not shown by default)
-  MessageSquare,   // header glyph
+  Send,   // header glyph
 } from "lucide-react";
 import { Link, NavLink, Outlet, useLocation } from "react-router-dom";
 import anonvicLogo from "../../logoss.png";
@@ -389,7 +387,6 @@ function ChatPanel({
   value,
   setValue,
   onSend,
-  onQuick,
 }: {
   chatListRef: React.RefObject<HTMLDivElement | null>;
   typing: boolean;
@@ -397,7 +394,6 @@ function ChatPanel({
   value: string;
   setValue: (v: string) => void;
   onSend: () => void;
-  onQuick: (q: string) => void;
 }) {
   const handleSend = () => {
     if (!value.trim()) return;
@@ -772,7 +768,6 @@ export function SiteLayout() {
             value={chatInput}
             setValue={setChatInput}
             onSend={() => sendChat()}
-            onQuick={(q) => sendChat(q)}
           />
         )}
 
