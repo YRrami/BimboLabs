@@ -1,31 +1,18 @@
-// src/pages/Solutions.tsx
-import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-import {
-  Sparkles,
-  Code,
-  Search,
-  Megaphone,
-  MessageSquare,
-  ArrowRight,
-  Check,
-  Target,
-  Rocket,
-  CalendarCheck,
-} from "lucide-react";
+import { Sparkles, Code, Search, Megaphone, MessageSquare, ArrowRight } from "lucide-react";
 import { SectionShell, withAlpha, COLORS } from "../components/layout/SiteLayout";
+import { Carousel } from 'react-responsive-carousel'; // Carousel import
+import "react-responsive-carousel/lib/styles/carousel.min.css"; // Carousel styles
 
 /* ===================== Data ===================== */
 
 type Solution = {
   id: string;
   title: string;
-  summary: string;
+  description: string;
+  focus: string;
   icon: React.ElementType;
   accent: string; // hex color
-  bullets: string[];
-  metrics: { label: string; value: string }[];
-  keywords: string[];
   cta: string;
 };
 
@@ -33,114 +20,120 @@ const SOLUTIONS: Solution[] = [
   {
     id: "software",
     title: "Software Development",
-    summary: "Ship web apps and sites with weekly drops, QA, analytics and docs.",
+    description:
+      "Collaborative pods that plan, design, and ship modern web products with steady iterations and clear reporting.",
+    focus: "Full-stack build + launch",
     icon: Code,
     accent: "#4F46E5",
-    bullets: ["Next.js + Node", "Design system", "Monitoring + CI"],
-    metrics: [
-      { label: "Cadence", value: "Weekly" },
-      { label: "Stack", value: "React / Node" },
-      { label: "Focus", value: "Quality + speed" },
-    ],
-    keywords: ["Accessibility", "Telemetry", "CI/CD"],
     cta: "Scope a Build",
   },
   {
     id: "seo",
     title: "SEO Optimization",
-    summary: "Technical + editorial SEO that compounds qualified traffic.",
+    description:
+      "Technical fixes, structured content plans, and analytics support that compound qualified organic traffic over time.",
+    focus: "Search performance",
     icon: Search,
     accent: "#38BDF8",
-    bullets: ["CWV > 90", "Content briefs", "Schema coverage"],
-    metrics: [
-      { label: "Velocity", value: "4–6 briefs/mo" },
-      { label: "Analytics", value: "Looker" },
-      { label: "Focus", value: "Intent > volume" },
-    ],
-    keywords: ["Clusters", "Internal links", "SERP intent"],
     cta: "Get an SEO Plan",
   },
   {
     id: "media",
     title: "Media Buying",
-    summary: "Creative tests, server-side tracking, live ROAS dashboards.",
+    description:
+      "Full-funnel experimentation with paid channels, server-side tracking, and dashboards tuned for real-time decisions.",
+    focus: "Paid acquisition",
     icon: Megaphone,
     accent: "#6366F1",
-    bullets: ["Meta + Google", "Budget pacing", "CAPI / gtag"],
-    metrics: [
-      { label: "Sprints", value: "Weekly" },
-      { label: "Focus", value: "MER + LTV" },
-      { label: "Attribution", value: "Server-side" },
-    ],
-    keywords: ["Experiments", "Attribution", "Creative"],
     cta: "Launch Media",
   },
   {
     id: "brand",
     title: "Brand Management",
-    summary: "Positioning, voice, and design tokens for consistent shipping.",
+    description:
+      "Messaging frameworks, visual systems, and governance models that make every touchpoint cohesive and on-brand.",
+    focus: "Identity systems",
     icon: Sparkles,
     accent: "#A855F7",
-    bullets: ["Messaging kit", "Visual tokens", "Governance"],
-    metrics: [
-      { label: "Timeline", value: "3–4 weeks" },
-      { label: "Output", value: "Playbook" },
-      { label: "Team", value: "Strategy + Design" },
-    ],
-    keywords: ["Voice map", "Design tokens", "Brand OS"],
     cta: "Start Brand Sprint",
   },
   {
     id: "social",
     title: "Social Media",
-    summary: "Always-on storytelling and community ops, on-brand and on time.",
+    description:
+      "Always-on storytelling, community engagement, and reporting that keep audiences informed and invested.",
+    focus: "Community narrative",
     icon: MessageSquare,
     accent: "#EC4899",
-    bullets: ["Calendar", "Community replies", "Analytics"],
-    metrics: [
-      { label: "Pace", value: "3–5 posts/wk" },
-      { label: "Channels", value: "IG/TikTok/X" },
-      { label: "Focus", value: "Reach + saves" },
-    ],
-    keywords: ["Templates", "Copy kits", "Influencers"],
     cta: "Design Social Playbook",
   },
 ];
 
-const STATS = [
-  { label: "MVP launches", value: "12" },
-  { label: "Added revenue", value: "$4.8M" },
-  { label: "Hours automated", value: "1.3K" },
-] as const;
+type PackageTier = {
+  id: string;
+  title: string;
+  price: string;
+  summary: string;
+  details: string;
+  tag?: string;
+  accent: string;
+};
 
-const FAQ = [
+const PACKAGES: PackageTier[] = [
   {
-    q: "How do we start?",
-    a: "We run a 45-min intake, then deliver a one-page plan with scope, timeline, and cost.",
+    id: "starter",
+    title: "Starter",
+    price: "$100",
+    summary: "Single-page landing site",
+    details:
+      "One responsive landing page built with React and Tailwind, including copy polish and core SEO basics.",
+    accent: "#38BDF8",
   },
   {
-    q: "Weekly cadence?",
-    a: "Yes. You’ll get a demo, Loom recap, and updated backlog every week.",
+    id: "basic",
+    title: "Basic",
+    price: "$350",
+    summary: "3-4 page brochure site",
+    details:
+      "Multi-page marketing site with component library, contact form, and tailored brand styling ready to launch fast.",
+    tag: "Popular",
+    accent: "#4F46E5",
   },
   {
-    q: "Who’s on the pod?",
-    a: "A strategist + builders (design/eng/ops) with shared KPIs and QA gates.",
+    id: "premium",
+    title: "Premium",
+    price: "$750",
+    summary: "5+ page product site",
+    details:
+      "Comprehensive website built in React and Tailwind with custom UI/UX design, animations, and content guidance.",
+    accent: "#A855F7",
   },
   {
-    q: "Do you do fixed price?",
-    a: "For sprints and clear scopes, yes. Ongoing work is a monthly retainer.",
+    id: "custom",
+    title: "Custom",
+    price: "Contact",
+    summary: "Advanced builds & integrations",
+    details:
+      "Ideal for ecommerce, dashboards, and application logic. Tell us the scope and we will craft a dedicated proposal.",
+    accent: "#22D3EE",
   },
 ];
+
+const HIGHLIGHTS = [
+  { label: "Pod spin-up", value: "5 days" },
+  { label: "Weekly updates", value: "Every Friday" },
+  { label: "Launch support", value: "30 days" },
+] as const;
+
+const PACKAGE_INCLUDES = [
+  "Figma UI/UX handoff",
+  "Responsive layouts",
+  "Performance budget",
+] as const;
 
 /* ===================== Page ===================== */
 
 export default function SolutionsPage() {
-  const [activeId, setActiveId] = useState<string>("software");
-  const active = useMemo(
-    () => SOLUTIONS.find((s) => s.id === activeId) ?? SOLUTIONS[0],
-    [activeId]
-  );
-
   return (
     <section className="relative py-16 sm:py-20 md:py-24 px-4 sm:px-6 md:px-8">
       {/* background glow + grid */}
@@ -149,352 +142,227 @@ export default function SolutionsPage() {
         className="pointer-events-none absolute inset-0 -z-10"
         style={{
           background:
-            "radial-gradient(35% 28% at 50% 0%, rgba(79,70,229,.28), transparent 70%)",
+            "radial-gradient(35% 28% at 50% 0%, rgba(79,70,229,.1), transparent 70%)",
           backgroundColor: COLORS.background,
         }}
       />
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-0 -z-10 opacity-30 mix-blend-soft-light"
+        className="pointer-events-none absolute inset-0 -z-10 opacity-20 mix-blend-soft-light"
         style={{
           backgroundImage:
-            "linear-gradient(rgba(255,255,255,.06) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.06) 1px, transparent 1px)",
-          backgroundSize: "24px 24px",
+            "linear-gradient(rgba(255,255,255,.02) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.02) 1px, transparent 1px)",
+          backgroundSize: "32px 32px",
         }}
       />
+      <div
+        aria-hidden
+        className="pointer-events-none absolute -top-24 right-[-10%] h-64 w-64 -z-10 rounded-full blur-3xl opacity-60"
+        style={{ background: "radial-gradient(circle, rgba(56,189,248,0.1), transparent 60%)" }}
+      />
+      <div
+        aria-hidden
+        className="pointer-events-none absolute bottom-[-18%] left-[-6%] h-72 w-72 -z-10 rounded-full blur-3xl opacity-40"
+        style={{ background: "radial-gradient(circle, rgba(168,85,247,0.1), transparent 65%)" }}
+      />
 
-      <div className="mx-auto w-full max-w-screen-2xl space-y-10">
-        {/* Header */}
-        <header className="text-center space-y-4 px-1">
-          <span className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 py-1 text-[11px] uppercase tracking-[0.22em] text-white/70">
+      <div className="mx-auto w-full max-w-6xl space-y-12">
+        {/* Header Section */}
+        <header className="space-y-5 text-center px-2">
+          <span className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-4 py-2 text-[12px] uppercase tracking-[0.22em] text-white/70">
             Solutions
           </span>
-          <h1 className="text-3xl sm:text-5xl font-extrabold text-white break-words">
-            Pods that{" "}
-            <span className="bg-gradient-to-r from-[#4F46E5] via-[#A855F7] to-[#4F46E5] bg-clip-text text-transparent">
-              move fast
+          <h1 className="text-4xl sm:text-5xl font-extrabold text-white break-words">
+            Strategic pods that{" "}
+            <span className="bg-gradient-to-r from-[#38BDF8] via-[#A855F7] to-[#4F46E5] bg-clip-text text-transparent">
+              move ideas into market
             </span>
+            .
           </h1>
-          <p className="mx-auto max-w-[70ch] text-white/70 text-[15px] sm:text-[16px] px-2">
-            Simple scopes. Weekly drops. Dashboards the exec team opens.
+          <p className="mx-auto max-w-[62ch] text-white/70 text-sm sm:text-base leading-relaxed">
+            Assemble a custom pod across strategy, design, engineering, and growth. Each engagement is time-boxed,
+            instrumented, and built to show progress every single week.
           </p>
+          <div className="flex flex-wrap justify-center gap-3 pt-1">
+            {["Strategy + Discovery", "Design Systems", "Full-stack Delivery"].map((label) => (
+              <span
+                key={label}
+                className="rounded-full border border-white/15 bg-white/5 px-4 py-1 text-[11px] font-medium uppercase tracking-[0.18em] text-white/60"
+              >
+                {label}
+              </span>
+            ))}
+          </div>
+          <div className="flex flex-wrap justify-center gap-3 pt-4">
+            <Link
+              to="/contact"
+              className="inline-flex items-center gap-3 rounded-xl border border-white/25 bg-white/10 px-6 py-3 text-sm font-semibold text-white transition-transform duration-300 hover:translate-y-1"
+            >
+              Start a project
+              <ArrowRight className="h-5 w-5" />
+            </Link>
+            <Link
+              to="/our-work"
+              className="inline-flex items-center gap-3 rounded-xl border border-white/15 px-6 py-3 text-sm font-semibold text-white/80 transition-colors duration-300 hover:text-white hover:border-white/30"
+            >
+              See recent work
+              <ArrowRight className="h-5 w-5" />
+            </Link>
+          </div>
         </header>
 
-        {/* Quick metrics strip */}
-        <SectionShell className="py-6 sm:py-8">
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
-            {STATS.map((s) => (
+        {/* Highlights Section */}
+        <SectionShell className="py-4 sm:py-6">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 sm:gap-10">
+            {HIGHLIGHTS.map((item) => (
               <div
-                key={s.label}
-                className="rounded-2xl border border-white/12 px-4 sm:px-5 py-4 text-center"
-                style={{ backgroundColor: withAlpha(COLORS.primary, 0.1) }}
+                key={item.label}
+                className="rounded-2xl border border-white/10 bg-white/[.04] px-6 py-6 text-center backdrop-blur-lg"
+                style={{ boxShadow: "0 20px 40px -10px rgba(0,0,0,0.4)" }}
               >
-                <div className="text-2xl font-extrabold text-white">{s.value}</div>
-                <div className="text-xs uppercase tracking-[0.2em] text-white/60">
-                  {s.label}
-                </div>
+                <div className="text-xs uppercase tracking-[0.24em] text-white/60">{item.label}</div>
+                <div className="mt-3 text-xl font-semibold text-white">{item.value}</div>
               </div>
             ))}
           </div>
         </SectionShell>
 
-        {/* Main: selector + glass panel */}
-        <SectionShell className="relative overflow-hidden">
-          {/* ambient beam */}
-          <div
-            aria-hidden
-            className="pointer-events-none absolute -inset-10 rounded-[40px] blur-3xl"
-            style={{
-              background: `radial-gradient(60% 45% at 50% 0%, ${withAlpha(
-                active.accent,
-                0.28
-              )}, transparent 65%)`,
-            }}
-          />
-
-          {/* desktop layout */}
-          <div className="hidden md:grid grid-cols-1 lg:grid-cols-[0.95fr_1.05fr] gap-6 lg:gap-8">
-            {/* left: glow rail pills */}
-            <nav aria-label="Solutions" className="flex flex-col gap-3 min-w-0">
-              {SOLUTIONS.map((s) => {
-                const isActive = s.id === activeId;
-                return (
-                  <button
-                    key={s.id}
-                    onClick={() => setActiveId(s.id)}
-                    className={`group relative w-full text-left rounded-2xl border px-4 py-4 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#4F46E5]/60 ${
-                      isActive
-                        ? "text-white"
-                        : "text-white/80 hover:text-white hover:border-white/25"
-                    }`}
-                    style={{
-                      backgroundColor: withAlpha(s.accent, isActive ? 0.2 : 0.1),
-                      borderColor: withAlpha(COLORS.text, isActive ? 0.3 : 0.16),
-                    }}
-                  >
-                    {isActive && (
-                      <span
-                        className="absolute -inset-0.5 rounded-2xl blur-xl opacity-70"
-                        style={{
-                          background: `linear-gradient(90deg, ${withAlpha(
-                            s.accent,
-                            0.55
-                          )}, transparent)`,
-                        }}
-                        aria-hidden
-                      />
-                    )}
-                    <span className="relative z-10 flex items-center gap-3 min-w-0">
-                      <span
-                        className="grid h-10 w-10 shrink-0 place-items-center rounded-xl border border-white/20"
-                        style={{ backgroundColor: withAlpha(s.accent, 0.22) }}
-                      >
-                        <s.icon className="h-5 w-5 text-white" />
-                      </span>
-                      <span className="min-w-0">
-                        <span className="block text-sm font-semibold truncate">
-                          {s.title}
-                        </span>
-                        <span className="block text-xs text-white/60 truncate">
-                          {s.summary}
-                        </span>
-                      </span>
-                    </span>
-                  </button>
-                );
-              })}
-            </nav>
-
-            {/* right: glass details */}
-            <GlassPanel s={active} />
-          </div>
-
-          {/* mobile: accordions */}
-          <div className="md:hidden space-y-4">
+        {/* Solutions Section */}
+        <SectionShell className="py-8 sm:py-12">
+          <Carousel className="carousel" infiniteLoop={true} showThumbs={false} showStatus={false} showArrows={true}>
             {SOLUTIONS.map((s) => (
-              <details
+              <article
                 key={s.id}
-                open={s.id === activeId}
-                onToggle={(e) => (e.currentTarget.open ? setActiveId(s.id) : null)}
-                className="group rounded-2xl border border-white/15 bg-white/[.06] backdrop-blur-xl overflow-hidden"
+                className="relative flex flex-col gap-6 overflow-hidden rounded-3xl border border-white/10 bg-white/[.04] p-7 transition-transform duration-500 ease-in-out hover:-translate-y-1 hover:border-white/20"
+                style={{
+                  borderColor: withAlpha(s.accent, 0.18),
+                  backgroundColor: withAlpha(s.accent, 0.06),
+                  boxShadow: `0 24px 55px -32px ${withAlpha(s.accent, 0.6)}`,
+                }}
               >
-                <summary className="list-none cursor-pointer px-4 py-4 flex items-center gap-3 min-w-0">
+                <div
+                  aria-hidden
+                  className="absolute inset-x-0 top-0 h-32 opacity-80"
+                  style={{
+                    background: `linear-gradient(130deg, ${withAlpha(s.accent, 0.5)} 0%, transparent 70%)`,
+                  }}
+                />
+                <div className="flex items-start gap-5">
                   <span
-                    className="grid h-10 w-10 shrink-0 place-items-center rounded-xl border border-white/20"
-                    style={{ backgroundColor: withAlpha(s.accent, 0.22) }}
+                    className="grid h-16 w-16 shrink-0 place-items-center rounded-2xl border border-white/20 bg-white/[.06]"
+                    style={{ borderColor: withAlpha(s.accent, 0.6) }}
                   >
-                    <s.icon className="h-5 w-5 text-white" />
+                    <s.icon className="h-8 w-8 text-white" />
                   </span>
-                  <div className="min-w-0">
-                    <h3 className="text-white font-semibold truncate">{s.title}</h3>
-                    <p className="text-xs text-white/60 truncate">{s.summary}</p>
+                  <div className="min-w-0 space-y-3">
+                    <h2 className="text-2xl font-semibold text-white">{s.title}</h2>
+                    <span
+                      className="inline-flex items-center gap-3 rounded-full border border-white/20 bg-white/10 px-4 py-1 text-xs uppercase tracking-[0.2em] text-white/65"
+                      style={{ borderColor: withAlpha(s.accent, 0.45), backgroundColor: withAlpha(s.accent, 0.2) }}
+                    >
+                      {s.focus}
+                    </span>
+                    <p className="text-sm sm:text-base leading-relaxed text-white/75">{s.description}</p>
                   </div>
-                </summary>
-                <div className="px-4 pb-4">
-                  <PanelInner s={s} />
                 </div>
-              </details>
+
+                <Link
+                  to="/contact"
+                  className="inline-flex items-center gap-3 self-start rounded-xl border border-white/25 px-6 py-3 text-sm font-semibold text-white transition-transform duration-300 hover:translate-x-1"
+                  style={{
+                    backgroundColor: withAlpha(s.accent, 0.3),
+                    boxShadow: `0 18px 35px -24px ${withAlpha(s.accent, 0.8)}`,
+                  }}
+                >
+                  {s.cta}
+                  <ArrowRight className="h-5 w-5" />
+                </Link>
+              </article>
             ))}
+          </Carousel>
+        </SectionShell>
+
+        {/* Packages Section */}
+        <SectionShell className="py-10 sm:py-12">
+          <div className="space-y-10">
+            <div className="text-center space-y-3">
+              <h2 className="text-2xl sm:text-3xl font-bold text-white">Website Packages</h2>
+              <p className="mx-auto max-w-[60ch] text-sm sm:text-base text-white/70">
+                Choose a build that fits your scope. All packages are engineered with React and Tailwind, include UI/UX
+                design, and launch-ready deployment support.
+              </p>
+            </div>
+
+            <div className="flex flex-wrap justify-center gap-4">
+              {PACKAGE_INCLUDES.map((item) => (
+                <span
+                  key={item}
+                  className="rounded-full border border-white/12 bg-white/[.06] px-4 py-2 text-[12px] uppercase tracking-[0.18em] text-white/65"
+                >
+                  {item}
+                </span>
+              ))}
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-10">
+              {PACKAGES.map((pkg) => (
+                <div
+                  key={pkg.id}
+                  className="relative flex flex-col gap-6 overflow-hidden rounded-2xl border border-white/12 bg-white/[.05] p-7 backdrop-blur-md transition-transform duration-500 ease-in-out hover:-translate-y-1"
+                  style={{
+                    borderColor: withAlpha(pkg.accent, 0.28),
+                    backgroundColor: withAlpha(pkg.accent, 0.08),
+                    boxShadow: `0 28px 60px -32px ${withAlpha(pkg.accent, 0.6)}`,
+                  }}
+                >
+                  <div
+                    aria-hidden
+                    className="pointer-events-none absolute inset-x-0 top-0 h-24"
+                    style={{
+                      background: `linear-gradient(120deg, ${withAlpha(pkg.accent, 0.45)} 0%, transparent 70%)`,
+                      opacity: 0.9,
+                    }}
+                  />
+                  {pkg.tag && (
+                    <span
+                      className="absolute right-8 top-8 inline-flex items-center rounded-full px-4 py-1 text-xs font-semibold uppercase tracking-wide text-white"
+                      style={{ backgroundColor: withAlpha(pkg.accent, 0.6) }}
+                    >
+                      {pkg.tag}
+                    </span>
+                  )}
+                  <div className="space-y-2">
+                    <h3 className="text-xl font-semibold text-white">{pkg.title}</h3>
+                    <div className="text-3xl font-bold text-white">{pkg.price}</div>
+                    <p className="text-sm text-white/70">{pkg.summary}</p>
+                  </div>
+                  <p className="text-sm text-white/75">{pkg.details}</p>
+                  <Link
+                    to="/contact"
+                    className="inline-flex w-fit items-center gap-3 rounded-lg border border-white/20 px-5 py-3 text-sm font-semibold text-white transition-transform duration-300 hover:translate-x-1"
+                    style={{ backgroundColor: withAlpha(pkg.accent, 0.18) }}
+                  >
+                    Talk to the team
+                    <ArrowRight className="h-5 w-5" />
+                  </Link>
+                </div>
+              ))}
+            </div>
           </div>
         </SectionShell>
 
-        {/* Process */}
-        <SectionShell>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            <Step icon={Target} title="Discover" text="Goals, constraints, success metrics." />
-            <Step icon={Rocket} title="Plan" text="4–8 week roadmap with milestones." />
-            <Step icon={Code} title="Build" text="Weekly drops with QA + tracking." />
-            <Step icon={CalendarCheck} title="Scale" text="Optimize funnels & add automations." />
-          </div>
-        </SectionShell>
-
-        {/* FAQ */}
-        <SectionShell>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {FAQ.map((f, i) => (
-              <details
-                key={i}
-                className="rounded-2xl border border-white/12 bg-white/5 p-4"
-              >
-                <summary className="list-none cursor-pointer text-white font-semibold">
-                  {f.q}
-                </summary>
-                <p className="mt-2 text-sm text-white/70">{f.a}</p>
-              </details>
-            ))}
-          </div>
-        </SectionShell>
-
-        {/* CTA */}
-        <div className="text-center px-2">
+        {/* Footer Section */}
+        <div className="text-center">
           <Link
             to="/contact"
-            className="inline-flex items-center gap-2 rounded-xl border border-white/20 px-5 sm:px-6 py-3 text-sm font-semibold text-white hover:translate-x-0.5 transition"
-            style={{ backgroundColor: withAlpha(COLORS.primary, 0.22) }}
+            className="inline-flex items-center gap-3 rounded-xl border border-white/20 px-6 py-4 text-sm font-semibold text-white transition duration-300 hover:bg-white/10"
+            style={{ backgroundColor: withAlpha(COLORS.primary, 0.18) }}
           >
-            Start a pod <ArrowRight className="h-4 w-4" />
+            Chat with the team
+            <ArrowRight className="h-5 w-5" />
           </Link>
         </div>
       </div>
     </section>
-  );
-}
-
-/* ===================== Sub-components ===================== */
-
-function GlassPanel({ s }: { s: Solution }) {
-  return (
-    <div
-      className="relative rounded-3xl border border-white/12 bg-white/[.06] backdrop-blur-xl p-5 sm:p-6 min-w-0"
-      style={{ boxShadow: "0 28px 60px -40px rgba(5,6,29,.85)" }}
-    >
-      <header className="flex items-start justify-between gap-4 min-w-0">
-        <div className="flex items-center gap-3 min-w-0">
-          <span
-            className="grid h-12 w-12 shrink-0 place-items-center rounded-xl border border-white/20"
-            style={{ backgroundColor: withAlpha(s.accent, 0.26) }}
-          >
-            <s.icon className="h-6 w-6 text-white" />
-          </span>
-          <div className="min-w-0">
-            <h2 className="text-2xl sm:text-3xl font-bold text-white break-words">
-              {s.title}
-            </h2>
-            <p className="text-sm text-white/70 max-w-[60ch] sm:max-w-[48ch] break-words">
-              {s.summary}
-            </p>
-          </div>
-        </div>
-        {/* keywords pill – hide on small, truncate on md */}
-        <span
-          className="hidden md:inline-flex h-8 px-4 items-center justify-center rounded-full border border-white/15 text-[11px] text-white/80 max-w-[40%] truncate"
-          style={{ backgroundColor: withAlpha(s.accent, 0.18) }}
-          title={s.keywords.join(" • ")}
-        >
-          {s.keywords.join(" • ")}
-        </span>
-      </header>
-
-      <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
-        {s.metrics.map((m) => (
-          <div
-            key={m.label}
-            className="rounded-2xl border border-white/15 px-4 py-4 text-center"
-            style={{ backgroundColor: withAlpha(s.accent, 0.14) }}
-          >
-            <p className="text-[11px] uppercase tracking-[0.18em] text-white/70">
-              {m.label}
-            </p>
-            <p className="mt-1 text-lg font-semibold text-white">{m.value}</p>
-          </div>
-        ))}
-      </div>
-
-      <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-3">
-        {s.bullets.map((b) => (
-          <div
-            key={b}
-            className="rounded-xl border border-white/15 bg-white/5 px-4 py-3 text-sm text-white/85 flex items-start gap-2 break-words"
-          >
-            <Check className="h-4 w-4 text-[#4F46E5] mt-0.5 shrink-0" />
-            <span className="min-w-0">{b}</span>
-          </div>
-        ))}
-      </div>
-
-      <div className="mt-6 flex flex-wrap items-center justify-between gap-3 border-t border-white/10 pt-5">
-        <div className="flex flex-wrap gap-2">
-          {s.keywords.map((k) => (
-            <span
-              key={k}
-              className="rounded-full border border-white/15 px-3 py-1 text-[11px] text-white/80"
-              style={{ backgroundColor: withAlpha(s.accent, 0.18) }}
-            >
-              {k}
-            </span>
-          ))}
-        </div>
-        <Link
-          to="/contact"
-          className="group inline-flex items-center gap-2 rounded-xl border border-white/20 px-4 sm:px-5 py-3 text-sm font-semibold text-white transition-transform duration-300 hover:translate-x-1"
-          style={{
-            backgroundColor: withAlpha(s.accent, 0.26),
-            backdropFilter: "blur(18px)",
-          }}
-        >
-          {s.cta} <ArrowRight className="h-4 w-4" />
-        </Link>
-      </div>
-    </div>
-  );
-}
-
-function PanelInner({ s }: { s: Solution }) {
-  return (
-    <div className="space-y-4">
-      <p className="text-sm text-white/75">{s.summary}</p>
-
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        {s.metrics.map((m) => (
-          <div
-            key={m.label}
-            className="rounded-xl border border-white/15 px-3 py-3 text-center"
-            style={{ backgroundColor: withAlpha(s.accent, 0.14) }}
-          >
-            <div className="text-[11px] uppercase tracking-[0.18em] text-white/70">
-              {m.label}
-            </div>
-            <div className="text-sm font-semibold text-white">{m.value}</div>
-          </div>
-        ))}
-      </div>
-
-      <ul className="space-y-2">
-        {s.bullets.map((b) => (
-          <li
-            key={b}
-            className="flex items-start gap-2 text-sm text-white/85 rounded-xl border border-white/15 bg-white/5 px-3 py-2 break-words"
-          >
-            <Check className="h-4 w-4 text-[#4F46E5] mt-0.5 shrink-0" />
-            <span className="min-w-0">{b}</span>
-          </li>
-        ))}
-      </ul>
-
-      <div className="pt-2">
-        <Link
-          to="/contact"
-          className="inline-flex items-center gap-2 rounded-lg border border-white/20 px-4 py-2 text-sm font-semibold text-white"
-          style={{ backgroundColor: withAlpha(s.accent, 0.22) }}
-        >
-          {s.cta} <ArrowRight className="h-4 w-4" />
-        </Link>
-      </div>
-    </div>
-  );
-}
-
-function Step({
-  icon: Icon,
-  title,
-  text,
-}: {
-  icon: React.ElementType;
-  title: string;
-  text: string;
-}) {
-  return (
-    <div
-      className="rounded-2xl border border-white/12 p-4 sm:p-5"
-      style={{ backgroundColor: withAlpha(COLORS.primary, 0.1) }}
-    >
-      <div className="flex items-center gap-3 min-w-0">
-        <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl border border-white/20 bg-white/10">
-          <Icon className="h-5 w-5 text-white" />
-        </span>
-        <h3 className="text-white font-semibold truncate">{title}</h3>
-      </div>
-      <p className="mt-2 text-sm text-white/70">{text}</p>
-    </div>
   );
 }

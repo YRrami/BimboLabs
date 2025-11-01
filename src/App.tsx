@@ -1,8 +1,7 @@
 ﻿/* eslint-disable no-empty-pattern */
- 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 // src/App.tsx
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
@@ -37,12 +36,8 @@ const COLORS = {
 } as const;
 
 const SITE = {
-  socials: {
-    linkedin: "https://www.linkedin.com/",
-  },
-  contacts: {
-    emailLabel: "hello@anonvic.com",
-  },
+  socials: { linkedin: "https://www.linkedin.com/" },
+  contacts: { emailLabel: "hello@anonvic.com" },
 } as const;
 
 function hexToRgb(hex: string) {
@@ -103,9 +98,7 @@ function Stat({
       className="text-center p-4 sm:p-5 rounded-xl border border-white/10"
       style={{ backgroundColor: withAlpha(COLORS.primary, 0.08) }}
     >
-      <div className={`text-2xl sm:text-3xl font-extrabold tabular-nums ${color}`}>
-        {number}
-      </div>
+      <div className={`text-2xl sm:text-3xl font-extrabold tabular-nums ${color}`}>{number}</div>
       <div className="text-[11px] sm:text-xs text-[#A5ADCF]">{label}</div>
     </div>
   );
@@ -259,6 +252,152 @@ function HeroEdgeIcons({
   );
 }
 
+/* ===================== Helpers ===================== */
+const fileNameToTitle = (p: string) => {
+  const base = p.split("/").pop() || "";
+  const name = base.replace(/\.[a-zA-Z0-9]+$/, "");
+  return name.replace(/[-_]+/g, " ").replace(/\b\w/g, (m) => m.toUpperCase()).trim();
+};
+
+/* ===================== Minimal Companies carousel (white circle mask + bigger size) ===================== */
+function CompaniesCarousel() {
+  const reduced = usePrefersReducedMotion();
+
+  // Accept logos from either src/assets/companies or src/companies
+  const logos = useMemo(() => {
+    const g1 = import.meta.glob<string>("./assets/companies/*.{png,jpg,jpeg,svg,webp}", {
+      eager: true,
+      as: "url",
+    }) as Record<string, string>;
+    const g2 = import.meta.glob<string>("./companies/*.{png,jpg,jpeg,svg,webp}", {
+      eager: true,
+      as: "url",
+    }) as Record<string, string>;
+
+    const merged = { ...g1, ...g2 };
+    return Object.entries(merged)
+      .sort(([a], [b]) => a.localeCompare(b))
+      .map(([path, url]) => ({
+        key: path,
+        url,
+        title: fileNameToTitle(path),
+      }));
+  }, []);
+
+  // Duplicate for seamless loop
+  const lane = [...logos, ...logos];
+
+  return (
+    <section className="relative py-10 sm:py-12">
+      <div className="mx-auto max-w-[95rem] px-4 sm:px-6 md:px-10 lg:px-14">
+        <div
+          className="relative overflow-hidden rounded-2xl border border-white/10"
+          style={{ backgroundColor: "rgba(255,255,255,0.02)" }}
+          aria-label="Companies we worked with"
+        >
+          <div className="px-4 sm:px-5 pt-4">
+            <p className="text-[11px] uppercase tracking-[0.28em] text-white/55">
+              Companies we worked with
+            </p>
+          </div>
+
+          <div className="relative mt-2">
+            <div className={`cc-marquee ${reduced ? "cc-paused" : ""}`}>
+              <div className="cc-track">
+                {lane.map((it, i) => (
+                  <figure key={`${it.key}-${i}`} className="cc-logo" title={it.title}>
+                    <span className="cc-avatar">
+                      <img
+                        src={it.url}
+                        alt={it.title}
+                        loading="lazy"
+                        decoding="async"
+                        className="cc-img"
+                      />
+                    </span>
+                  </figure>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <style>{`
+        /* container with edge fade */
+        .cc-marquee {
+          --gap: 2.5rem;
+          --speed: 34s;
+          position: relative;
+          padding: 1rem 0 1.5rem;
+          mask-image: linear-gradient(to right, transparent 0, #000 5%, #000 95%, transparent 100%);
+          -webkit-mask-image: linear-gradient(to right, transparent 0, #000 5%, #000 95%, transparent 100%);
+        }
+        .cc-marquee:hover .cc-track { animation-play-state: paused; }
+        .cc-paused .cc-track { animation: none !important; }
+
+        /* track */
+        .cc-track {
+          display: inline-flex;
+          gap: var(--gap);
+          padding: 0 var(--gap);
+          white-space: nowrap;
+          will-change: transform;
+          animation: cc-slide var(--speed) linear infinite;
+        }
+        @keyframes cc-slide { 0% { transform: translateX(0) } 100% { transform: translateX(-50%) } }
+
+        /* each slot */
+        .cc-logo {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          height: 150px; /* bigger lane height */
+          padding: 0 1rem;
+        }
+
+        /* white circular mask */
+        .cc-avatar {
+          display: grid;
+          place-items: center;
+          width: 64px;
+          height: 64px;
+         
+         
+        }
+
+        /* logo inside the circle */
+        .cc-img {
+          max-width: 190%;
+          max-height: 190%;
+          object-fit: contain;
+       
+          transition: transform .18s ease, filter .18s ease;
+        }
+        .cc-avatar:hover .cc-img {
+          transform: translateY(-1px) scale(1.03);
+          filter: grayscale(.05) opacity(1) contrast(1);
+        }
+
+        /* responsive */
+        @media (max-width: 1024px) {
+          .cc-marquee { --gap: 2rem; --speed: 30s; }
+          .cc-logo { height: 80px; }
+          .cc-avatar { width: 56px; height: 56px; }
+        }
+        @media (max-width: 640px) {
+          .cc-marquee { --gap: 1.5rem; --speed: 26s; }
+          .cc-logo { height: 72px; }
+          .cc-avatar { width: 52px; height: 52px; }
+        }
+
+        /* respect reduced motion */
+        @media (prefers-reduced-motion: reduce) { .cc-track { animation: none !important; } }
+      `}</style>
+    </section>
+  );
+}
+
 /* ===================== Home page local data ===================== */
 const overviewTiles = [
   {
@@ -296,145 +435,18 @@ const overviewTiles = [
 ];
 
 const highlightCards = [
-  {
-    title: "Operate Like An In-House Team",
-    copy: "We plug into your tools and rituals — Slack, Linear, Notion — collaboration feels native.",
-    icon: Compass,
-  },
-  {
-    title: "Ship End-to-End",
-    copy: "Strategy becomes shipped assets. One pod with shared KPIs, QA gates, and docs.",
-    icon: GaugeCircle,
-  },
-  {
-    title: "Measure Everything",
-    copy: "Experiments and features land with tracking + dashboards so impact is obvious.",
-    icon: Lightbulb,
-  },
+  { title: "Operate Like An In-House Team", copy: "We plug into your tools and rituals — Slack, Linear, Notion — collaboration feels native.", icon: Compass },
+  { title: "Ship End-to-End", copy: "Strategy becomes shipped assets. One pod with shared KPIs, QA gates, and docs.", icon: GaugeCircle },
+  { title: "Measure Everything", copy: "Experiments and features land with tracking + dashboards so impact is obvious.", icon: Lightbulb },
 ];
 
 const outcomeMilestones = [
-  {
-    label: "6-week MVP launches",
-    value: "12",
-    detail:
-      "Full-stack builds shipped in the past year with analytics, docs, and onboarding flows.",
-  },
-  {
-    label: "Incremental revenue",
-    value: "$4.8M",
-    detail:
-      "Attributed to lifecycle, paid media, and conversion optimization programs we maintain.",
-  },
-  {
-    label: "Automation hours saved",
-    value: "1.3K",
-    detail:
-      "Across RevOps, data pipelines, and AI copilots designed to unblock growth teams.",
-  },
+  { label: "6-week MVP launches", value: "12", detail: "Full-stack builds shipped in the past year with analytics, docs, and onboarding flows." },
+  { label: "Incremental revenue", value: "$4.8M", detail: "Attributed to lifecycle, paid media, and conversion optimization programs we maintain." },
+  { label: "Automation hours saved", value: "1.3K", detail: "Across RevOps, data pipelines, and AI copilots designed to unblock growth teams." },
 ];
 
-/* ===================== New sections (trust, process, quotes, faq, cta) ===================== */
-
-function TrustBar() {
-  type Client = { name: string; initials: string; accent: string };
-  const clients: Client[] = [
-    { name: "Orbit Labs",   initials: "OL", accent: "from-[#4F46E5] via-[#7C3AED] to-[#312E81]" },
-    { name: "Northwind",    initials: "NW", accent: "from-[#38BDF8] via-[#0EA5E9] to-[#1E3A8A]" },
-    { name: "Pulse AI",     initials: "PA", accent: "from-[#F97316] via-[#FB923C] to-[#78350F]" },
-    { name: "Brightline",   initials: "BL", accent: "from-[#F472B6] via-[#EC4899] to-[#9D174D]" },
-    { name: "Helios Co.",   initials: "HC", accent: "from-[#FACC15] via-[#FB923C] to-[#92400E]" },
-    { name: "Nova Studio",  initials: "NS", accent: "from-[#34D399] via-[#10B981] to-[#065F46]" },
-    { name: "Vertex",       initials: "VX", accent: "from-[#818CF8] via-[#6366F1] to-[#312E81]" },
-    { name: "Summit",       initials: "SM", accent: "from-[#C084FC] via-[#A855F7] to-[#6B21A8]" },
-  ];
-
-  // two counter-scrolling lanes; duplicate for seamless loop
-  const laneA = [...clients, ...clients, ...clients];
-  const laneB = [...clients.slice().reverse(), ...clients.slice().reverse(), ...clients.slice().reverse()];
-
-  const Chip = ({ c }: { c: Client }) => (
-    <span className="inline-flex items-center gap-3 rounded-full border border-white/10 bg-white/5 px-3.5 sm:px-4 py-2 backdrop-blur">
-      <span className={`grid h-8 w-8 sm:h-9 sm:w-9 place-items-center rounded-xl bg-gradient-to-br ${c.accent} text-[10px] sm:text-xs font-semibold uppercase text-white`}>
-        {c.initials}
-      </span>
-      <span className="text-white/80">{c.name}</span>
-    </span>
-  );
-
-  return (
-    <section className="relative py-10 sm:py-12 px-4 sm:px-6 md:px-10 lg:px-14">
-      <div className="mx-auto max-w-[95rem]">
-        <div
-          className="relative rounded-3xl border border-white/12 overflow-hidden"
-          style={{
-            background: `linear-gradient(180deg, ${withAlpha(COLORS.primary,0.10)}, ${withAlpha(COLORS.background,0.85)})`,
-            boxShadow: "0 24px 60px -32px rgba(5,6,29,0.75)",
-          }}
-          aria-label="Previous clients"
-        >
-          <div className="px-4 sm:px-6 py-5">
-            <div className="flex items-center justify-between">
-              <p className="text-xs tracking-[0.25em] uppercase text-white/60">Trusted by teams like</p>
-              <div className="hidden sm:flex gap-2">
-                {["Brand-safe", "Fast onboarding", "Weekly demos"].map((t) => (
-                  <span key={t} className="px-2.5 py-1 text-[11px] rounded-full border border-white/12 text-white/75" style={{ backgroundColor: withAlpha(COLORS.primary,0.10) }}>{t}</span>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          <div className="relative overflow-hidden">
-            <div className="marquee group" aria-hidden>
-              <div className="marquee__track marquee__left" role="presentation">
-                {laneA.map((c, i) => <Chip key={`A-${c.name}-${i}`} c={c} />)}
-              </div>
-              <div className="marquee__track marquee__right" role="presentation">
-                {laneB.map((c, i) => <Chip key={`B-${c.name}-${i}`} c={c} />)}
-              </div>
-            </div>
-
-            {/* Reduced-motion fallback: static grid */}
-            <div className="sr-only motion-safe:hidden px-4 pb-5">
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
-                {clients.map((c) => <Chip key={`grid-${c.name}`} c={c} />)}
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <style>{`
-        .marquee {
-          --gap: 1rem;
-          --speedA: 28s;
-          --speedB: 34s;
-          position: relative;
-          padding: 0.25rem 0.75rem 0.75rem;
-        }
-        .marquee__track {
-          display: flex;
-          gap: var(--gap);
-          white-space: nowrap;
-          will-change: transform;
-          padding: 0 0.75rem 0.75rem;
-        }
-        .marquee__left { animation: slideLeft var(--speedA) linear infinite; }
-        .marquee__right { animation: slideRight var(--speedB) linear infinite; opacity: .9; }
-        .marquee:hover .marquee__track { animation-play-state: paused; }
-        @keyframes slideLeft  { 0% { transform: translateX(0) } 100% { transform: translateX(-50%) } }
-        @keyframes slideRight { 0% { transform: translateX(-50%) } 100% { transform: translateX(0) } }
-        @media (max-width: 640px) {
-          .marquee { --speedA: 24s; --speedB: 28s; --gap: .75rem; }
-        }
-        @media (prefers-reduced-motion: reduce) {
-          .marquee__track { animation: none !important; }
-        }
-      `}</style>
-    </section>
-  );
-}
-
+/* ===================== Sections ===================== */
 function ProcessMini() {
   const steps = [
     { icon: Target, title: "Discovery", text: "Clarify goals, constraints, and success metrics." },
@@ -760,7 +772,7 @@ export default function App() {
 
   return (
     <>
-      <section className="relative min-h-[100vh] pt-28 sm:pt-32 md:pt-36 flex items-center justify-center px-4 sm:px-6 md:px-10 lg:px-14">
+      <section className="relative min-h-[90vh] pt-28 sm:pt-32 md:pt-30 flex items-center justify-center px-4 sm:px-6 md:px-10 lg:px-14">
         {/* subtle background accents */}
         <div
           aria-hidden
@@ -795,7 +807,7 @@ export default function App() {
             >
               <h1
                 className="font-black tracking-tight leading-[1.05] text-balance"
-                style={{ fontSize: "clamp(32px, 6.2vw, 80px)" }}
+                style={{ fontSize: "clamp(32px, 6.2vw, 65px)" }}
               >
                 <span className="relative block bg-gradient-to-r from-white via-gray-100 to-white bg-clip-text text-transparent">
                   Build momentum across every surface
@@ -846,8 +858,6 @@ export default function App() {
               </Link>
             </motion.div>
 
-           
-
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 md:gap-5 mx-auto max-w-3xl pt-2">
               <Stat number="32+" label="Growth programs shipped" accent="indigo" />
               <Stat number="18" label="Product launches delivered" accent="fuchsia" />
@@ -863,7 +873,9 @@ export default function App() {
         </div>
       </section>
 
-      <TrustBar />
+      {/* Minimal auto-loaded companies carousel with white circular mask */}
+      <CompaniesCarousel />
+
       <HomeOverview />
       <Highlights />
       <ProcessMini />
@@ -884,7 +896,6 @@ export default function App() {
           transition: transform .2s ease, background-color .2s ease, border-color .2s ease;
         }
         .chip:hover { background:${withAlpha(COLORS.primary, 0.28)}; border-color:${withAlpha(COLORS.primary, 0.6)}; transform: translateY(-1px); }
-        /* gentle section separation */
         section + section { scroll-margin-top: 80px; }
       `}</style>
     </>

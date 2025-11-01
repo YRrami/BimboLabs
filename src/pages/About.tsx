@@ -1,6 +1,10 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable react-refresh/only-export-components */
 // src/pages/AboutPage.tsx
 import { Check, Quote, Sparkles } from "lucide-react";
+import { useMemo } from "react";
+import { usePrefersReducedMotion } from "../components/layout/SiteLayout";
 
 /* ========== Local UI tokens + tiny primitives (no SiteLayout needed) ========== */
 const COLORS = {
@@ -67,49 +71,149 @@ function Stat({
     </div>
   );
 }
+const fileNameToTitle = (p: string) => {
+  const base = p.split("/").pop() || "";
+  const name = base.replace(/\.[a-zA-Z0-9]+$/, "");
+  return name.replace(/[-_]+/g, " ").replace(/\b\w/g, (m) => m.toUpperCase()).trim();
+};
+/* ===================== Minimal Companies carousel (white circle mask + bigger size) ===================== */
+function CompaniesCarousel() {
+  const reduced = usePrefersReducedMotion();
 
-/* ========== Local blocks that used to live in SiteLayout ========== */
-function ClientTicker() {
-  const clients = [
-    { name: "Orbit Labs", initials: "OL", gradient: "from-[#4F46E5] via-[#7C3AED] to-[#312E81]" },
-    { name: "Northwind", initials: "NW", gradient: "from-[#38BDF8] via-[#0EA5E9] to-[#1E3A8A]" },
-    { name: "Pulse AI", initials: "PA", gradient: "from-[#F97316] via-[#FB923C] to-[#78350F]" },
-    { name: "Brightline", initials: "BL", gradient: "from-[#F472B6] via-[#EC4899] to-[#9D174D]" },
-    { name: "Helios Co.", initials: "HC", gradient: "from-[#FACC15] via-[#FB923C] to-[#92400E]" },
-    { name: "Nova Studio", initials: "NS", gradient: "from-[#34D399] via-[#10B981] to-[#065F46]" },
-    { name: "Vertex", initials: "VX", gradient: "from-[#818CF8] via-[#6366F1] to-[#312E81]" },
-    { name: "Summit", initials: "SM", gradient: "from-[#C084FC] via-[#A855F7] to-[#6B21A8]" },
-  ];
-  const looped = [...clients, ...clients];
+  // Accept logos from either src/assets/companies or src/companies
+  const logos = useMemo(() => {
+    const g1 = import.meta.glob<string>("./assets/companies/*.{png,jpg,jpeg,svg,webp}", {
+      eager: true,
+      as: "url",
+    }) as Record<string, string>;
+    const g2 = import.meta.glob<string>("./companies/*.{png,jpg,jpeg,svg,webp}", {
+      eager: true,
+      as: "url",
+    }) as Record<string, string>;
+
+    const merged = { ...g1, ...g2 };
+    return Object.entries(merged)
+      .sort(([a], [b]) => a.localeCompare(b))
+      .map(([path, url]) => ({
+        key: path,
+        url,
+        title: fileNameToTitle(path),
+      }));
+  }, []);
+
+  // Duplicate for seamless loop
+  const lane = [...logos, ...logos];
 
   return (
-    <div className="relative overflow-hidden rounded-3xl border border-white/12 bg-[rgba(8,12,32,0.82)] px-6 py-4">
-      <div className="pointer-events-none absolute inset-y-0 left-0 w-24 bg-gradient-to-r from-[#05061D] via-[#05061D]/80 to-transparent" />
-      <div className="pointer-events-none absolute inset-y-0 right-0 w-24 bg-gradient-to-l from-[#05061D] via-[#05061D]/80 to-transparent" />
-      <div className="ticker flex items-center gap-6 whitespace-nowrap text-sm sm:text-base text-white/70">
-        {looped.map((client, idx) => (
-          <span
-            key={`${client.name}-${idx}`}
-            className="inline-flex items-center gap-3 rounded-full border border-white/10 bg-white/5 px-4 py-2 backdrop-blur"
-          >
-            <span
-              className={`grid h-9 w-9 place-items-center rounded-xl bg-gradient-to-br ${client.gradient} text-xs font-semibold uppercase text-white shadow-[0_12px_32px_-16px_rgba(79,70,229,0.65)]`}
-            >
-              {client.initials}
-            </span>
-            <span className="text-white/80">{client.name}</span>
-          </span>
-        ))}
+    <section className="relative py-10 sm:py-12">
+      <div className="mx-auto max-w-[95rem] px-4 sm:px-6 md:px-10 lg:px-14">
+        <div
+          className="relative overflow-hidden rounded-2xl border border-white/10"
+          style={{ backgroundColor: "rgba(255,255,255,0.02)" }}
+          aria-label="Companies we worked with"
+        >
+          <div className="px-4 sm:px-5 pt-4">
+            <p className="text-[11px] uppercase tracking-[0.28em] text-white/55">
+              Companies we worked with
+            </p>
+          </div>
+
+          <div className="relative mt-2">
+            <div className={`cc-marquee ${reduced ? "cc-paused" : ""}`}>
+              <div className="cc-track">
+                {lane.map((it, i) => (
+                  <figure key={`${it.key}-${i}`} className="cc-logo" title={it.title}>
+                    <span className="cc-avatar">
+                      <img
+                        src={it.url}
+                        alt={it.title}
+                        loading="lazy"
+                        decoding="async"
+                        className="cc-img"
+                      />
+                    </span>
+                  </figure>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
+
       <style>{`
-        @keyframes tickerMove { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
-        .ticker { display:inline-block; min-width:200%; animation: tickerMove 22s linear infinite; }
-        @media (prefers-reduced-motion: reduce) { .ticker { animation: none !important; } }
+        /* container with edge fade */
+        .cc-marquee {
+          --gap: 2.5rem;
+          --speed: 34s;
+          position: relative;
+          padding: 1rem 0 1.5rem;
+          mask-image: linear-gradient(to right, transparent 0, #000 5%, #000 95%, transparent 100%);
+          -webkit-mask-image: linear-gradient(to right, transparent 0, #000 5%, #000 95%, transparent 100%);
+        }
+        .cc-marquee:hover .cc-track { animation-play-state: paused; }
+        .cc-paused .cc-track { animation: none !important; }
+
+        /* track */
+        .cc-track {
+          display: inline-flex;
+          gap: var(--gap);
+          padding: 0 var(--gap);
+          white-space: nowrap;
+          will-change: transform;
+          animation: cc-slide var(--speed) linear infinite;
+        }
+        @keyframes cc-slide { 0% { transform: translateX(0) } 100% { transform: translateX(-50%) } }
+
+        /* each slot */
+        .cc-logo {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          height: 150px; /* bigger lane height */
+          padding: 0 1rem;
+        }
+
+        /* white circular mask */
+        .cc-avatar {
+          display: grid;
+          place-items: center;
+          width: 64px;
+          height: 64px;
+         
+         
+        }
+
+        /* logo inside the circle */
+        .cc-img {
+          max-width: 190%;
+          max-height: 190%;
+          object-fit: contain;
+       
+          transition: transform .18s ease, filter .18s ease;
+        }
+        .cc-avatar:hover .cc-img {
+          transform: translateY(-1px) scale(1.03);
+          filter: grayscale(.05) opacity(1) contrast(1);
+        }
+
+        /* responsive */
+        @media (max-width: 1024px) {
+          .cc-marquee { --gap: 2rem; --speed: 30s; }
+          .cc-logo { height: 80px; }
+          .cc-avatar { width: 56px; height: 56px; }
+        }
+        @media (max-width: 640px) {
+          .cc-marquee { --gap: 1.5rem; --speed: 26s; }
+          .cc-logo { height: 72px; }
+          .cc-avatar { width: 52px; height: 52px; }
+        }
+
+        /* respect reduced motion */
+        @media (prefers-reduced-motion: reduce) { .cc-track { animation: none !important; } }
       `}</style>
-    </div>
+    </section>
   );
 }
-
 function TestimonialsSection() {
   const testimonials = [
     {
@@ -359,7 +463,7 @@ export default function AboutPage() {
         <SectionShell>
           <div className="space-y-6">
             <h3 className="text-xl font-semibold text-white">Brands we’ve worked with</h3>
-            <ClientTicker />
+            <CompaniesCarousel />
           </div>
         </SectionShell>
 
@@ -377,3 +481,5 @@ export default function AboutPage() {
     </section>
   );
 }
+
+

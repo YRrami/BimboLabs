@@ -64,45 +64,6 @@ function SectionShell({
   );
 }
 
-/* ===================== Local ClientTicker ===================== */
-function ClientTicker() {
-  const clients = [
-    { name: "Orbit Labs", initials: "OL", gradient: "from-[#4F46E5] via-[#7C3AED] to-[#312E81]" },
-    { name: "Northwind", initials: "NW", gradient: "from-[#38BDF8] via-[#0EA5E9] to-[#1E3A8A]" },
-    { name: "Pulse AI", initials: "PA", gradient: "from-[#F97316] via-[#FB923C] to-[#78350F]" },
-    { name: "Brightline", initials: "BL", gradient: "from-[#F472B6] via-[#EC4899] to-[#9D174D]" },
-    { name: "Helios Co.", initials: "HC", gradient: "from-[#FACC15] via-[#FB923C] to-[#92400E]" },
-    { name: "Nova Studio", initials: "NS", gradient: "from-[#34D399] via-[#10B981] to-[#065F46]" },
-    { name: "Vertex", initials: "VX", gradient: "from-[#818CF8] via-[#6366F1] to-[#312E81]" },
-    { name: "Summit", initials: "SM", gradient: "from-[#C084FC] via-[#A855F7] to-[#6B21A8]" },
-  ];
-  const looped = [...clients, ...clients];
-  return (
-    <div className="relative overflow-hidden rounded-3xl border border-white/12 bg-[rgba(8,12,32,0.82)] px-4 sm:px-6 py-4">
-      <div className="pointer-events-none absolute inset-y-0 left-0 w-16 sm:w-24 bg-gradient-to-r from-[#05061D] via-[#05061D]/80 to-transparent" />
-      <div className="pointer-events-none absolute inset-y-0 right-0 w-16 sm:w-24 bg-gradient-to-l from-[#05061D] via-[#05061D]/80 to-transparent" />
-      <div className="ticker flex items-center gap-4 sm:gap-6 whitespace-nowrap text-sm sm:text-base text-white/70 will-change-transform">
-        {looped.map((client, idx) => (
-          <span
-            key={`${client.name}-${idx}`}
-            className="inline-flex items-center gap-3 rounded-full border border-white/10 bg-white/5 px-3 sm:px-4 py-2 backdrop-blur"
-          >
-            <span
-              className={`grid h-8 w-8 sm:h-9 sm:w-9 place-items-center rounded-xl bg-gradient-to-br ${client.gradient} text-[10px] sm:text-xs font-semibold uppercase text-white shadow-[0_12px_32px_-16px_rgba(79,70,229,0.65)]`}
-            >
-              {client.initials}
-            </span>
-            <span className="text-white/80">{client.name}</span>
-          </span>
-        ))}
-      </div>
-      <style>{`
-        @keyframes tickerMove { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
-        .ticker { display: inline-block; min-width: 200%; animation: tickerMove 22s linear infinite; }
-      `}</style>
-    </div>
-  );
-}
 
 /* ===================== Local Testimonials ===================== */
 function TestimonialsSection() {
@@ -139,22 +100,22 @@ function TestimonialsSection() {
   );
 }
 
-/* ===================== Local Demos (lazy iframes) ===================== */
+/* ===================== Local Demos +) ===================== */
 function Demos() {
   const projects = [
     {
       id: 1,
-      title: "Ecommerce Accelerator",
+      title: "Marketing Agency",
       url: "https://leadmagnett.vercel.app/",
       brief:
         "High-converting storefront starter with bundles, subscriptions, and server-side tracking.",
-      tags: ["Next.js", "Stripe", "SEO"],
+      tags: ["React", "Stripe", "SEO"],
       year: "2025",
       emoji: "🛒",
     },
     {
       id: 2,
-      title: "SEO Landing Framework",
+      title: "Medical Tourism Organization",
       url: "https://healthtrip-opal.vercel.app/",
       brief:
         "Programmatic city/service pages, schema, and content ops. Ship CWV>90 landers fast.",
@@ -164,13 +125,23 @@ function Demos() {
     },
     {
       id: 3,
-      title: "RAG Support Copilot",
-      url: "https://sfeclub.vercel.app/",
+      title: "Student Onion of ASU",
+      url: "https://sfeclub.site/",
       brief:
-        "Docs Q&A copilot with hybrid search and analytics -- reduce tickets, boost CSAT.",
+        "",
       tags: ["OpenAI", "RAG", "FastAPI"],
       year: "2025",
       emoji: "🤖",
+    },
+     {
+      id: 4,
+      title: "Luxurious uPVC industry leader",
+      url: "https://egywin-luxury.vercel.app/",
+      brief:
+        "",
+      tags: ["OpenAI", "RAG", "FastAPI"],
+      year: "2025",
+      emoji: "🔎",
     },
   ] as const;
 
@@ -533,7 +504,7 @@ export default function WorkPage() {
                 and product releases on track. Everything shown here is production use, not concept decks.
               </p>
             </div>
-            <ClientTicker />
+           
           </SectionShell>
         </div>
       </section>

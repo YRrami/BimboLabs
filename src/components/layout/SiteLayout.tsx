@@ -27,7 +27,7 @@ import {
 } from "lucide-react";
 import { Link, NavLink, Outlet, useLocation } from "react-router-dom";
 import anonvicLogo from "../../logoss.png";
-
+import botPng from "../../pilot.png"; 
 /* ================================
    SITE CONFIG
 ================================ */
@@ -335,13 +335,35 @@ export function Navbar({ scrolled = false }: { scrolled?: boolean }) {
    Bot avatar + typing dots
 ================================ */
 // === Minimal Glassy Bot (simple + elegant) ===
-function BotAvatar({ size = 36 }: { size?: number }) {
+// Minimal glassy avatar that accepts a PNG source.
+// Usage: <BotAvatar size={34} src={botPng} alt="Anonvic Copilot" />
+
+
+
+type BotAvatarProps = {
+  size?: number;
+  src?: string;     // PNG/JPG/WebP/etc
+  alt?: string;
+};
+
+export function BotAvatar({ size = 36, src, alt = "Copilot" }: BotAvatarProps) {
+  const [imgOk, setImgOk] = useState(true);
   const s = Math.max(28, size);
+
   return (
-    <span className="relative inline-grid place-items-center" style={{ width: s, height: s }} aria-hidden>
+    <span
+      className="relative inline-grid place-items-center"
+      style={{ width: s, height: s }}
+      aria-hidden={!alt}
+      role={alt ? "img" : undefined}
+      aria-label={alt}
+    >
+      {/* soft glow */}
       <span className="absolute -inset-2 blur-xl rounded-[20px] bg-gradient-to-br from-[#A855F7]/35 via-[#4F46E5]/30 to-transparent" />
+
+      {/* glass button */}
       <span
-        className="relative grid place-items-center rounded-full border border-white/12"
+        className="relative grid place-items-center rounded-full border border-white/12 overflow-hidden"
         style={{
           width: s,
           height: s,
@@ -350,14 +372,27 @@ function BotAvatar({ size = 36 }: { size?: number }) {
           backdropFilter: "blur(8px)",
         }}
       >
-        <span className="flex items-center gap-1.5">
-          <span className="h-1.5 w-1.5 rounded-full bg-white/90" />
-          <span className="h-1.5 w-1.5 rounded-full bg-white/90" />
-        </span>
+        {src && imgOk ? (
+          <img
+            src={src}
+            alt={alt}
+            className="block h-[72%] w-[72%] object-contain pointer-events-none select-none"
+            draggable={false}
+            loading="lazy"
+            onError={() => setImgOk(false)}
+          />
+        ) : (
+          // fallback: minimal “eyes”
+          <span className="flex items-center gap-1.5">
+            <span className="h-1.5 w-1.5 rounded-full bg-white/90" />
+            <span className="h-1.5 w-1.5 rounded-full bg-white/90" />
+          </span>
+        )}
       </span>
     </span>
   );
 }
+
 
 function TypingDots() {
   return (
@@ -775,6 +810,8 @@ export function SiteLayout() {
           @keyframes edgeFloat { 0%, 100% { transform: translate3d(-50%, -50%, 0) translateY(0); } 50% { transform: translate3d(-50%, -50%, 0) translateY(-10px); } }
         `}</style>
       </div>
+      <BotAvatar size={34} src={botPng} alt="Anonvic Copilot" />
     </SiteContext.Provider>
+    
   );
 }
