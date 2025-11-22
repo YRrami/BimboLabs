@@ -2,7 +2,7 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import { HashRouter } from "react-router-dom";
-import { HelmetProvider } from "react-helmet-async";
+// HelmetProvider removed; head tags are managed manually in components
 import AppRouter from "./AppRouter";
 import "./index.css";
 
@@ -22,10 +22,8 @@ if (typeof window !== "undefined") {
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    <HelmetProvider>
       <HashRouter basename="/">
         <AppRouter />
       </HashRouter>
-    </HelmetProvider>
   </React.StrictMode>
 );

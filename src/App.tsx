@@ -25,7 +25,6 @@ import {
   CalendarCheck,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
-import { Helmet } from "react-helmet-async";
 
 /* ===================== Local tokens & helpers ===================== */
 const COLORS = {
@@ -559,56 +558,100 @@ export default function App() {
 
   const mainId = "main";
 
-  // Structured data (JSON-LD)
-  const orgJsonLd = {
-    "@context": "https://schema.org",
-    "@type": "Organization",
-    name: SITE.name,
-    url: SITE.domain,
-    sameAs: Object.values(SITE.socials),
-    areaServed: SITE.regions,
-    contactPoint: [
-      {
-        "@type": "ContactPoint",
-        email: SITE.contacts.emailLabel,
-        contactType: "customer support",
-        availableLanguage: SITE.locales,
-      },
-    ],
-  } as const;
+  // (SEO meta and JSON-LD are injected into document.head in an effect below)
 
-  const siteJsonLd = {
-    "@context": "https://schema.org",
-    "@type": "WebSite",
-    name: SITE.name,
-    url: SITE.domain,
-    inLanguage: SITE.locales,
-    potentialAction: {
-      "@type": "SearchAction",
-      target: `${SITE.domain}/search?q={query}`,
-      "query-input": "required name=query",
-    },
-  } as const;
+  useEffect(() => {
+    const prevTitle = document.title;
+    document.title = `${SITE.name} — Software & Marketing for SMEs (EN/AR)`;
+
+    const ensureMeta = (attr: string, key: string, content: string) => {
+      const sel = `meta[${attr}="${key}"]`;
+      let el = document.head.querySelector(sel) as HTMLMetaElement | null;
+      if (!el) {
+        el = document.createElement("meta");
+        el.setAttribute(attr, key);
+        document.head.appendChild(el);
+        (el as any).dataset._injected = "1";
+      }
+      el.content = content;
+      return el;
+    };
+
+    ensureMeta("name", "description", SITE.description);
+    ensureMeta("name", "keywords", SITE.keywords.join(", "));
+    ensureMeta("name", "twitter:card", "summary_large_image");
+    ensureMeta("name", "twitter:title", `${SITE.name} — Software & Marketing for SMEs`);
+    ensureMeta("name", "twitter:description", SITE.description);
+    ensureMeta("property", "og:site_name", SITE.name);
+    ensureMeta("property", "og:type", "website");
+    ensureMeta("property", "og:title", `${SITE.name} — Software & Marketing for SMEs`);
+    ensureMeta("property", "og:description", SITE.description);
+    ensureMeta("property", "og:url", SITE.domain);
+
+    // canonical link
+    let canonical = document.head.querySelector('link[rel="canonical"]') as HTMLLinkElement | null;
+    if (!canonical) {
+      canonical = document.createElement("link");
+      canonical.rel = "canonical";
+      canonical.href = SITE.domain;
+      canonical.dataset._injected = "1";
+      document.head.appendChild(canonical);
+    } else {
+      canonical.href = SITE.domain;
+    }
+
+    // JSON-LD scripts (built inside the effect so dependencies don't change)
+    const orgJsonLd = {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      name: SITE.name,
+      url: SITE.domain,
+      sameAs: Object.values(SITE.socials),
+      areaServed: SITE.regions,
+      contactPoint: [
+        {
+          "@type": "ContactPoint",
+          email: SITE.contacts.emailLabel,
+          contactType: "customer support",
+          availableLanguage: SITE.locales,
+        },
+      ],
+    } as const;
+
+    const siteJsonLd = {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      name: SITE.name,
+      url: SITE.domain,
+      inLanguage: SITE.locales,
+      potentialAction: {
+        "@type": "SearchAction",
+        target: `${SITE.domain}/search?q={query}`,
+        "query-input": "required name=query",
+      },
+    } as const;
+
+    const s1 = document.createElement("script");
+    s1.type = "application/ld+json";
+    s1.textContent = JSON.stringify(orgJsonLd);
+    s1.dataset._injected = "1";
+    document.head.appendChild(s1);
+
+    const s2 = document.createElement("script");
+    s2.type = "application/ld+json";
+    s2.textContent = JSON.stringify(siteJsonLd);
+    s2.dataset._injected = "1";
+    document.head.appendChild(s2);
+
+    return () => {
+      document.title = prevTitle;
+      // remove injected metas/links/scripts
+      document.head.querySelectorAll('[data-_injected="1"]').forEach((n) => n.remove());
+    };
+  }, []); 
 
   return (
     <>
-      {/* SEO meta */}
-      <Helmet>
-        <title>{SITE.name} — Software & Marketing for SMEs (EN/AR)</title>
-        <meta name="description" content={SITE.description} />
-        <meta name="keywords" content={SITE.keywords.join(", ")} />
-        <link rel="canonical" href={SITE.domain} />
-        <meta property="og:site_name" content={SITE.name} />
-        <meta property="og:type" content="website" />
-        <meta property="og:title" content={`${SITE.name} — Software & Marketing for SMEs`} />
-        <meta property="og:description" content={SITE.description} />
-        <meta property="og:url" content={SITE.domain} />
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content={`${SITE.name} — Software & Marketing for SMEs`} />
-        <meta name="twitter:description" content={SITE.description} />
-        <script type="application/ld+json">{JSON.stringify(orgJsonLd)}</script>
-        <script type="application/ld+json">{JSON.stringify(siteJsonLd)}</script>
-      </Helmet>
 
       {/* Skip Link */}
       <a
