@@ -1,5 +1,5 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/no-unused-vars */
+ 
+ 
 /* eslint-disable react-refresh/only-export-components */
 // src/pages/AboutPage.tsx
 import { Check, Quote, Sparkles } from "lucide-react";
@@ -84,11 +84,13 @@ function CompaniesCarousel() {
   const logos = useMemo(() => {
     const g1 = import.meta.glob<string>("./assets/companies/*.{png,jpg,jpeg,svg,webp}", {
       eager: true,
-      as: "url",
+      query: "?url",
+      import: "default",
     }) as Record<string, string>;
     const g2 = import.meta.glob<string>("./companies/*.{png,jpg,jpeg,svg,webp}", {
       eager: true,
-      as: "url",
+      query: "?url",
+      import: "default",
     }) as Record<string, string>;
 
     const merged = { ...g1, ...g2 };

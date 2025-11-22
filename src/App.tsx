@@ -1,7 +1,8 @@
-﻿/* eslint-disable no-empty-pattern */
+﻿ 
 /* eslint-disable @typescript-eslint/no-explicit-any */
-// src/App.tsx
-import { useEffect, useMemo, useState } from "react";
+// src/App.tsx — Honest early-stage copy, SEO tuned, and TSX-safe
+
+import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
@@ -22,9 +23,9 @@ import {
   Rocket,
   Code,
   CalendarCheck,
-  Quote,
-  ChevronDown,
 } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
+import { Helmet } from "react-helmet-async";
 
 /* ===================== Local tokens & helpers ===================== */
 const COLORS = {
@@ -36,8 +37,29 @@ const COLORS = {
 } as const;
 
 const SITE = {
-  socials: { linkedin: "https://www.linkedin.com/" },
-  contacts: { emailLabel: "hello@anonvic.com" },
+  name: "Anonvic",
+  domain: "https://www.anonvic.com",
+  socials: {
+    linkedin: "https://www.linkedin.com/",
+    instagram: "https://www.instagram.com/",
+    twitter: "https://twitter.com/",
+    facebook: "https://www.facebook.com/",
+    github: "https://github.com/",
+  },
+  contacts: { emailLabel: "business@anonvic.com" },
+  description:
+    "Anonvic is a friendly, two-market studio (Egypt & US) offering software and marketing services for SMEs. We build websites/apps, brand foundations, market analysis & strategy, ad setup (Meta/Google), and content — in English and Arabic.",
+  keywords: [
+    "SME software",
+    "SME marketing Egypt US",
+    "web and app development",
+    "branding EN AR",
+    "market analysis and strategy",
+    "Meta Google ads setup",
+    "content creation",
+  ],
+  locales: ["en", "ar"],
+  regions: ["Egypt", "United States"],
 } as const;
 
 function hexToRgb(hex: string) {
@@ -61,46 +83,40 @@ const gradientSoft = (angle = 135, p = 0.14, a = 0.1, b = 0.88) =>
     a
   )}, ${withAlpha(COLORS.background, b)})`;
 
+/* ===================== Generic containers ===================== */
 function SectionShell({
   children,
   className,
+  as: Tag = "section",
+  id,
+  ariaLabel,
 }: {
   children: React.ReactNode;
   className?: string;
+  as?: any;
+  id?: string;
+  ariaLabel?: string;
 }) {
   return (
-    <div
-      className={`rounded-3xl border border-white/10 backdrop-blur-xl px-6 sm:px-10 md:px-14 py-12 sm:py-16 ${className ?? ""}`}
-      style={{ background: gradientSoft(), boxShadow: "0 30px 80px -40px rgba(0,0,0,0.8)" }}
+    <Tag
+      id={id}
+      aria-label={ariaLabel}
+      className={`relative py-16 sm:py-20 md:py-24 px-4 sm:px-6 md:px-10 lg:px-14 ${
+        className ?? ""
+      }`}
     >
-      {children}
-    </div>
-  );
-}
-
-function Stat({
-  number,
-  label,
-  accent,
-}: {
-  number: string;
-  label: string;
-  accent: "fuchsia" | "sky" | "indigo";
-}) {
-  const color =
-    accent === "fuchsia"
-      ? "text-[#4F46E5]"
-      : accent === "sky"
-      ? "text-white"
-      : "text-[#A855F7]";
-  return (
-    <div
-      className="text-center p-4 sm:p-5 rounded-xl border border-white/10"
-      style={{ backgroundColor: withAlpha(COLORS.primary, 0.08) }}
-    >
-      <div className={`text-2xl sm:text-3xl font-extrabold tabular-nums ${color}`}>{number}</div>
-      <div className="text-[11px] sm:text-xs text-[#A5ADCF]">{label}</div>
-    </div>
+      <div className="mx-auto max-w-[95rem]">
+        <div
+          className="rounded-3xl border border-white/10 backdrop-blur-xl px-6 sm:px-10 md:px-14 py-12 sm:py-16"
+          style={{
+            background: gradientSoft(),
+            boxShadow: "0 30px 80px -40px rgba(0,0,0,0.8)",
+          }}
+        >
+          {children}
+        </div>
+      </div>
+    </Tag>
   );
 }
 
@@ -164,7 +180,7 @@ function HeroEdgeIcons({
 
   const items: Array<{
     key: keyof typeof desktop;
-    Icon: React.ElementType;
+    Icon: LucideIcon;
     href: string;
     title: string;
     glow: string;
@@ -172,7 +188,7 @@ function HeroEdgeIcons({
     {
       key: "ig",
       Icon: Instagram,
-      href: "https://www.instagram.com/",
+      href: SITE.socials.instagram,
       title: "Instagram",
       glow: "from-[#4F46E5] via-[#A855F7] to-transparent",
     },
@@ -186,21 +202,21 @@ function HeroEdgeIcons({
     {
       key: "tw",
       Icon: Twitter,
-      href: "https://twitter.com/",
+      href: SITE.socials.twitter,
       title: "Twitter",
       glow: "from-[#4F46E5] via-[#A855F7] to-transparent",
     },
     {
       key: "fb",
       Icon: Facebook,
-      href: "https://www.facebook.com/",
+      href: SITE.socials.facebook,
       title: "Facebook",
       glow: "from-[#4F46E5] via-[#A855F7] to-transparent",
     },
     {
       key: "gh",
       Icon: Github,
-      href: "https://github.com/",
+      href: SITE.socials.github,
       title: "GitHub",
       glow: "from-[#4F46E5] via-[#A855F7] to-transparent",
     },
@@ -211,18 +227,21 @@ function HeroEdgeIcons({
     Math.max(min, Math.min(max, v));
 
   return (
-    <div className="pointer-events-none absolute inset-0 overflow-visible z-[11]">
+    <div className="pointer-events-none absolute inset-0 overflow-visible z-[11]" aria-hidden>
       {items.map(({ key, Icon, href, title, glow }, i) => {
         const base = isMobile ? mobile[key] : desktop[key];
         const left = clamp(base.left, isMobile ? 6 : 0, isMobile ? 94 : 100);
         const top = clamp(base.top, isMobile ? 9 : 0, isMobile ? 91 : 100);
         const translateY = reducedMotion ? 0 : scrollY * strength;
+
+        const IconComp = Icon; // TSX-safe
+
         return (
           <a
             key={key}
             href={href}
             target="_blank"
-            rel="noreferrer noopener"
+            rel="me noopener noreferrer"
             aria-label={title}
             className="absolute pointer-events-auto group focus:outline-none focus-visible:ring-2 focus-visible:ring-[#4F46E5]/60 rounded-2xl"
             style={{
@@ -243,7 +262,7 @@ function HeroEdgeIcons({
             <span
               className={`relative grid place-items-center ${sizeClass} rounded-2xl bg-[rgba(57,80,180,0.15)] border border-white/15 shadow-[0_22px_38px_-18px_rgba(106,13,173,0.35)] transition group-hover:scale-110 group-hover:-rotate-3`}
             >
-              <Icon className="h-6 w-6 sm:h-7 sm:w-7 text-white" />
+              <IconComp className="h-6 w-6 sm:h-7 sm:w-7 text-white" aria-hidden />
             </span>
           </a>
         );
@@ -252,506 +271,266 @@ function HeroEdgeIcons({
   );
 }
 
-/* ===================== Helpers ===================== */
-const fileNameToTitle = (p: string) => {
-  const base = p.split("/").pop() || "";
-  const name = base.replace(/\.[a-zA-Z0-9]+$/, "");
-  return name.replace(/[-_]+/g, " ").replace(/\b\w/g, (m) => m.toUpperCase()).trim();
-};
-
-/* ===================== Minimal Companies carousel (white circle mask + bigger size) ===================== */
-function CompaniesCarousel() {
-  const reduced = usePrefersReducedMotion();
-
-  // Accept logos from either src/assets/companies or src/companies
-  const logos = useMemo(() => {
-    const g1 = import.meta.glob<string>("./assets/companies/*.{png,jpg,jpeg,svg,webp}", {
-      eager: true,
-      as: "url",
-    }) as Record<string, string>;
-    const g2 = import.meta.glob<string>("./companies/*.{png,jpg,jpeg,svg,webp}", {
-      eager: true,
-      as: "url",
-    }) as Record<string, string>;
-
-    const merged = { ...g1, ...g2 };
-    return Object.entries(merged)
-      .sort(([a], [b]) => a.localeCompare(b))
-      .map(([path, url]) => ({
-        key: path,
-        url,
-        title: fileNameToTitle(path),
-      }));
-  }, []);
-
-  // Duplicate for seamless loop
-  const lane = [...logos, ...logos];
-
-  return (
-    <section className="relative py-10 sm:py-12">
-      <div className="mx-auto max-w-[95rem] px-4 sm:px-6 md:px-10 lg:px-14">
-        <div
-          className="relative overflow-hidden rounded-2xl border border-white/10"
-          style={{ backgroundColor: "rgba(255,255,255,0.02)" }}
-          aria-label="Companies we worked with"
-        >
-          <div className="px-4 sm:px-5 pt-4">
-            <p className="text-[11px] uppercase tracking-[0.28em] text-white/55">
-              Companies we worked with
-            </p>
-          </div>
-
-          <div className="relative mt-2">
-            <div className={`cc-marquee ${reduced ? "cc-paused" : ""}`}>
-              <div className="cc-track">
-                {lane.map((it, i) => (
-                  <figure key={`${it.key}-${i}`} className="cc-logo" title={it.title}>
-                    <span className="cc-avatar">
-                      <img
-                        src={it.url}
-                        alt={it.title}
-                        loading="lazy"
-                        decoding="async"
-                        className="cc-img"
-                      />
-                    </span>
-                  </figure>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <style>{`
-        /* container with edge fade */
-        .cc-marquee {
-          --gap: 2.5rem;
-          --speed: 34s;
-          position: relative;
-          padding: 1rem 0 1.5rem;
-          mask-image: linear-gradient(to right, transparent 0, #000 5%, #000 95%, transparent 100%);
-          -webkit-mask-image: linear-gradient(to right, transparent 0, #000 5%, #000 95%, transparent 100%);
-        }
-        .cc-marquee:hover .cc-track { animation-play-state: paused; }
-        .cc-paused .cc-track { animation: none !important; }
-
-        /* track */
-        .cc-track {
-          display: inline-flex;
-          gap: var(--gap);
-          padding: 0 var(--gap);
-          white-space: nowrap;
-          will-change: transform;
-          animation: cc-slide var(--speed) linear infinite;
-        }
-        @keyframes cc-slide { 0% { transform: translateX(0) } 100% { transform: translateX(-50%) } }
-
-        /* each slot */
-        .cc-logo {
-          display: inline-flex;
-          align-items: center;
-          justify-content: center;
-          height: 150px; /* bigger lane height */
-          padding: 0 1rem;
-        }
-
-        /* white circular mask */
-        .cc-avatar {
-          display: grid;
-          place-items: center;
-          width: 64px;
-          height: 64px;
-         
-         
-        }
-
-        /* logo inside the circle */
-        .cc-img {
-          max-width: 190%;
-          max-height: 190%;
-          object-fit: contain;
-       
-          transition: transform .18s ease, filter .18s ease;
-        }
-        .cc-avatar:hover .cc-img {
-          transform: translateY(-1px) scale(1.03);
-          filter: grayscale(.05) opacity(1) contrast(1);
-        }
-
-        /* responsive */
-        @media (max-width: 1024px) {
-          .cc-marquee { --gap: 2rem; --speed: 30s; }
-          .cc-logo { height: 80px; }
-          .cc-avatar { width: 56px; height: 56px; }
-        }
-        @media (max-width: 640px) {
-          .cc-marquee { --gap: 1.5rem; --speed: 26s; }
-          .cc-logo { height: 72px; }
-          .cc-avatar { width: 52px; height: 52px; }
-        }
-
-        /* respect reduced motion */
-        @media (prefers-reduced-motion: reduce) { .cc-track { animation: none !important; } }
-      `}</style>
-    </section>
-  );
-}
-
-/* ===================== Home page local data ===================== */
+/* ===================== Home page local data (truth-based) ===================== */
 const overviewTiles = [
   {
-    title: "Solutions",
+    title: "Software",
     blurb:
-      "Five modular programs spanning product, marketing, and automation. Embed a pod that ships in under 30 days.",
-    path: "/solutions",
-    tag: "Services",
+      "Websites and small apps. We use modern stacks and keep the handoff clean.",
+    path: "/solutions#software",
+    tag: "Web & App",
     accent: "from-[#4F46E5] via-[#A855F7] to-[#312E81]",
   },
   {
-    title: "Our Work",
+    title: "Branding",
     blurb:
-      "Peek at live demos, dashboards, and campaign systems already compounding growth for partners.",
-    path: "/our-work",
-    tag: "Proof",
+      "Foundations that scale: logo, colors, typography, and a voice that fits your market.",
+    path: "/solutions#branding",
+    tag: "Identity",
     accent: "from-[#38BDF8] via-[#0EA5E9] to-[#1E3A8A]",
   },
   {
-    title: "About",
+    title: "Market Analysis & Strategy",
     blurb:
-      "How we operate — rituals, documentation, and feedback loops that keep projects moving.",
-    path: "/about",
-    tag: "Team",
+      "We study your audience and competitors, then shape a simple plan you can execute.",
+    path: "/solutions#analysis",
+    tag: "Strategy",
     accent: "from-[#F472B6] via-[#EC4899] to-[#9D174D]",
   },
   {
-    title: "Contact",
+    title: "Ads & Content",
     blurb:
-      "Share your objectives and timelines. We'll map an onboarding sprint and show a plan in days.",
-    path: "/contact",
-    tag: "Start",
+      "Meta/Google ad setup and helpful content in EN/AR to support steady growth.",
+    path: "/solutions#ads-content",
+    tag: "Acquisition",
     accent: "from-[#34D399] via-[#10B981] to-[#065F46]",
   },
 ];
 
-const highlightCards = [
-  { title: "Operate Like An In-House Team", copy: "We plug into your tools and rituals — Slack, Linear, Notion — collaboration feels native.", icon: Compass },
-  { title: "Ship End-to-End", copy: "Strategy becomes shipped assets. One pod with shared KPIs, QA gates, and docs.", icon: GaugeCircle },
-  { title: "Measure Everything", copy: "Experiments and features land with tracking + dashboards so impact is obvious.", icon: Lightbulb },
-];
-
-const outcomeMilestones = [
-  { label: "6-week MVP launches", value: "12", detail: "Full-stack builds shipped in the past year with analytics, docs, and onboarding flows." },
-  { label: "Incremental revenue", value: "$4.8M", detail: "Attributed to lifecycle, paid media, and conversion optimization programs we maintain." },
-  { label: "Automation hours saved", value: "1.3K", detail: "Across RevOps, data pipelines, and AI copilots designed to unblock growth teams." },
+const highlightCards: Array<{
+  title: string;
+  copy: string;
+  icon: LucideIcon;
+}> = [
+  {
+    title: "SME-focused",
+    copy: "We work with small to medium businesses and keep communication simple.",
+    icon: Compass,
+  },
+  {
+    title: "Friendly cadence",
+    copy: "Weekly online calls and clear notes. Deliverables shared as we go.",
+    icon: GaugeCircle,
+  },
+  {
+    title: "Measure what matters",
+    copy: "We set up basic tracking so you can see what’s working.",
+    icon: Lightbulb,
+  },
 ];
 
 /* ===================== Sections ===================== */
 function ProcessMini() {
-  const steps = [
-    { icon: Target, title: "Discovery", text: "Clarify goals, constraints, and success metrics." },
-    { icon: Rocket, title: "Roadmap", text: "Prioritize quick wins and define a 4–8 week plan." },
-    { icon: Code, title: "Build", text: "Ship weekly with QA, tracking, and performance budgets." },
-    { icon: CalendarCheck, title: "Scale", text: "Optimize funnels, expand channels, and automate ops." },
-  ] as const;
+  const steps: Array<{ icon: LucideIcon; title: string; text: string }> = [
+    { icon: Target, title: "Discovery", text: "Short call to understand goals and constraints." },
+    { icon: Rocket, title: "Plan", text: "We suggest a case-by-case timeline and a simple backlog." },
+    { icon: Code, title: "Build", text: "Ship in small pieces with reviews and notes after each milestone." },
+    { icon: CalendarCheck, title: "Iterate", text: "Weekly calls, feedback, and adjustments. No heavy handoffs." },
+  ];
   return (
-    <section className="relative py-16 sm:py-20 md:py-24 px-4 sm:px-6 md:px-10 lg:px-14">
-      <div className="mx-auto max-w-[95rem]">
-        <SectionShell>
-          <div className="text-center mb-8 sm:mb-10">
-            <h2 className="text-3xl sm:text-4xl font-bold text-white">A simple path to momentum</h2>
-            <p className="mt-3 text-[#A5ADCF] max-w-[68ch] mx-auto text-[15px] sm:text-[16px]">
-              You’ll see progress in week one and shipped value every week after.
-            </p>
-          </div>
-          <ol className="grid gap-4 sm:gap-6 sm:grid-cols-2 lg:grid-cols-4">
-            {steps.map((s, i) => (
-              <li
-                key={s.title}
-                className="rounded-2xl border border-white/12 p-5"
-                style={{ backgroundColor: withAlpha(COLORS.primary, 0.08) }}
-              >
-                <div className="flex items-center gap-3">
-                  <span className="grid h-10 w-10 place-items-center rounded-xl border border-white/15" style={{ backgroundColor: withAlpha(COLORS.primary, 0.18) }}>
-                    <s.icon className="h-5 w-5 text-white" />
-                  </span>
-                  <div className="text-white font-semibold">{String(i + 1).padStart(2, "0")} — {s.title}</div>
-                </div>
-                <p className="mt-3 text-sm text-white/70 leading-relaxed">{s.text}</p>
-              </li>
-            ))}
-          </ol>
-        </SectionShell>
+    <SectionShell ariaLabel="Delivery process">
+      <div className="text-center mb-8 sm:mb-10">
+        <h2 className="text-3xl sm:text-4xl font-bold text-white">How we work</h2>
+        <p className="mt-3 text-[#A5ADCF] max-w-[68ch] mx-auto text-[15px] sm:text-[16px]">
+          Friendly and helpful. We keep things clear and move at a pace that fits your team.
+        </p>
       </div>
-    </section>
-  );
-}
-
-function QuotesRow() {
-  const quotes = [
-    { name: "Mariam B.", role: "Head of Growth, Retail", quote: "Anonvic launched new funnels in three weeks. Reporting ties straight to revenue.", result: "+162% ROAS" },
-    { name: "J. Park", role: "VP Product, SaaS", quote: "The product pod shipped an MVP with analytics and docs. We onboarded customers that week.", result: "6-week MVP" },
-    { name: "Noor K.", role: "Marketing Lead, Fintech", quote: "SEO workflows and media pacing finally live in one place. Exec reporting is trivial.", result: "+4x organic" },
-  ] as const;
-
-  return (
-    <section className="relative py-16 sm:py-20 md:py-24 px-4 sm:px-6 md:px-10 lg:px-14">
-      <div className="mx-auto max-w-[95rem]">
-        <SectionShell>
-          <div className="grid gap-5 sm:gap-6 md:grid-cols-3">
-            {quotes.map((q, idx) => (
-              <div
-                key={idx}
-                className="relative h-full rounded-3xl border border-white/12 p-6 sm:p-7"
-                style={{ backgroundColor: withAlpha(COLORS.primary, 0.1) }}
-              >
-                <Quote className="h-6 w-6 text-white/70" />
-                <p className="mt-4 text-white/85 text-base leading-relaxed">“{q.quote}”</p>
-                <div className="mt-6 flex items-center justify-between gap-3">
-                  <div>
-                    <p className="text-sm font-semibold text-white">{q.name}</p>
-                    <p className="text-xs uppercase tracking-[0.18em] text-white/50">{q.role}</p>
-                  </div>
-                  <span className="inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-white/10 px-3 py-1 text-xs text-white/80">
-                    <Sparkles className="h-3.5 w-3.5" />
-                    {q.result}
-                  </span>
+      <ol className="grid gap-4 sm:gap-6 sm:grid-cols-2 lg:grid-cols-4" aria-label="Process steps">
+        {steps.map((s, i) => {
+          const IconComp = s.icon;
+          return (
+            <li
+              key={s.title}
+              className="rounded-2xl border border-white/12 p-5"
+              style={{ backgroundColor: withAlpha(COLORS.primary, 0.08) }}
+            >
+              <div className="flex items-center gap-3">
+                <span
+                  className="grid h-10 w-10 place-items-center rounded-xl border border-white/15"
+                  style={{ backgroundColor: withAlpha(COLORS.primary, 0.18) }}
+                  aria-hidden
+                >
+                  <IconComp className="h-5 w-5 text-white" />
+                </span>
+                <div className="text-white font-semibold">
+                  {String(i + 1).padStart(2, "0")} — {s.title}
                 </div>
               </div>
-            ))}
-          </div>
-        </SectionShell>
-      </div>
-    </section>
-  );
-}
-
-function MiniFAQ() {
-  const faqs = [
-    { q: "How fast can we launch?", a: "Launch plan is ~2 weeks for a production landing. Larger scopes run 4–8 weeks." },
-    { q: "Do you support Shopify or Stripe?", a: "Yes. We integrate Shopify storefronts or Stripe for payments, subscriptions, and invoicing." },
-    { q: "What’s included in tracking?", a: "GA4 + server-side events (CAPI/gtag) where possible, source-of-truth dashboards, and monthly audits." },
-    { q: "Can you handle Arabic or RTL?", a: "Yes. We ship multilingual and RTL-ready sites and content pipelines." },
-  ] as const;
-
-  const [open, setOpen] = useState<number | null>(0);
-
-  return (
-    <section className="relative py-16 sm:py-20 md:py-24 px-4 sm:px-6 md:px-10 lg:px-14">
-      <div className="mx-auto max-w-[95rem]">
-        <SectionShell>
-          <div className="text-center mb-8 sm:mb-10">
-            <h2 className="text-3xl sm:text-4xl font-bold text-white">FAQs</h2>
-            <p className="mt-3 text-[#A5ADCF] max-w-[66ch] mx-auto text-[15px] sm:text-[16px]">
-              Clear answers to common questions. Need more detail? Ping us anytime.
-            </p>
-          </div>
-          <div className="space-y-3">
-            {faqs.map((f, idx) => {
-              const isOpen = open === idx;
-              return (
-                <div
-                  key={idx}
-                  className="rounded-2xl border border-white/10"
-                  style={{ backgroundColor: withAlpha(COLORS.primary, 0.08) }}
-                >
-                  <button
-                    onClick={() => setOpen(isOpen ? null : idx)}
-                    className="w-full flex items-center justify-between gap-3 text-left px-5 py-4"
-                    aria-expanded={isOpen}
-                  >
-                    <span className="font-medium text-white">{f.q}</span>
-                    <ChevronDown className={`h-5 w-5 transition-transform ${isOpen ? "rotate-180" : ""}`} />
-                  </button>
-                  <div className={`px-5 overflow-hidden transition-all ${isOpen ? "pb-5 max-h-48" : "pb-0 max-h-0"}`}>
-                    <p className="text-sm text-[#A5ADCF]">{f.a}</p>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </SectionShell>
-      </div>
-    </section>
+              <p className="mt-3 text-sm text-white/70 leading-relaxed">{s.text}</p>
+            </li>
+          );
+        })}
+      </ol>
+    </SectionShell>
   );
 }
 
 function FinalCTA() {
   return (
-    <section className="relative py-12 sm:py-16 md:py-20 px-4 sm:px-6 md:px-10 lg:px-14">
-      <div className="mx-auto max-w-[95rem]">
-        <SectionShell className="text-center">
-          <h3 className="text-2xl sm:text-3xl font-bold text-white">Ready to move fast?</h3>
-          <p className="mt-3 text-[#A5ADCF] max-w-[62ch] mx-auto">
-            Share your goals and constraints. We’ll reply with a short plan, timeline, and resourcing recommendations.
-          </p>
-          <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
-            <Link
-              to="/solutions"
-              className="group relative rounded-2xl px-6 sm:px-7 py-3.5 text-sm md:text-base font-semibold text-white transition-all duration-300 hover:-translate-y-1 hover:scale-[1.03]"
-              style={{ background: gradientPrimary(125), boxShadow: "0 24px 50px -32px rgba(79,70,229,0.65)", backdropFilter: "blur(20px)" }}
-            >
-              <span className="relative z-10 inline-flex items-center gap-2">
-                Explore Solutions <ArrowRight className="h-5 w-5 transition-transform duration-300 group-hover:translate-x-1" />
-              </span>
-            </Link>
-            <Link
-              to="/contact"
-              className="group relative rounded-2xl border border-white/15 px-6 sm:px-7 py-3.5 text-sm md:text-base font-semibold text-white transition-all duration-300 hover:scale-[1.03]"
-              style={{ backgroundColor: withAlpha(COLORS.accent, 0.12), borderColor: withAlpha(COLORS.primary, 0.25), backdropFilter: "blur(18px)" }}
-            >
-              <span className="relative z-10 inline-flex items-center gap-2">
-                Contact Anonvic <Mail className="h-5 w-5" />
-              </span>
-            </Link>
-          </div>
-        </SectionShell>
+    <SectionShell ariaLabel="Final call to action">
+      <div className="text-center">
+        <h3 className="text-2xl sm:text-3xl font-bold text-white">Let’s talk about your project</h3>
+        <p className="mt-3 text-[#A5ADCF] max-w-[62ch] mx-auto">
+          We’re taking on SMEs in Egypt and the US. Send a short note about your goals and we’ll reply with next steps.
+        </p>
+        <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
+          <Link
+            to="/solutions"
+            className="group relative rounded-2xl px-6 sm:px-7 py-3.5 text-sm md:text-base font-semibold text-white transition-all duration-300 hover:-translate-y-1 hover:scale-[1.03]"
+            style={{
+              background: gradientPrimary(125),
+              boxShadow: "0 24px 50px -32px rgba(79,70,229,0.65)",
+              backdropFilter: "blur(20px)",
+            }}
+            aria-label="Explore services"
+          >
+            <span className="relative z-10 inline-flex items-center gap-2">
+              Explore Services{" "}
+              <ArrowRight
+                className="h-5 w-5 transition-transform duration-300 group-hover:translate-x-1"
+                aria-hidden
+              />
+            </span>
+          </Link>
+          <a
+            href={`mailto:${SITE.contacts.emailLabel}`}
+            className="group relative rounded-2xl border border-white/15 px-6 sm:px-7 py-3.5 text-sm md:text-base font-semibold text-white transition-all duration-300 hover:scale-[1.03]"
+            style={{
+              backgroundColor: withAlpha(COLORS.accent, 0.12),
+              borderColor: withAlpha(COLORS.primary, 0.25),
+              backdropFilter: "blur(18px)",
+            }}
+            aria-label="Email Anonvic"
+          >
+            <span className="relative z-10 inline-flex items-center gap-2">
+              Email {SITE.name} <Mail className="h-5 w-5" aria-hidden />
+            </span>
+          </a>
+        </div>
       </div>
-    </section>
+    </SectionShell>
   );
 }
 
-/* ===================== Existing sections ===================== */
 function HomeOverview() {
   return (
-    <section className="relative py-20 sm:py-24 md:py-28 px-4 sm:px-6 md:px-10 lg:px-14">
-      <div className="mx-auto max-w-[95rem]">
-        <SectionShell>
-          <div className="text-center mb-14">
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold bg-gradient-to-r from-white via-gray-100 to-white bg-clip-text text-transparent">
-              Choose Your Next Move
-            </h2>
-            <p className="mt-4 text-[#A5ADCF] max-w-[66ch] mx-auto text-[15px] sm:text-[16px]">
-              Dive into focused pages with sample roadmaps, deliverables, and playbooks. Each path is battle-tested and ready to tailor.
-            </p>
-          </div>
-
-          <div className="grid gap-6 lg:gap-8 md:grid-cols-2 xl:grid-cols-4">
-            {overviewTiles.map((tile) => (
-              <Link
-                key={tile.title}
-                to={tile.path}
-                className="group relative overflow-hidden rounded-3xl border border-white/12 bg-white/5 px-6 py-8 transition-all duration-300 hover:-translate-y-2 hover:border-white/20"
-              >
-                <span
-                  className={`absolute -inset-2 opacity-0 transition-opacity duration-300 group-hover:opacity-60 blur-2xl bg-gradient-to-br ${tile.accent}`}
-                />
-                <div className="relative space-y-4">
-                  <span className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1 text-xs uppercase tracking-[0.32em] text-white/70">
-                    <Sparkles className="h-3.5 w-3.5" />
-                    {tile.tag}
-                  </span>
-                  <h3 className="text-2xl font-semibold text-white">{tile.title}</h3>
-                  <p className="text-sm text-white/70 leading-relaxed">{tile.blurb}</p>
-                  <span className="inline-flex items-center gap-2 text-sm font-medium text-white">
-                    Explore{" "}
-                    <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
-                  </span>
-                </div>
-              </Link>
-            ))}
-          </div>
-        </SectionShell>
+    <SectionShell ariaLabel="Overview tiles">
+      <div className="text-center mb-14">
+        <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold bg-gradient-to-r from-white via-gray-100 to-white bg-clip-text text-transparent">
+          What we can help with
+        </h2>
+        <p className="mt-4 text-[#A5ADCF] max-w-[66ch] mx-auto text-[15px] sm:text-[16px]">
+          Pick the part you need right now. We’re flexible and match your pace.
+        </p>
       </div>
-    </section>
+
+      <div className="grid gap-6 lg:gap-8 md:grid-cols-2 xl:grid-cols-4">
+        {overviewTiles.map((tile) => (
+          <Link
+            key={tile.title}
+            to={tile.path}
+            className="group relative overflow-hidden rounded-3xl border border-white/12 bg-white/5 px-6 py-8 transition-all duration-300 hover:-translate-y-2 hover:border-white/20"
+            aria-label={`Open ${tile.title}`}
+          >
+            <span
+              className={`absolute -inset-2 opacity-0 transition-opacity duration-300 group-hover:opacity-60 blur-2xl bg-gradient-to-br ${tile.accent}`}
+            />
+            <div className="relative space-y-4">
+              <span className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1 text-xs uppercase tracking-[0.32em] text-white/70">
+                <Sparkles className="h-3.5 w-3.5" aria-hidden />
+                {tile.tag}
+              </span>
+              <h3 className="text-2xl font-semibold text-white">{tile.title}</h3>
+              <p className="text-sm text-white/70 leading-relaxed">{tile.blurb}</p>
+              <span className="inline-flex items-center gap-2 text-sm font-medium text-white">
+                Explore{" "}
+                <ArrowRight
+                  className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1"
+                  aria-hidden
+                />
+              </span>
+            </div>
+          </Link>
+        ))}
+      </div>
+    </SectionShell>
   );
 }
 
 function Highlights() {
   return (
-    <section className="relative py-20 sm:py-24 md:py-28 px-4 sm:px-6 md:px-10 lg:px-14">
-      <div className="mx-auto max-w-[95rem]">
-        <SectionShell>
-          <div className="grid lg:grid-cols-[1.1fr_1fr] gap-10 sm:gap-12 items-start">
-            <div className="space-y-6">
-              <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white">
-                Why operators pick Anonvic
-              </h2>
-              <p className="text-[#A5ADCF] text-[15px] sm:text-[16px] leading-relaxed">
-                From discovery to deployment, we behave like an in-house team with agency speed. Pods include strategists, builders, and analysts so you never wait for handoffs.
-              </p>
-              <ul className="space-y-3 text-sm text-[#A5ADCF]">
-                <li className="flex items-start gap-3">
-                  <Check className="h-4 w-4 text-[#4F46E5] mt-0.5" />
-                  Weekly demos, experiment logs, and Loom recaps keep stakeholders aligned.
-                </li>
-                <li className="flex items-start gap-3">
-                  <Check className="h-4 w-4 text-[#4F46E5] mt-0.5" />
-                  Design systems, analytics, and marketing ops share one backlog for visibility.
-                </li>
-                <li className="flex items-start gap-3">
-                  <Check className="h-4 w-4 text-[#4F46E5] mt-0.5" />
-                  Every deliverable includes docs and enablement so your team can run with it.
-                </li>
-                <li className="flex items-start gap-3">
-                  <Check className="h-4 w-4 text-[#4F46E5] mt-0.5" />
-                  SLAs for response times, dashboards, and ad spend pacing are built-in.
-                </li>
-              </ul>
-            </div>
+    <SectionShell ariaLabel="Why teams work with us">
+      <div className="grid lg:grid-cols-[1.1fr_1fr] gap-10 sm:gap-12 items-start">
+        <div className="space-y-6">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white">
+            Why SMEs pick {SITE.name}
+          </h2>
+          <p className="text-[#A5ADCF] text-[15px] sm:text-[16px] leading-relaxed">
+            We’re a small studio. You’ll speak directly with the people doing the work. Clear notes,
+            quick replies, and honest timelines.
+          </p>
+          <ul className="space-y-3 text-sm text-[#A5ADCF]">
+            <li className="flex items-start gap-3">
+              <Check className="h-4 w-4 text-[#4F46E5] mt-0.5" aria-hidden />
+              Weekly online calls and simple action lists.
+            </li>
+            <li className="flex items-start gap-3">
+              <Check className="h-4 w-4 text-[#4F46E5] mt-0.5" aria-hidden />
+              Bilingual delivery (EN/AR) for Egypt and US markets.
+            </li>
+            <li className="flex items-start gap-3">
+              <Check className="h-4 w-4 text-[#4F46E5] mt-0.5" aria-hidden />
+              Case-by-case timelines that fit your team’s bandwidth.
+            </li>
+            <li className="flex items-start gap-3">
+              <Check className="h-4 w-4 text-[#4F46E5] mt-0.5" aria-hidden />
+              Basic tracking from day one so progress is visible.
+            </li>
+          </ul>
+        </div>
 
-            <div className="grid gap-4">
-              {highlightCards.map(({ title, copy, icon: Icon }, idx) => (
-                <div
-                  key={title}
-                  className="relative overflow-hidden rounded-2xl border border-white/12 bg-white/5 p-6"
-                  style={{ boxShadow: "0 24px 60px -40px rgba(5,6,29,0.65)" }}
-                >
-                  <span className="absolute -inset-1 opacity-0 blur-2xl transition-opacity duration-300 hover:opacity-60 bg-gradient-to-br from-[#4F46E5] via-[#A855F7] to-transparent" />
-                  <div className="relative flex items-start gap-4">
-                    <span
-                      className="grid h-11 w-11 place-items-center rounded-xl border border-white/15"
-                      style={{ backgroundColor: withAlpha(COLORS.primary, 0.18) }}
-                    >
-                      <Icon className="h-5 w-5 text-white" />
-                    </span>
-                    <div className="space-y-2">
-                      <h3 className="text-lg font-semibold text-white">{title}</h3>
-                      <p className="text-sm text-white/70 leading-relaxed">{copy}</p>
-                    </div>
-                    <span className="ml-auto text-sm text-white/40 font-mono">0{idx + 1}</span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </SectionShell>
-      </div>
-    </section>
-  );
-}
-
-function OutcomeShowcase() {
-  return (
-    <section className="relative py-20 sm:py-24 md:py-28 px-4 sm:px-6 md:px-10 lg:px-14">
-      <div className="mx-auto max-w-[95rem]">
-        <SectionShell>
-          <div className="text-center mb-12">
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white">
-              Recent outcomes from embedded pods
-            </h2>
-            <p className="mt-3 text-[#A5ADCF] text-[15px] sm:text-[16px] max-w-[70ch] mx-auto">
-              We iterate alongside internal teams to unblock growth, product velocity, and lifecycle efficiency.
-            </p>
-          </div>
-          <div className="grid gap-6 md:grid-cols-3">
-            {outcomeMilestones.map(({ label, value, detail }) => (
+        <div className="grid gap-4">
+          {highlightCards.map(({ title, copy, icon: Icon }, idx) => {
+            const IconComp = Icon as LucideIcon;
+            return (
               <div
-                key={label}
-                className="rounded-3xl border border-white/12 p-6"
-                style={{ backgroundColor: withAlpha(COLORS.primary, 0.1) }}
+                key={title}
+                className="relative overflow-hidden rounded-2xl border border-white/12 bg-white/5 p-6"
+                style={{ boxShadow: "0 24px 60px -40px rgba(5,6,29,0.65)" }}
               >
-                <span className="text-[12px] uppercase tracking-[0.3em] text-white/60">
-                  {label}
-                </span>
-                <div className="mt-4 text-4xl font-extrabold text-white">{value}</div>
-                <p className="mt-3 text-sm text-white/70 leading-relaxed">{detail}</p>
+                <span className="absolute -inset-1 opacity-0 blur-2xl transition-opacity duration-300 hover:opacity-60 bg-gradient-to-br from-[#4F46E5] via-[#A855F7] to-transparent" />
+                <div className="relative flex items-start gap-4">
+                  <span
+                    className="grid h-11 w-11 place-items-center rounded-xl border border-white/15"
+                    style={{ backgroundColor: withAlpha(COLORS.primary, 0.18) }}
+                    aria-hidden
+                  >
+                    <IconComp className="h-5 w-5 text-white" />
+                  </span>
+                  <div className="space-y-2">
+                    <h3 className="text-lg font-semibold text-white">{title}</h3>
+                    <p className="text-sm text-white/70 leading-relaxed">{copy}</p>
+                  </div>
+                  <span className="ml-auto text-sm text-white/40 font-mono" aria-hidden>
+                    0{idx + 1}
+                  </span>
+                </div>
               </div>
-            ))}
-          </div>
-        </SectionShell>
+            );
+          })}
+        </div>
       </div>
-    </section>
+    </SectionShell>
   );
 }
 
@@ -760,133 +539,214 @@ export default function App() {
   const isMobile = useIsMobile();
   const reducedMotion = usePrefersReducedMotion();
 
+  // rAF-throttled scroll listener for smoother perf
   const [scrollY, setScrollY] = useState(0);
+  const ticking = useRef(false);
   useEffect(() => {
-    const onScroll = () => setScrollY(window.scrollY);
+    const onScroll = () => {
+      if (!ticking.current) {
+        window.requestAnimationFrame(() => {
+          setScrollY(window.scrollY);
+          ticking.current = false;
+        });
+        ticking.current = true;
+      }
+    };
     window.addEventListener("scroll", onScroll, { passive: true });
     onScroll();
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  const [] = useState(false);
+  const mainId = "main";
+
+  // Structured data (JSON-LD)
+  const orgJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    name: SITE.name,
+    url: SITE.domain,
+    sameAs: Object.values(SITE.socials),
+    areaServed: SITE.regions,
+    contactPoint: [
+      {
+        "@type": "ContactPoint",
+        email: SITE.contacts.emailLabel,
+        contactType: "customer support",
+        availableLanguage: SITE.locales,
+      },
+    ],
+  } as const;
+
+  const siteJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    name: SITE.name,
+    url: SITE.domain,
+    inLanguage: SITE.locales,
+    potentialAction: {
+      "@type": "SearchAction",
+      target: `${SITE.domain}/search?q={query}`,
+      "query-input": "required name=query",
+    },
+  } as const;
 
   return (
     <>
-      <section className="relative min-h-[90vh] pt-28 sm:pt-32 md:pt-30 flex items-center justify-center px-4 sm:px-6 md:px-10 lg:px-14">
-        {/* subtle background accents */}
-        <div
-          aria-hidden
-          className="absolute inset-0 -z-10"
-          style={{
-            background:
-              "radial-gradient(circle at top, rgba(57,80,180,0.25), transparent 60%)",
-            backgroundColor: COLORS.background,
-          }}
-        />
-        <div className="relative z-10 mx-auto max-w-screen-xl w-full text-center">
-          <div className="space-y-8 sm:space-y-10 md:space-y-12">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, ease: "easeOut" }}
-              className="inline-flex items-center gap-2 rounded-full border border-white/15 px-4 sm:px-5 py-2.5 backdrop-blur-xl shadow-[0_12px_38px_-28px_rgba(79,70,229,0.85)]"
-              style={{ backgroundColor: withAlpha(COLORS.primary, 0.16) }}
-            >
-              <Zap className="h-4 w-4 text-[#4F46E5]" />
-              <span className="text-xs sm:text-sm font-medium text-white/80">
-                Growth marketing × product engineering, embedded.
-              </span>
-              <Sparkles className="h-3.5 w-3.5 text-[#A855F7]" />
-            </motion.div>
+      {/* SEO meta */}
+      <Helmet>
+        <title>{SITE.name} — Software & Marketing for SMEs (EN/AR)</title>
+        <meta name="description" content={SITE.description} />
+        <meta name="keywords" content={SITE.keywords.join(", ")} />
+        <link rel="canonical" href={SITE.domain} />
+        <meta property="og:site_name" content={SITE.name} />
+        <meta property="og:type" content="website" />
+        <meta property="og:title" content={`${SITE.name} — Software & Marketing for SMEs`} />
+        <meta property="og:description" content={SITE.description} />
+        <meta property="og:url" content={SITE.domain} />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={`${SITE.name} — Software & Marketing for SMEs`} />
+        <meta name="twitter:description" content={SITE.description} />
+        <script type="application/ld+json">{JSON.stringify(orgJsonLd)}</script>
+        <script type="application/ld+json">{JSON.stringify(siteJsonLd)}</script>
+      </Helmet>
 
-            <motion.div
-              initial={{ opacity: 0, y: 24 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.7, delay: 0.1, ease: "easeOut" }}
-              className="space-y-3"
-            >
-              <h1
-                className="font-black tracking-tight leading-[1.05] text-balance"
-                style={{ fontSize: "clamp(32px, 6.2vw, 65px)" }}
-              >
-                <span className="relative block bg-gradient-to-r from-white via-gray-100 to-white bg-clip-text text-transparent">
-                  Build momentum across every surface
-                </span>
-                <span className="relative block -mt-1 bg-gradient-to-r from-[#4F46E5] via-[#A855F7] to-[#1B1F3B] bg-clip-text text-transparent">
-                  Marketing, product, and ops working in sync
-                </span>
-              </h1>
-              <p className="mx-auto max-w-[66ch] px-1 text-[15px] sm:text-[16px] md:text-[17px] leading-relaxed text-[#A5ADCF]">
-                Anonvic pairs strategists with builders so idea → execution happens without the usual friction. Launch faster, iterate weekly, and measure impact where leadership already looks.
-              </p>
-            </motion.div>
+      {/* Skip Link */}
+      <a
+        href={`#${mainId}`}
+        className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:rounded-md focus:bg-white focus:text-black focus:px-3 focus:py-2"
+      >
+        Skip to content
+      </a>
 
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.2, ease: "easeOut" }}
-              className="flex flex-wrap items-center justify-center gap-2 sm:gap-3"
-            >
-              <Link
-                to="/solutions"
-                className="group relative min-w-[150px] sm:min-w-[180px] rounded-2xl px-6 sm:px-7 py-3.5 text-sm md:text-base font-semibold text-white transition-all duration-300 hover:-translate-y-1 hover:scale-[1.03]"
-                style={{
-                  background: gradientPrimary(125),
-                  boxShadow: "0 24px 50px -32px rgba(79,70,229,0.65)",
-                  backdropFilter: "blur(20px)",
-                }}
-              >
-                <span className="relative z-10 flex items-center justify-center gap-2">
-                  <ArrowRight className="h-5 w-5 transition-transform duration-300 group-hover:translate-x-1" />
-                  <span>See Solution Pods</span>
-                </span>
-              </Link>
-
-              <Link
-                to="/contact"
-                className="group relative min-w-[150px] sm:min-w-[180px] rounded-2xl border border-white/15 px-6 sm:px-7 py-3.5 text-sm md:text-base font-semibold text-white transition-all duration-300 hover:scale-[1.03]"
-                style={{
-                  backgroundColor: withAlpha(COLORS.accent, 0.12),
-                  borderColor: withAlpha(COLORS.primary, 0.25),
-                  backdropFilter: "blur(18px)",
-                }}
-              >
-                <span className="relative z-10 flex items-center justify-center gap-2">
-                  <Mail className="h-5 w-5 transition duration-300 group-hover:text-[#4F46E5] group-hover:-translate-y-0.5" />
-                  <span>Book an Intro Call</span>
-                </span>
-              </Link>
-            </motion.div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 md:gap-5 mx-auto max-w-3xl pt-2">
-              <Stat number="32+" label="Growth programs shipped" accent="indigo" />
-              <Stat number="18" label="Product launches delivered" accent="fuchsia" />
-              <Stat number="4.9/5" label="Average partner rating" accent="sky" />
-            </div>
-          </div>
-
-          <HeroEdgeIcons
-            scrollY={scrollY}
-            isMobile={isMobile}
-            reducedMotion={reducedMotion}
+      <header className="relative" aria-label="Hero header">
+        <section className="relative min-h-[90vh] pt-28 sm:pt-32 md:pt-30 flex items-center justify-center px-4 sm:px-6 md:px-10 lg:px-14">
+          {/* subtle background accents */}
+          <div
+            aria-hidden
+            className="absolute inset-0 -z-10"
+            style={{
+              background:
+                "radial-gradient(circle at top, rgba(57,80,180,0.25), transparent 60%)",
+              backgroundColor: COLORS.background,
+            }}
           />
-        </div>
-      </section>
+          <div className="relative z-10 mx-auto max-w-screen-xl w-full text-center">
+            <div className="space-y-8 sm:space-y-10 md:space-y-12">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, ease: "easeOut" }}
+                className="inline-flex items-center gap-2 rounded-full border border-white/15 px-4 sm:px-5 py-2.5 backdrop-blur-xl shadow-[0_12px_38px_-28px_rgba(79,70,229,0.85)]"
+                style={{ backgroundColor: withAlpha(COLORS.primary, 0.16) }}
+              >
+                <Zap className="h-4 w-4 text-[#4F46E5]" aria-hidden />
+                <span className="text-xs sm:text-sm font-medium text-white/80">
+                  Friendly software & marketing for SMEs (EN/AR)
+                </span>
+                <Sparkles className="h-3.5 w-3.5 text-[#A855F7]" aria-hidden />
+              </motion.div>
 
-      {/* Minimal auto-loaded companies carousel with white circular mask */}
-      <CompaniesCarousel />
+              <motion.div
+                initial={{ opacity: 0, y: 24 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.7, delay: 0.1, ease: "easeOut" }}
+                className="space-y-3"
+              >
+                <h1
+                  className="font-black tracking-tight leading-[1.05] text-balance"
+                  style={{ fontSize: "clamp(32px, 6.2vw, 65px)" }}
+                >
+                  <span className="relative block bg-gradient-to-r from-white via-gray-100 to-white bg-clip-text text-transparent">
+                    Build the basics. Grow steadily.
+                  </span>
+                  <span className="relative block -mt-1 bg-gradient-to-r from-[#4F46E5] via-[#A855F7] to-[#1B1F3B] bg-clip-text text-transparent">
+                    Web & app, branding, analysis, ads, and content
+                  </span>
+                </h1>
+                <p className="mx-auto max-w-[66ch] px-1 text-[15px] sm:text-[16px] md:text-[17px] leading-relaxed text-[#A5ADCF]">
+                  We serve small to medium businesses in Egypt and the US. Case-by-case timelines,
+                  weekly online calls, and clear deliverables.
+                </p>
+              </motion.div>
 
-      <HomeOverview />
-      <Highlights />
-      <ProcessMini />
-      <OutcomeShowcase />
-      <QuotesRow />
-      <MiniFAQ />
-      <FinalCTA />
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.2, ease: "easeOut" }}
+                className="flex flex-wrap items-center justify-center gap-2 sm:gap-3"
+              >
+                <Link
+                  to="/solutions"
+                  className="group relative min-w-[150px] sm:min-w-[180px] rounded-2xl px-6 sm:px-7 py-3.5 text-sm md:text-base font-semibold text-white transition-all duration-300 hover:-translate-y-1 hover:scale-[1.03]"
+                  style={{
+                    background: gradientPrimary(125),
+                    boxShadow: "0 24px 50px -32px rgba(79,70,229,0.65)",
+                    backdropFilter: "blur(20px)",
+                  }}
+                  aria-label="See services"
+                >
+                  <span className="relative z-10 flex items-center justify-center gap-2">
+                    <ArrowRight
+                      className="h-5 w-5 transition-transform duration-300 group-hover:translate-x-1"
+                      aria-hidden
+                    />
+                    <span>See Services</span>
+                  </span>
+                </Link>
+
+                <a
+                  href={`mailto:${SITE.contacts.emailLabel}`}
+                  className="group relative min-w-[150px] sm:min-w-[180px] rounded-2xl border border-white/15 px-6 sm:px-7 py-3.5 text-sm md:text-base font-semibold text-white transition-all duration-300 hover:scale-[1.03]"
+                  style={{
+                    backgroundColor: withAlpha(COLORS.accent, 0.12),
+                    borderColor: withAlpha(COLORS.primary, 0.25),
+                    backdropFilter: "blur(18px)",
+                  }}
+                  aria-label="Email us"
+                >
+                  <span className="relative z-10 flex items-center justify-center gap-2">
+                    <Mail className="h-5 w-5" aria-hidden />
+                    <span>Email Us</span>
+                  </span>
+                </a>
+              </motion.div>
+            </div>
+
+            <HeroEdgeIcons
+              scrollY={scrollY}
+              isMobile={isMobile}
+              reducedMotion={reducedMotion}
+            />
+          </div>
+        </section>
+      </header>
+
+      {/* Main content */}
+      <main id={mainId} role="main">
+        <HomeOverview />
+        <Highlights />
+        <ProcessMini />
+        <FinalCTA />
+      </main>
+
+      <footer className="px-4 sm:px-6 md:px-10 lg:px-14 py-10 text-center text-white/60">
+        <p className="text-sm">
+          © {new Date().getFullYear()} {SITE.name}. All rights reserved.
+        </p>
+        <p className="text-xs mt-2">
+          Contact:{" "}
+          <a href={`mailto:${SITE.contacts.emailLabel}`} className="underline">
+            {SITE.contacts.emailLabel}
+          </a>
+        </p>
+      </footer>
 
       {/* local styles used by home (chips + floats) */}
       <style>{`
-        @keyframes edgeFloat { 0%, 100% { transform: translate3d(-50%, -50%, 0) translateY(0); } 50% { transform: translate3d(-50%, -50%, 0) translateY(-10px); } }
+        @keyframes edgeFloat {
+          0%, 100% { transform: translate3d(-50%, -50%, 0) translateY(0); }
+          50% { transform: translate3d(-50%, -50%, 0) translateY(-10px); }
+        }
         .chip {
           display:inline-flex; align-items:center; gap:.5rem;
           border-radius:9999px; padding:.5rem .75rem;
@@ -897,6 +757,8 @@ export default function App() {
         }
         .chip:hover { background:${withAlpha(COLORS.primary, 0.28)}; border-color:${withAlpha(COLORS.primary, 0.6)}; transform: translateY(-1px); }
         section + section { scroll-margin-top: 80px; }
+        .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border-width: 0; }
+        .focus\\:not-sr-only:focus { position: static; width: auto; height: auto; margin: 0; overflow: visible; clip: auto; white-space: normal; }
       `}</style>
     </>
   );

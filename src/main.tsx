@@ -2,6 +2,7 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import { HashRouter } from "react-router-dom";
+import { HelmetProvider } from "react-helmet-async";
 import AppRouter from "./AppRouter";
 import "./index.css";
 
@@ -21,8 +22,10 @@ if (typeof window !== "undefined") {
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    <HashRouter basename="/">
-      <AppRouter />
-    </HashRouter>
+    <HelmetProvider>
+      <HashRouter basename="/">
+        <AppRouter />
+      </HashRouter>
+    </HelmetProvider>
   </React.StrictMode>
 );
