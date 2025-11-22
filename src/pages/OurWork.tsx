@@ -1,4 +1,5 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable react-hooks/exhaustive-deps */
+ 
 // src/pages/WorkPage.tsx — Studio-grade redesign (no new deps)
 // - Sticky navigator + filters (All/Web/SEO/AI)
 // - Big preview with progress bar + auto-rotate (pause/play)
@@ -274,13 +275,6 @@ export default function WorkPage() {
     }
   })();
 
-  const faviconFor = (u: string) => {
-    try {
-      return `${new URL(u).origin}/favicon.ico`;
-    } catch {
-      return "";
-    }
-  };
 
   /* ---------- Subcomponents ---------- */
   const Navigator = () => (
@@ -695,7 +689,6 @@ export default function WorkPage() {
 
       {/* JSON-LD */}
       <script
-        // eslint-disable-next-line react/no-danger
         dangerouslySetInnerHTML={{
           __html: JSON.stringify({
             "@context": "https://schema.org",
