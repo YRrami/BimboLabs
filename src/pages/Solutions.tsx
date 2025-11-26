@@ -5,7 +5,6 @@ import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import {
   Sparkles,
-  Code,
   Search,
   Megaphone,
   MessageSquare,
@@ -13,6 +12,7 @@ import {
   Check,
   Target,
   Layout,
+  Code,
 } from "lucide-react";
 import { SectionShell, withAlpha, COLORS } from "../components/layout/SiteLayout";
 
@@ -24,7 +24,7 @@ type Solution = {
   description: string;
   focus: string;
   icon: React.ElementType;
-  accent: string; // hex color
+  accent: string;
   cta: string;
   sampleBullets: string[];
 };
@@ -33,338 +33,271 @@ const SOLUTIONS: Solution[] = [
   {
     id: "software",
     title: "Software Development",
-    description:
-      "We plan, design, and ship modern web apps with weekly demos, docs, and tracking from day one.",
-    focus: "Full-stack build + launch",
+    description: "Web apps, dashboards, and tools tailored to your business.",
+    focus: "Web apps & tools",
     icon: Code,
     accent: "#4F46E5",
-    cta: "Scope a Build",
-    sampleBullets: ["Next.js/React frontends", "APIs & auth", "Deploy & observability"],
+    cta: "Discuss a build",
+    sampleBullets: ["Landing pages & sites", "Dashboards & portals", "Integrations & automations"],
   },
   {
-    id: "seo",
-    title: "SEO Optimization",
-    description:
-      "Technical fixes and content systems that grow qualified traffic—measured in your analytics, not guesses.",
-    focus: "Search performance",
-    icon: Search,
-    accent: "#38BDF8",
-    cta: "Get an SEO Plan",
-    sampleBullets: ["Tech SEO audits", "Content briefs", "Schema & Core Web Vitals"],
-  },
-  {
-    id: "media",
-    title: "Media Buying",
-    description:
-      "Full-funnel testing on Meta/Google with server-side events and pacing dashboards you can trust.",
-    focus: "Paid acquisition",
-    icon: Megaphone,
-    accent: "#6366F1",
-    cta: "Launch Media",
-    sampleBullets: ["Account structure", "Creative testing", "Budget pacing & ROAS"],
-  },
-  {
-    id: "brand",
-    title: "Brand Management",
-    description:
-      "Messaging, visual systems, and usage rules so every touchpoint feels consistent—in English or Arabic.",
-    focus: "Identity systems",
+    id: "branding",
+    title: "Brand Identity",
+    description: "A clean brand kit so you look consistent everywhere.",
+    focus: "Brand basics",
     icon: Sparkles,
     accent: "#A855F7",
-    cta: "Start Brand Sprint",
-    sampleBullets: ["Voice & tone", "Logo/typography rules", "Templates & components"],
+    cta: "Ask about branding",
+    sampleBullets: ["Logo & colors", "Social profile & cover", "Business card"],
   },
   {
     id: "social",
-    title: "Social Media",
-    description:
-      "Always-on storytelling and community replies with a light weekly cadence and simple reporting.",
-    focus: "Community narrative",
+    title: "Social Media Management",
+    description: "We post for you on Facebook & Instagram every month.",
+    focus: "Monthly content",
     icon: MessageSquare,
     accent: "#EC4899",
-    cta: "Design Social Playbook",
-    sampleBullets: ["Content calendar", "Reply guidelines", "Monthly insights"],
+    cta: "See social packages",
+    sampleBullets: ["Posts & reels", "Stories", "Monthly calendar"],
+  },
+  {
+    id: "paid-ads",
+    title: "Social Ads Management",
+    description: "We run paid campaigns to get traffic, leads, or sales.",
+    focus: "Paid campaigns",
+    icon: Megaphone,
+    accent: "#38BDF8",
+    cta: "Talk about ads",
+    sampleBullets: ["Campaign setup", "Budget & targeting", "Simple reporting"],
+  },
+  {
+    id: "content",
+    title: "Content & Creative",
+    description: "We design posts and edit reels that fit your brand.",
+    focus: "Design & video",
+    icon: Layout,
+    accent: "#22C55E",
+    cta: "Plan a content sprint",
+    sampleBullets: ["Feed designs", "Reel editing", "Story sets"],
+  },
+  {
+    id: "strategy",
+    title: "Marketing Strategy",
+    description: "A simple plan for 60–90 days of marketing.",
+    focus: "Simple plan",
+    icon: Search,
+    accent: "#14B8A6",
+    cta: "Book a strategy call",
+    sampleBullets: ["Target customer", "Key offers", "Roadmap"],
   },
 ];
 
-type WebsitePackageTier = {
+/* ---------- Generic Plan Type ---------- */
+
+type PlanTier = {
   id: string;
   title: string;
-  price: string;
-  summary: string;
-  details: string;
-  tag?: string;
+  price: string; // "$300" or "Contact"
+  cadence: "One-time" | "Monthly" | "Project";
   accent: string;
-  specs: string[];
+  badge?: string;
+  summary: string;
+  bestFor: string;
+  bullets: string[]; // "You get"
+  footnote?: string;
 };
 
-const WEBSITE_PACKAGES: WebsitePackageTier[] = [
+/* ---------- Website Plans ---------- */
+
+const WEBSITE_PLANS: PlanTier[] = [
   {
-    id: "starter",
-    title: "Starter",
+    id: "web-starter",
+    title: "Starter Site",
     price: "Contact",
-    summary: "Single-page landing",
-    details:
-      "Responsive landing page with copy polish and core SEO basics. Great for a quick launch.",
+    cadence: "Project",
     accent: "#38BDF8",
-    specs: ["1 page", "Basic SEO", "Contact form"],
+    badge: "Landing page",
+    summary: "Single-page site to start selling or capturing leads.",
+    bestFor: "New offers or campaigns.",
+    bullets: ["1 page", "Basic SEO", "Contact form"],
+    footnote: "Design, build, and launch included.",
   },
   {
-    id: "basic",
-    title: "Basic",
+    id: "web-basic",
+    title: "Basic Site",
     price: "Contact",
-    summary: "3–4 page brochure",
-    details:
-      "Multi-page site with component library and tailored styling. Our most common SME package.",
-    tag: "Popular",
+    cadence: "Project",
     accent: "#4F46E5",
-    specs: ["3–4 pages", "SEO setup", "CMS-ready"],
+    badge: "Most common",
+    summary: "3–4 pages to explain who you are and what you do.",
+    bestFor: "Service businesses and local brands.",
+    bullets: ["3–4 pages", "SEO setup", "CMS-ready"],
+    footnote: "We help shape structure and basic copy.",
   },
   {
-    id: "premium",
-    title: "Premium",
+    id: "web-premium",
+    title: "Premium Site",
     price: "Contact",
-    summary: "5+ page product site",
-    details:
-      "Custom UI/UX, motion, and content guidance. Good for launches that need polish and depth.",
+    cadence: "Project",
     accent: "#A855F7",
-    specs: ["5+ pages", "Animations", "Content help"],
+    summary: "More pages, more content, and nicer motion.",
+    bestFor: "Brands that need more depth.",
+    bullets: ["5+ pages", "Animations", "Content guidance"],
+    footnote: "Good for product-heavy or story-heavy sites.",
   },
   {
-    id: "custom",
-    title: "Custom",
+    id: "web-custom",
+    title: "Custom Build",
     price: "Contact",
-    summary: "Advanced builds & integrations",
-    details:
-      "E-commerce, dashboards, or application logic. Tell us your scope; we’ll craft a proposal.",
+    cadence: "Project",
     accent: "#22D3EE",
-    specs: ["Scoped features", "Integrations", "Roadmap"],
+    badge: "Custom",
+    summary: "E-commerce or special features.",
+    bestFor: "Shops or apps with custom flows.",
+    bullets: ["Scoped features", "Integrations", "Roadmap"],
+    footnote: "We scope it with you, then quote.",
   },
 ];
 
-const PACKAGE_INCLUDES = ["Figma handoff", "Responsive layouts", "Performance budget"] as const;
+const WEBSITE_INCLUDES = ["Figma handoff", "Responsive layouts", "Fast loading"] as const;
 
-/* ---------- Marketing Packages ---------- */
+/* ---------- Branding & Social (Core Packages: $200 / $300 / $450 / $600) ---------- */
 
-type MarketingPackageTier = {
-  id: string;
-  title: "Launch" | "Growth" | "Scale" | "Custom";
-  price: string; // "Contact"
-  summary: string;
-  details: string;
-  tag?: string;
-  accent: string;
-  specs: string[]; // badges
-  kpis: string[];
-  adSpendRange: string;
-  commitment: string;
-  platforms: string[];
-  languages: string[]; // ["EN","AR"]
-  meetings: "Weekly" | "Bi-weekly";
-  slas: string[];
-  addons: string[];
-  exclusions: string[];
-  proofBadge?: string;
-};
-
-const MARKETING_PACKAGES: MarketingPackageTier[] = [
+const MARKETING_PLANS: PlanTier[] = [
   {
-    id: "mkt-launch",
-    title: "Launch",
-    price: "Contact",
-    summary: "Set up + first 10 experiments",
-    details:
-      "Meta + Google foundations with server-side events and clear dashboards. 10–12 structured tests in the first 6 weeks.",
-    tag: "Great for new brands",
+    id: "mkt-branding",
+    title: "Branding Package",
+    price: "$200",
+    cadence: "One-time",
     accent: "#22D3EE",
-    specs: ["Meta + Google", "GA4 + CAPI", "Weekly report"],
-    kpis: ["ROAS", "CPL", "CTR"],
-    adSpendRange: "$1k–$5k / mo",
-    commitment: "8 weeks",
-    platforms: ["Meta", "Google"],
-    languages: ["EN", "AR"],
-    meetings: "Weekly",
-    slas: ["<24h response", "48–72h new creative"],
-    addons: ["Landing page", "Motion variant"],
-    exclusions: ["Community management", "Video shoots"],
-    proofBadge: "+162% ROAS in 90d",
+    badge: "Start here",
+    summary: "Simple brand kit so you can launch with confidence.",
+    bestFor: "New brands or a clean refresh.",
+    bullets: [
+      "Logo + color palette + fonts",
+      "Facebook & Instagram profile + cover",
+      "Brand sheet + business card design",
+    ],
+    footnote: "One-time project. No monthly content included.",
   },
   {
-    id: "mkt-growth",
-    title: "Growth",
-    price: "Contact",
-    summary: "Creative velocity + multi-channel scaling",
-    details:
-      "Higher test velocity with cross-channel insights, weekly creative sprints, and a live experimentation log.",
-    tag: "Most popular",
+    id: "mkt-social-1",
+    title: "Social Package 1",
+    price: "$300",
+    cadence: "Monthly",
     accent: "#6366F1",
-    specs: ["Meta + Google (+TikTok)", "Server-side tracking", "Live dashboard"],
-    kpis: ["ROAS", "CAC", "CVR"],
-    adSpendRange: "$5k–$20k / mo",
-    commitment: "12 weeks",
-    platforms: ["Meta", "Google", "TikTok"],
-    languages: ["EN", "AR"],
-    meetings: "Weekly",
-    slas: ["<12h response", "24–48h new creative"],
-    addons: ["Influencer seeding", "Email flows"],
-    exclusions: ["PR", "Affiliate network mgmt"],
-    proofBadge: "58% revenue lift in 90d",
+    badge: "Entry plan",
+    summary: "Light monthly content to keep pages active.",
+    bestFor: "Small brands that just need consistent posting.",
+    bullets: [
+      "5 post designs + 3 reels / month",
+      "8 main posts + 10 stories / month",
+      "Page management (FB + IG)",
+    ],
+    footnote: "Good if you want to stay visible without heavy spend.",
   },
   {
-    id: "mkt-scale",
-    title: "Scale",
-    price: "Contact",
-    summary: "Multi-market growth + deeper analytics",
-    details:
-      "Advanced experimentation, offline conversions, and rapid landing tests across EN/AR markets.",
+    id: "mkt-social-2",
+    title: "Social Package 2",
+    price: "$450",
+    cadence: "Monthly",
     accent: "#A855F7",
-    specs: ["Meta/Google/TikTok/LinkedIn", "Offline conv. uploads", "Exec reporting"],
-    kpis: ["MER", "Revenue influenced", "Payback period"],
-    adSpendRange: "$20k–$80k / mo",
-    commitment: "3 months",
-    platforms: ["Meta", "Google", "TikTok", "LinkedIn"],
-    languages: ["EN", "AR"],
-    meetings: "Weekly",
-    slas: ["Same-day response", "24h hotfix"],
-    addons: ["LP design/build", "CRO sprint"],
-    exclusions: ["TV/OOH buying"],
-    proofBadge: "MER +0.8 within 60d",
+    badge: "Most chosen",
+    summary: "More content plus ads for growth.",
+    bestFor: "Brands ready to push reach and leads.",
+    bullets: [
+      "10 post designs + 6 reels / month",
+      "16 main posts + 20 stories / month",
+      "Meta ads setup + basic optimization",
+    ],
+    footnote: "Works well with ~$1k–$3k ad spend / month.",
   },
   {
-    id: "mkt-custom",
-    title: "Custom",
-    price: "Contact",
-    summary: "Performance squad for unique scopes",
-    details:
-      "For regulated categories or unusual funnels. We design the playbook around your constraints and targets.",
-    accent: "#0EA5E9",
-    specs: ["Scoped channels", "Bespoke cadence", "Custom reporting"],
-    kpis: ["Custom to brief"],
-    adSpendRange: "Any",
-    commitment: "TBD",
-    platforms: ["Meta", "Google", "TikTok", "LinkedIn"],
-    languages: ["EN", "AR"],
-    meetings: "Bi-weekly",
-    slas: ["TBD"],
-    addons: ["As needed"],
-    exclusions: [],
+    id: "mkt-social-3",
+    title: "Social Package 3",
+    price: "$600",
+    cadence: "Monthly",
+    accent: "#EC4899",
+    badge: "Growth mode",
+    summary: "Full social engine: content, ads, and simple strategy.",
+    bestFor: "Brands using social as a main sales channel.",
+    bullets: [
+      "20 post designs + 12 reels / month",
+      "32 main posts + 30 stories / month",
+      "Ads management + media persona + basic strategy",
+    ],
+    footnote: "Best if you want volume, testing, and learning.",
   },
 ];
 
-/* ---------- Branding Packages (NEW) ---------- */
+/* ---------- Brand Systems (Deeper Projects) ---------- */
 
-type BrandingPackageTier = {
-  id: string;
-  title: "Brand Sprint" | "Brand System" | "Rebrand & Rollout" | "Custom";
-  price: string; // "Contact"
-  summary: string;
-  details: string;
-  tag?: string;
-  accent: string;
-  specs: string[]; // badges (e.g., EN/AR, Guidelines, Templates)
-  commitment: string; // e.g., 3–4 weeks, 6–8 weeks
-  meetings: "Weekly" | "Bi-weekly";
-  languages: string[]; // ["EN","AR"]
-  deliverables: string[];
-  addons: string[];
-  exclusions: string[];
-  proofBadge?: string;
-};
-
-const BRANDING_PACKAGES: BrandingPackageTier[] = [
+const BRAND_SYSTEM_PLANS: PlanTier[] = [
   {
     id: "br-sprint",
     title: "Brand Sprint",
     price: "Contact",
-    summary: "Positioning, voice, and a usable mini-kit",
-    details:
-      "Fast discovery + positioning, core messaging, and a lightweight visual starter to align your team and ship quickly.",
-    tag: "Fastest path",
+    cadence: "Project",
     accent: "#F59E0B",
-    specs: ["EN/AR ready", "Mini guidelines", "Templates"],
-    commitment: "3–4 weeks",
-    meetings: "Weekly",
-    languages: ["EN", "AR"],
-    deliverables: [
-      "Positioning + value props",
-      "Voice & tone guide",
-      "Color & typography picks",
-      "Logo refinements (if any)",
-      "Social & deck templates (starter)",
+    badge: "Fast",
+    summary: "Quick project to lock in basics and tone.",
+    bestFor: "New brands that want clarity quickly.",
+    bullets: [
+      "Core brand message",
+      "Tone of voice notes",
+      "Simple colors & fonts",
     ],
-    addons: ["Naming sprint", "Brand photoshoot brief", "Icon set"],
-    exclusions: ["Full rebrand", "Comprehensive signage"],
-    proofBadge: "Used by 5+ SME launches",
+    footnote: "Typical duration: 3–4 weeks.",
   },
   {
     id: "br-system",
     title: "Brand System",
     price: "Contact",
-    summary: "Scalable identity with components & rules",
-    details:
-      "A cohesive identity system with rules and templates so every touchpoint is consistent, in English and Arabic.",
-    tag: "Most requested",
+    cadence: "Project",
     accent: "#A855F7",
-    specs: ["Design tokens", "Guidelines", "Templates"],
-    commitment: "6–8 weeks",
-    meetings: "Weekly",
-    languages: ["EN", "AR"],
-    deliverables: [
-      "Logo suite + usage rules",
-      "Design tokens (color/typography/spacing)",
-      "Grid + layout patterns",
-      "Presentation, social, and doc templates",
-      "Brand guidelines (PDF/Notion)",
+    badge: "For teams",
+    summary: "Rules and templates for your team.",
+    bestFor: "Growing teams and multi-channel brands.",
+    bullets: [
+      "Logo set & usage rules",
+      "Color & typography system",
+      "Deck & document templates",
     ],
-    addons: ["Illustration style", "Motion identity", "Email template kit"],
-    exclusions: ["Packaging dielines", "Retail signage"],
-    proofBadge: "Adopted by multi-market teams",
+    footnote: "Typical duration: 6–8 weeks.",
   },
   {
     id: "br-rebrand",
     title: "Rebrand & Rollout",
     price: "Contact",
-    summary: "Identity refresh and changeover plan",
-    details:
-      "For established brands: new identity, change management, and a sequenced rollout across your properties.",
+    cadence: "Project",
     accent: "#10B981",
-    specs: ["Rollout plan", "Asset migration", "Stakeholder comms"],
-    commitment: "8–12 weeks",
-    meetings: "Weekly",
-    languages: ["EN", "AR"],
-    deliverables: [
-      "Brand audit + stakeholder interviews",
-      "New identity (logo/system/guidelines)",
-      "Asset migration plan & checklists",
-      "Rollout comms kit + templates",
-      "QA on top 10 touchpoints",
+    summary: "New look plus a clear rollout plan.",
+    bestFor: "Existing brands changing direction.",
+    bullets: [
+      "Brand audit & new identity",
+      "Rollout checklist",
+      "Simple launch kit",
     ],
-    addons: ["Launch campaign kit", "Website reskin", "Motion templates"],
-    exclusions: ["Physical store redesign", "TV/OOH production"],
-    proofBadge: "Seamless changeovers",
+    footnote: "Typical duration: 8–12 weeks.",
   },
   {
     id: "br-custom",
-    title: "Custom",
+    title: "Custom Brand Project",
     price: "Contact",
-    summary: "Tailored scope for special constraints",
-    details:
-      "Specific markets, regulators, or complex org structures—tell us the constraints and targets, we’ll blueprint the path.",
+    cadence: "Project",
     accent: "#3B82F6",
-    specs: ["Bespoke cadence", "Custom templates", "Exec reporting"],
-    commitment: "TBD",
-    meetings: "Bi-weekly",
-    languages: ["EN", "AR"],
-    deliverables: ["Defined with you"],
-    addons: ["As needed"],
-    exclusions: [],
+    badge: "Custom",
+    summary: "Custom scope if your needs don’t fit a box.",
+    bestFor: "Special markets or complex setups.",
+    bullets: ["Scope defined together", "Flexible cadence", "Tailored deliverables"],
+    footnote: "We agree on scope and timing first, then price.",
   },
 ];
 
 const HIGHLIGHTS = [
-  { label: "Pod spin-up", value: "5 days" },
-  { label: "Weekly updates", value: "Every Friday" },
-  { label: "Launch support", value: "30 days" },
+  { label: "Brand setup", value: "1–2 weeks" },
+  { label: "Social content", value: "Up to 32 posts/mo" },
+  { label: "Languages", value: "EN + AR" },
 ] as const;
 
 /* ===================== Hooks ===================== */
@@ -426,10 +359,13 @@ const AccentChip: React.FC<{ text: string; accent: string }> = ({ text, accent }
 
 const StickyNav: React.FC<{ activeId: string | null }> = ({ activeId }) => (
   <nav
-    aria-label="Solutions navigation"
+    aria-label="Services navigation"
     className="hidden lg:block sticky top-24 self-start rounded-2xl border border-white/10 bg-white/5 p-4"
     style={{ backdropFilter: "blur(16px)" }}
   >
+    <div className="mb-3 text-[11px] uppercase tracking-[0.18em] text-white/55">
+      Services
+    </div>
     <ul className="space-y-1">
       {SOLUTIONS.map((s) => {
         const isActive = activeId === s.id;
@@ -471,15 +407,21 @@ const MobileChipRail: React.FC = () => (
   </div>
 );
 
-const MediaFrame: React.FC<{ accent: string; children: React.ReactNode }> = ({ accent, children }) => (
+const MediaFrame: React.FC<{ accent: string; children: React.ReactNode }> = ({
+  accent,
+  children,
+}) => (
   <div
-    className="relative h-full rounded-3xl border p-4 sm:p-5"
+    className="relative h-full rounded-3xl border p-4 sm:p-5 overflow-hidden"
     style={{
       borderColor: withAlpha(accent, 0.25),
-      background: `linear-gradient(180deg, ${withAlpha(accent, 0.08)} 0%, ${withAlpha(
+      background: `radial-gradient(circle at top, ${withAlpha(
+        accent,
+        0.25
+      )} 0, transparent 55%), linear-gradient(180deg, ${withAlpha(
         COLORS.background,
-        0.4
-      )} 100%)`,
+        0.85
+      )} 0%, ${withAlpha(COLORS.background, 1)} 60%)`,
     }}
   >
     <div className="flex items-center gap-1.5 pb-3">
@@ -487,10 +429,48 @@ const MediaFrame: React.FC<{ accent: string; children: React.ReactNode }> = ({ a
       <span className="h-2.5 w-2.5 rounded-full" style={{ background: withAlpha("#ffbd2e", 1) }} />
       <span className="h-2.5 w-2.5 rounded-full" style={{ background: withAlpha("#27c93f", 1) }} />
     </div>
-    <div className="rounded-xl border border-white/10 bg-white/[.04] p-4 min-h-[160px]">
+    <div className="rounded-xl border border-white/10 bg-white/[.03] p-4 min-h-[160px]">
       {children}
     </div>
   </div>
+);
+
+const PlanBadge: React.FC<{ text: string }> = ({ text }) => (
+  <span className="rounded-full border border-white/12 bg-white/[.06] px-3 py-1 text-[11px] text-white/80">
+    {text}
+  </span>
+);
+
+/* ===================== Services Overview Cards ===================== */
+
+const ServiceOverviewCard: React.FC<{ data: Solution }> = ({ data }) => (
+  <a
+    href={`#${data.id}`}
+    className="group relative flex flex-col gap-3 rounded-2xl border border-white/10 bg-white/[.03] p-4 sm:p-5 backdrop-blur-md transition-all duration-300 hover:-translate-y-1 hover:border-white/30 hover:bg-white/[.06]"
+    style={{
+      boxShadow: "0 18px 40px -26px rgba(0,0,0,.65)",
+    }}
+  >
+    <div className="flex items-center gap-3">
+      <span
+        className="grid h-10 w-10 place-items-center rounded-xl border bg-white/5"
+        style={{ borderColor: withAlpha(data.accent, 0.6) }}
+      >
+        <data.icon className="h-5 w-5 text-white" />
+      </span>
+      <div>
+        <div className="text-sm font-semibold text-white">{data.title}</div>
+        <div className="text-[11px] uppercase tracking-[0.18em] text-white/55">
+          {data.focus}
+        </div>
+      </div>
+    </div>
+    <p className="text-xs sm:text-sm text-white/70 line-clamp-2">{data.description}</p>
+    <div className="mt-auto flex items-center gap-2 text-[12px] text-white/80">
+      <span>View details</span>
+      <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" />
+    </div>
+  </a>
 );
 
 /* ===================== Sections ===================== */
@@ -505,7 +485,10 @@ const SolutionZigzag: React.FC<{ data: Solution; index: number }> = ({ data, ind
         aria-hidden
         className="pointer-events-none absolute -inset-x-4 -inset-y-3 rounded-3xl"
         style={{
-          background: `linear-gradient(120deg, ${withAlpha(data.accent, 0.16)}, transparent 60%)`,
+          background: `linear-gradient(120deg, ${withAlpha(
+            data.accent,
+            0.18
+          )}, transparent 60%)`,
         }}
       />
       {/* Text card */}
@@ -515,7 +498,7 @@ const SolutionZigzag: React.FC<{ data: Solution; index: number }> = ({ data, ind
           style={{
             borderColor: withAlpha(data.accent, 0.28),
             backgroundColor: withAlpha(data.accent, 0.08),
-            boxShadow: `0 28px 60px -32px ${withAlpha(data.accent, 0.55)}`,
+            boxShadow: `0 28px 60px -32px ${withAlpha(data.accent, 0.6)}`,
           }}
         >
           <header className="flex items-start gap-4">
@@ -553,7 +536,7 @@ const SolutionZigzag: React.FC<{ data: Solution; index: number }> = ({ data, ind
               style={{
                 borderColor: withAlpha(data.accent, 0.4),
                 backgroundColor: withAlpha(data.accent, 0.22),
-                boxShadow: `0 18px 40px -28px ${withAlpha(data.accent, 0.7)}`,
+                boxShadow: `0 18px 40px -28px ${withAlpha(data.accent, 0.75)}`,
               }}
             >
               {data.cta}
@@ -569,24 +552,24 @@ const SolutionZigzag: React.FC<{ data: Solution; index: number }> = ({ data, ind
           <div className="grid gap-3">
             <div className="flex items-center gap-2">
               <Target className="h-4 w-4 text-white/70" />
-              <span className="text-sm font-medium text-white/80">What you’ll see</span>
+              <span className="text-sm font-medium text-white/80">What you see from us</span>
             </div>
             <div className="grid grid-cols-2 gap-2 text-[12px] text-white/75">
               <div className="rounded-md border border-white/10 bg-white/5 p-3">
-                <div className="text-white/90 font-medium">Weekly demos</div>
-                <div className="mt-1 text-white/60">Short Loom + notes</div>
+                <div className="text-white/90 font-medium">Short updates</div>
+                <div className="mt-1 text-white/60">Quick check-ins, not long reports</div>
               </div>
               <div className="rounded-md border border-white/10 bg-white/5 p-3">
-                <div className="text-white/90 font-medium">Live backlog</div>
-                <div className="mt-1 text-white/60">Tasks & statuses</div>
+                <div className="text-white/90 font-medium">Clear tasks</div>
+                <div className="mt-1 text-white/60">What’s in progress this week</div>
               </div>
               <div className="rounded-md border border-white/10 bg-white/5 p-3">
-                <div className="text-white/90 font-medium">Tracking</div>
-                <div className="mt-1 text-white/60">Events + dashboards</div>
+                <div className="text-white/90 font-medium">Simple numbers</div>
+                <div className="mt-1 text-white/60">Core metrics only</div>
               </div>
               <div className="rounded-md border border-white/10 bg-white/5 p-3">
-                <div className="text-white/90 font-medium">Docs</div>
-                <div className="mt-1 text-white/60">Handover & how-to</div>
+                <div className="text-white/90 font-medium">Final files</div>
+                <div className="mt-1 text-white/60">Easy to reuse or hand to your team</div>
               </div>
             </div>
           </div>
@@ -596,219 +579,153 @@ const SolutionZigzag: React.FC<{ data: Solution; index: number }> = ({ data, ind
   );
 };
 
-/* ===================== Packages ===================== */
+/* ===================== Plan Card ===================== */
 
-const PackageBadge: React.FC<{ text: string }> = ({ text }) => (
-  <span className="rounded-full border border-white/12 bg-white/[.06] px-3 py-1 text-[11px] text-white/80">
-    {text}
-  </span>
+const PlanCard: React.FC<{ plan: PlanTier }> = ({ plan }) => (
+  <div
+    className={`group relative flex flex-col gap-5 overflow-hidden rounded-3xl border bg-white/[.05] p-7 backdrop-blur-xl transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_30px_80px_-40px_rgba(0,0,0,.9)] ${
+      plan.badge ? "md:scale-[1.02] md:border-white/25" : ""
+    }`}
+    style={{
+      borderColor: withAlpha(plan.accent, 0.3),
+      backgroundImage: `radial-gradient(circle at 0 0, ${withAlpha(
+        plan.accent,
+        0.35
+      )}, transparent 55%), radial-gradient(circle at 100% 100%, ${withAlpha(
+        "#000000",
+        0.35
+      )}, transparent 55%)`,
+    }}
+  >
+    {/* Glow overlay */}
+    <div
+      aria-hidden
+      className="pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+      style={{
+        background: `radial-gradient(circle at top, ${withAlpha(
+          plan.accent,
+          0.35
+        )}, transparent 60%)`,
+      }}
+    />
+
+    {/* Top gradient bar */}
+    <div
+      aria-hidden
+      className="pointer-events-none absolute inset-x-0 top-0 h-1"
+      style={{
+        background: `linear-gradient(90deg, ${withAlpha(plan.accent, 0.2)}, transparent 70%)`,
+      }}
+    />
+
+    {plan.badge && (
+      <span
+        className="absolute right-6 top-6 inline-flex items-center gap-1 rounded-full px-3 py-1 text-[11px] font-semibold uppercase tracking-wide text-white"
+        style={{ backgroundColor: withAlpha(plan.accent, 0.75) }}
+      >
+        <span className="h-1.5 w-1.5 rounded-full bg-white" />
+        {plan.badge}
+      </span>
+    )}
+
+    {/* Head */}
+    <div className="relative space-y-1">
+      <div className="flex items-center justify-between gap-2">
+        <h3 className="text-lg font-semibold text-white">{plan.title}</h3>
+        <span className="rounded-full border border-white/20 bg-white/10 px-2 py-0.5 text-[11px] text-white/75">
+          {plan.cadence}
+        </span>
+      </div>
+      <div className="flex items-baseline gap-2">
+        <div className="text-3xl font-bold text-white">{plan.price}</div>
+        {plan.cadence === "Monthly" && plan.price !== "Contact" && (
+          <span className="text-xs uppercase tracking-[0.18em] text-white/70">/ month</span>
+        )}
+        {plan.price === "Contact" && (
+          <span className="text-[11px] rounded-full border border-white/20 bg-white/10 px-2 py-0.5 text-white/70">
+            Custom quote
+          </span>
+        )}
+      </div>
+      <p className="text-sm text-white/70">{plan.summary}</p>
+    </div>
+
+    {/* Body */}
+    <div className="relative text-[13px] text-white/85">
+      <div className="mb-1 text-white/60">You get:</div>
+      <ul className="space-y-1.5">
+        {plan.bullets.map((b) => (
+          <li key={b} className="flex items-start gap-2">
+            <Check className="mt-0.5 h-3.5 w-3.5 shrink-0" />
+            <span>{b}</span>
+          </li>
+        ))}
+      </ul>
+    </div>
+
+    <div className="relative space-y-1 text-[12px] text-white/80">
+      <div>
+        <span className="text-white/50">Best for: </span>
+        {plan.bestFor}
+      </div>
+      {plan.footnote && <div className="text-white/65">{plan.footnote}</div>}
+    </div>
+
+    {/* CTA */}
+    <div className="relative mt-auto pt-1">
+      <Link
+        to="/contact"
+        className="inline-flex w-fit items-center gap-3 rounded-xl border px-5 py-3 text-sm font-semibold text-white transition-transform group-hover:translate-x-1"
+        style={{
+          borderColor: withAlpha(plan.accent, 0.35),
+          backgroundColor: withAlpha(plan.accent, 0.22),
+          boxShadow: `0 18px 40px -26px ${withAlpha(plan.accent, 0.9)}`,
+        }}
+      >
+        Talk about {plan.title}
+        <ArrowRight className="h-5 w-5" />
+      </Link>
+    </div>
+  </div>
 );
 
-const CardShadow: React.CSSProperties = { boxShadow: "0 28px 60px -32px rgba(0,0,0,.55)" };
+/* ===================== Package Switcher ===================== */
 
-function PackageGrid<T extends WebsitePackageTier | MarketingPackageTier | BrandingPackageTier>({
-  data,
-  isMarketing = false,
-  isBranding = false,
-}: {
-  data: T[];
-  isMarketing?: boolean;
-  isBranding?: boolean;
-}) {
-  const cols =
-    isMarketing || isBranding ? "md:grid-cols-2 xl:grid-cols-4" : "md:grid-cols-4";
-
-  return (
-    <div className={`grid grid-cols-1 ${cols} gap-6 sm:gap-8`}>
-      {data.map((pkg: any) => (
-        <div
-          key={pkg.id}
-          className={`relative flex flex-col gap-5 overflow-hidden rounded-2xl border bg-white/[.05] p-7 backdrop-blur-md transition-transform duration-300 hover:-translate-y-1 ${
-            pkg.tag ? "md:scale-[1.02] md:border-white/20" : ""
-          }`}
-          style={{
-            ...CardShadow,
-            borderColor: withAlpha(pkg.accent, 0.28),
-            backgroundColor: withAlpha(pkg.accent, 0.08),
-          }}
-        >
-          <div
-            aria-hidden
-            className="pointer-events-none absolute inset-x-0 top-0 h-20"
-            style={{
-              background: `linear-gradient(120deg, ${withAlpha(pkg.accent, 0.45)} 0%, transparent 70%)`,
-              opacity: 0.9,
-            }}
-          />
-          {pkg.tag && (
-            <span
-              className="absolute right-6 top-6 inline-flex items-center rounded-full px-3 py-1 text-[11px] font-semibold uppercase tracking-wide text-white"
-              style={{ backgroundColor: withAlpha(pkg.accent, 0.6) }}
-            >
-              {pkg.tag}
-            </span>
-          )}
-
-          {/* Head */}
-          <div className="space-y-1">
-            <h3 className="text-lg font-semibold text-white">{pkg.title}</h3>
-            <div className="text-3xl font-bold text-white">{pkg.price}</div>
-            <p className="text-sm text-white/70">{pkg.summary}</p>
-          </div>
-
-          {/* Body */}
-          <p className="text-sm text-white/80">{pkg.details}</p>
-
-          {/* Spec row */}
-          <div className="mt-1 flex flex-wrap gap-2">
-            {pkg.specs?.map((s: string) => <PackageBadge key={s} text={s} />)}
-          </div>
-
-          {/* Marketing-only rows */}
-          {"kpis" in pkg && (
-            <>
-              <div className="grid grid-cols-2 gap-2 text-[12px] text-white/85">
-                <div className="rounded-md border border-white/12 bg-white/10 p-3">
-                  <div className="text-white/60">Ad spend</div>
-                  <div className="text-white font-medium">{pkg.adSpendRange}</div>
-                </div>
-                <div className="rounded-md border border-white/12 bg-white/10 p-3">
-                  <div className="text-white/60">Commitment</div>
-                  <div className="text-white font-medium">{pkg.commitment}</div>
-                </div>
-                <div className="rounded-md border border-white/12 bg-white/10 p-3">
-                  <div className="text-white/60">Platforms</div>
-                  <div className="text-white font-medium truncate">{pkg.platforms.join(" • ")}</div>
-                </div>
-                <div className="rounded-md border border-white/12 bg-white/10 p-3">
-                  <div className="text-white/60">Meetings</div>
-                  <div className="text-white font-medium">{pkg.meetings}</div>
-                </div>
-              </div>
-
-              <div className="flex flex-wrap gap-2">
-                {pkg.kpis.map((k: string) => <PackageBadge key={k} text={`KPI: ${k}`} />)}
-                {pkg.languages.map((l: string) => <PackageBadge key={l} text={`Lang: ${l}`} />)}
-              </div>
-
-              {(pkg.addons?.length || pkg.exclusions?.length) && (
-                <div className="grid grid-cols-1 gap-2 text-[12px]">
-                  {pkg.addons?.length ? (
-                    <div className="text-white/80">
-                      <span className="text-white/60">Add-ons: </span>{pkg.addons.join(", ")}
-                    </div>
-                  ) : null}
-                  {pkg.exclusions?.length ? (
-                    <div className="text-white/70">
-                      <span className="text-white/50">Exclusions: </span>{pkg.exclusions.join(", ")}
-                    </div>
-                  ) : null}
-                </div>
-              )}
-
-              {pkg.proofBadge && (
-                <span className="inline-flex items-center self-start rounded-full border border-white/12 bg-white/10 px-3 py-1 text-[11px] text-white/85">
-                  {pkg.proofBadge}
-                </span>
-              )}
-            </>
-          )}
-
-          {/* Branding-only rows */}
-          {"deliverables" in pkg && !("kpis" in pkg) && (
-            <>
-              <div className="grid grid-cols-2 gap-2 text-[12px] text-white/85">
-                <div className="rounded-md border border-white/12 bg-white/10 p-3">
-                  <div className="text-white/60">Commitment</div>
-                  <div className="text-white font-medium">{pkg.commitment}</div>
-                </div>
-                <div className="rounded-md border border-white/12 bg-white/10 p-3">
-                  <div className="text-white/60">Meetings</div>
-                  <div className="text-white font-medium">{pkg.meetings}</div>
-                </div>
-              </div>
-
-              <div className="flex flex-wrap gap-2">
-                {pkg.languages.map((l: string) => <PackageBadge key={l} text={`Lang: ${l}`} />)}
-              </div>
-
-              {pkg.deliverables?.length > 0 && (
-                <div className="text-[12px] text-white/80">
-                  <div className="mb-1 text-white/60">Deliverables:</div>
-                  <ul className="space-y-1">
-                    {pkg.deliverables.map((d: string) => (
-                      <li key={d} className="flex items-start gap-2">
-                        <Check className="mt-0.5 h-3.5 w-3.5" />
-                        <span>{d}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-
-              {(pkg.addons?.length || pkg.exclusions?.length) && (
-                <div className="grid grid-cols-1 gap-2 text-[12px]">
-                  {pkg.addons?.length ? (
-                    <div className="text-white/80">
-                      <span className="text-white/60">Add-ons: </span>{pkg.addons.join(", ")}
-                    </div>
-                  ) : null}
-                  {pkg.exclusions?.length ? (
-                    <div className="text-white/70">
-                      <span className="text-white/50">Exclusions: </span>{pkg.exclusions.join(", ")}
-                    </div>
-                  ) : null}
-                </div>
-              )}
-
-              {pkg.proofBadge && (
-                <span className="inline-flex items-center self-start rounded-full border border-white/12 bg-white/10 px-3 py-1 text-[11px] text-white/85">
-                  {pkg.proofBadge}
-                </span>
-              )}
-            </>
-          )}
-
-          {/* CTA */}
-          <div className="mt-auto">
-            <Link
-              to="/contact"
-              className="inline-flex w-fit items-center gap-3 rounded-lg border px-5 py-3 text-sm font-semibold text-white transition-transform hover:translate-x-1"
-              style={{
-                borderColor: withAlpha(pkg.accent, 0.25),
-                backgroundColor: withAlpha(pkg.accent, 0.18),
-              }}
-            >
-              Talk to the team
-              <ArrowRight className="h-5 w-5" />
-            </Link>
-          </div>
-        </div>
-      ))}
-    </div>
-  );
-}
-
-/* Tabbed switcher now has three tabs: Website | Marketing | Branding */
 function PackageSwitcher() {
   const [tab, setTab] = useState<"website" | "marketing" | "branding">("marketing");
 
-  const TabButton = ({ id, label }: { id: "website" | "marketing" | "branding"; label: string }) => {
+  const TabButton = ({
+    id,
+    label,
+  }: {
+    id: "website" | "marketing" | "branding";
+    label: string;
+  }) => {
     const active = tab === id;
     return (
       <button
         onClick={() => setTab(id)}
-        className={`px-4 py-2 rounded-xl text-sm font-semibold transition ${
+        className={`relative flex items-center gap-2 rounded-xl px-2 py-1 text-sm font-semibold transition ${
           active ? "text-white" : "text-white/70 hover:text-white"
         }`}
-        style={{
-          border: `1px solid ${withAlpha(COLORS.text, active ? 0.2 : 0.12)}`,
-          background: active ? withAlpha(COLORS.primary, 0.22) : "transparent",
-          boxShadow: active ? "0 12px 28px -20px rgba(79,70,229,.65)" : "none",
-        }}
-        aria-pressed={active}
       >
-        {label}
+        <span
+          className="block rounded-[0.9rem] px-4 py-2"
+          style={{
+            border: `1px solid ${withAlpha(COLORS.text, active ? 0.28 : 0.12)}`,
+            background: active
+              ? `radial-gradient(circle at top, ${withAlpha(
+                  COLORS.primary,
+                  0.55
+                )}, transparent 70%), ${withAlpha(COLORS.background, 0.8)}`
+              : "transparent",
+            boxShadow: active
+              ? "0 14px 40px -26px rgba(79,70,229,.85)"
+              : "0 0 0 0 rgba(0,0,0,0)",
+          }}
+        >
+          {label}
+        </span>
       </button>
     );
   };
@@ -818,10 +735,10 @@ function PackageSwitcher() {
       return (
         <>
           <p className="mx-auto max-w-[60ch] text-sm sm:text-base text-white/70">
-            Pick a scope that matches your moment. All builds include UI/UX, responsive design, and deployment help.
+            Website plans with clear scope. You choose pages, we handle design, build, and launch.
           </p>
           <div className="flex flex-wrap justify-center gap-3">
-            {PACKAGE_INCLUDES.map((item) => (
+            {WEBSITE_INCLUDES.map((item) => (
               <span
                 key={item}
                 className="inline-flex items-center gap-2 rounded-full border border-white/12 bg-white/[.06] px-4 py-2 text-[12px] uppercase tracking-[0.18em] text-white/75"
@@ -838,48 +755,61 @@ function PackageSwitcher() {
       return (
         <>
           <p className="mx-auto max-w-[60ch] text-sm sm:text-base text-white/70">
-            Performance pods for Meta, Google, TikTok, and LinkedIn. EN/AR support, weekly or bi-weekly cadence, server-side tracking, and live dashboards. Pricing is “Contact” until budgets are finalized.
+            Core branding and social packages with fixed outputs and clear prices. English and
+            Arabic content supported.
           </p>
           <div className="flex flex-wrap justify-center gap-2">
-            {["ROAS", "CAC", "CVR", "MER"].map((k) => (
-              <PackageBadge key={k} text={`KPI: ${k}`} />
+            {["Branding", "Social posts", "Reels & stories"].map((k) => (
+              <PlanBadge key={k} text={k} />
             ))}
-            <PackageBadge text="EN/AR" />
+            <PlanBadge text="EN + AR" />
           </div>
         </>
       );
     }
-    // branding
+    // branding systems
     return (
       <>
         <p className="mx-auto max-w-[60ch] text-sm sm:text-base text-white/70">
-          Identity that scales: positioning, visual systems, and templates so every touchpoint is on-brand. EN/AR deliverables, weekly or bi-weekly cadence, and a clear rollout plan. Pricing is “Contact”.
+          Deeper brand work with rules, systems, and rollout plans so your team uses the brand the
+          same way everywhere.
         </p>
         <div className="flex flex-wrap justify-center gap-2">
-          {["Guidelines", "Templates", "Design tokens"].map((k) => (
-            <PackageBadge key={k} text={k} />
+          {["Guidelines", "Templates", "For teams"].map((k) => (
+            <PlanBadge key={k} text={k} />
           ))}
-          <PackageBadge text="EN/AR" />
+          <PlanBadge text="Project-based" />
         </div>
       </>
     );
   };
 
+  const gridCols = "grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 sm:gap-8";
+
+  const activePlans =
+    tab === "website"
+      ? WEBSITE_PLANS
+      : tab === "marketing"
+      ? MARKETING_PLANS
+      : BRAND_SYSTEM_PLANS;
+
   return (
     <SectionShell className="py-10 sm:py-12">
       <div className="space-y-10">
         <div className="text-center space-y-4">
-          <div className="inline-flex gap-2 rounded-2xl p-1 border border-white/10 bg-white/5 backdrop-blur">
-            <TabButton id="website" label="Website Packages" />
-            <TabButton id="marketing" label="Marketing Packages" />
-            <TabButton id="branding" label="Branding Packages" />
+          <div className="inline-flex gap-1 rounded-2xl p-1 border border-white/10 bg-white/5 backdrop-blur">
+            <TabButton id="website" label="Website" />
+            <TabButton id="marketing" label="Branding & Social" />
+            <TabButton id="branding" label="Brand Systems" />
           </div>
           <HeaderCopy />
         </div>
 
-        {tab === "website" && <PackageGrid data={WEBSITE_PACKAGES} />}
-        {tab === "marketing" && <PackageGrid data={MARKETING_PACKAGES} isMarketing />}
-        {tab === "branding" && <PackageGrid data={BRANDING_PACKAGES} isBranding />}
+        <div className={gridCols}>
+          {activePlans.map((plan) => (
+            <PlanCard key={plan.id} plan={plan} />
+          ))}
+        </div>
       </div>
     </SectionShell>
   );
@@ -918,7 +848,7 @@ export default function SolutionsPage() {
         className="pointer-events-none absolute inset-0 -z-10"
         style={{
           background:
-            "radial-gradient(35% 28% at 50% 0%, rgba(79,70,229,.1), transparent 70%)",
+            "radial-gradient(35% 28% at 50% 0%, rgba(79,70,229,.14), transparent 75%)",
           backgroundColor: COLORS.background,
         }}
       />
@@ -935,25 +865,33 @@ export default function SolutionsPage() {
       <div className="mx-auto w-full max-w-7xl space-y-12">
         {/* Header */}
         <header className="space-y-6 text-center">
-          <span className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-4 py-2 text-[12px] uppercase tracking-[0.22em] text-white/70">
-            Solutions
-          </span>
+          <div className="inline-flex items-center gap-3 rounded-full border border-white/15 bg-white/5 px-4 py-2 text-[11px] uppercase tracking-[0.22em] text-white/70">
+            <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
+            Services & Packages
+          </div>
           <h1 className="text-4xl sm:text-5xl font-extrabold text-white">
-            Strategic pods that{" "}
+            Clear branding, social & software pods that{" "}
             <span className="bg-gradient-to-r from-[#38BDF8] via-[#A855F7] to-[#4F46E5] bg-clip-text text-transparent">
-              move ideas into market
+              are easy to buy
             </span>
             .
           </h1>
           <p className="mx-auto max-w-[62ch] text-white/70 text-sm sm:text-base leading-relaxed">
-            Build what matters with a small team that ships weekly. We work with SMEs in Egypt and the US, in English or Arabic.
+            One-time branding, simple monthly social packages, and software builds. Fixed outputs,
+            clear prices, and English or Arabic content.
           </p>
+
+          <div className="flex flex-wrap justify-center gap-3 pt-2">
+            <span className="inline-flex items-center gap-2 rounded-full border border-emerald-400/30 bg-emerald-400/10 px-4 py-1.5 text-[11px] font-medium uppercase tracking-[0.18em] text-emerald-100">
+              From $200 · Monthly from $300
+            </span>
+          </div>
 
           {/* Mobile quick chips */}
           <MobileChipRail />
 
           <div className="flex flex-wrap justify-center gap-3 pt-3">
-            {["Strategy + Discovery", "Design Systems", "Full-stack Delivery"].map((label) => (
+            {["Branding", "Social media", "Software", "Strategy"].map((label) => (
               <span
                 key={label}
                 className="rounded-full border border-white/15 bg-white/5 px-4 py-1 text-[11px] font-medium uppercase tracking-[0.18em] text-white/60"
@@ -968,14 +906,14 @@ export default function SolutionsPage() {
               to="/contact"
               className="inline-flex items-center gap-3 rounded-xl border border-white/25 bg-white/10 px-6 py-3 text-sm font-semibold text-white transition-transform hover:translate-y-0.5"
             >
-              Start a project
+              Talk about a package
               <ArrowRight className="h-5 w-5" />
             </Link>
             <Link
               to="/our-work"
               className="inline-flex items-center gap-3 rounded-xl border border-white/15 px-6 py-3 text-sm font-semibold text-white/80 transition-colors hover:text-white hover:border-white/30"
             >
-              See recent work
+              See examples
               <ArrowRight className="h-5 w-5" />
             </Link>
           </div>
@@ -988,7 +926,7 @@ export default function SolutionsPage() {
               <div
                 key={item.label}
                 className="rounded-2xl border border-white/10 bg-white/[.04] px-6 py-6 text-center backdrop-blur-lg"
-                style={{ boxShadow: "0 20px 40px -10px rgba(0,0,0,0.4)" }}
+                style={{ boxShadow: "0 20px 40px -14px rgba(0,0,0,0.55)" }}
               >
                 <div className="text-xs uppercase tracking-[0.24em] text-white/60">
                   {item.label}
@@ -999,47 +937,37 @@ export default function SolutionsPage() {
           </div>
         </SectionShell>
 
-        {/* Solutions body: sticky nav + zigzag */}
-        <div className="grid lg:grid-cols-[220px_minmax(0,1fr)] gap-6">
-          <StickyNav activeId={activeId} />
-          <div className="space-y-12">
-            {SOLUTIONS.map((s, i) => (
-              <SolutionZigzag key={s.id} data={s} index={i} />
-            ))}
+        {/* Services overview grid (quick scan) */}
+        <SectionShell className="py-6 sm:py-8">
+          <div className="mb-5 flex items-center justify-between gap-3">
+            <div className="flex items-center gap-2">
+              <Layout className="h-5 w-5 text-white/80" />
+              <h3 className="text-lg font-semibold text-white">What we can run for you</h3>
+            </div>
+            <span className="hidden md:inline text-[12px] text-white/55">
+              Click a card to jump to details.
+            </span>
           </div>
-        </div>
-
-        {/* Which pod fits? */}
-        <SectionShell className="py-8 sm:py-10">
-          <div className="mb-6 flex items-center gap-2">
-            <Layout className="h-5 w-5 text-white/80" />
-            <h3 className="text-xl font-semibold text-white">Which pod fits?</h3>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-5 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6">
             {SOLUTIONS.map((s) => (
-              <div
-                key={s.id}
-                className="rounded-xl border p-4"
-                style={{ borderColor: withAlpha(s.accent, 0.25), backgroundColor: withAlpha(s.accent, 0.07) }}
-              >
-                <div className="flex items-center gap-2">
-                  <span className="h-2.5 w-2.5 rounded-full" style={{ background: withAlpha(s.accent, 0.9) }} />
-                  <div className="text-sm font-medium text-white">{s.title}</div>
-                </div>
-                <ul className="mt-3 space-y-1.5 text-[12px] text-white/80">
-                  {s.sampleBullets.slice(0, 3).map((b) => (
-                    <li key={b} className="flex items-start gap-2">
-                      <Check className="mt-0.5 h-3.5 w-3.5" />
-                      <span>{b}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
+              <ServiceOverviewCard key={s.id} data={s} />
             ))}
           </div>
         </SectionShell>
 
-        {/* Packages Switcher: Website | Marketing | Branding */}
+        {/* Services body: sticky nav + zigzag */}
+        <SectionShell className="pt-4 pb-10">
+          <div className="grid lg:grid-cols-[240px_minmax(0,1fr)] gap-6">
+            <StickyNav activeId={activeId} />
+            <div className="space-y-12">
+              {SOLUTIONS.map((s, i) => (
+                <SolutionZigzag key={s.id} data={s} index={i} />
+              ))}
+            </div>
+          </div>
+        </SectionShell>
+
+        {/* Packages Switcher */}
         <PackageSwitcher />
 
         {/* Footer CTA */}

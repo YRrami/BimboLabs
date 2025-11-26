@@ -1,4 +1,3 @@
- 
 /* eslint-disable react-refresh/only-export-components */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -22,12 +21,13 @@ import {
   Twitter,
   Facebook,
   ArrowRight,
-  Sparkles,        // copilot avatar glyph
-  Send,   // header glyph
+  Sparkles,
+  Send,
 } from "lucide-react";
 import { Link, NavLink, Outlet, useLocation } from "react-router-dom";
 import anonvicLogo from "../../logoss.png";
-import botPng from "../../pilot.png"; 
+import botPng from "../../pilot.png";
+
 /* ================================
    SITE CONFIG
 ================================ */
@@ -90,10 +90,13 @@ export function withAlpha(hex: string, alpha: number) {
 }
 
 export const gradientPrimary = (angle = 140) =>
-  `linear-gradient(${angle}deg, ${withAlpha(COLORS.primary, 0.18)}, ${withAlpha(
-    COLORS.accent,
-    0.14
-  )}, ${withAlpha(COLORS.background, 0.92)})`;
+  `linear-gradient(${angle}deg, ${withAlpha(
+    COLORS.primary,
+    0.18
+  )}, ${withAlpha(COLORS.accent, 0.14)}, ${withAlpha(
+    COLORS.background,
+    0.92
+  )})`;
 
 /* ================================
    Context
@@ -150,7 +153,13 @@ export function usePrefersReducedMotion() {
 /* ================================
    UI atoms
 ================================ */
-export function SectionShell({ children, className }: { children: ReactNode; className?: string }) {
+export function SectionShell({
+  children,
+  className,
+}: {
+  children: ReactNode;
+  className?: string;
+}) {
   return (
     <div
       className={`rounded-3xl border border-white/10 backdrop-blur-xl px-6 sm:px-10 md:px-14 py-12 sm:py-16 ${
@@ -172,7 +181,15 @@ export function SectionShell({ children, className }: { children: ReactNode; cla
   );
 }
 
-export function Stat({ number, label, accent }: { number: string; label: string; accent: "fuchsia" | "sky" | "indigo"; }) {
+export function Stat({
+  number,
+  label,
+  accent,
+}: {
+  number: string;
+  label: string;
+  accent: "fuchsia" | "sky" | "indigo";
+}) {
   const color =
     accent === "fuchsia"
       ? "text-[#4F46E5]"
@@ -184,7 +201,11 @@ export function Stat({ number, label, accent }: { number: string; label: string;
       className="text-center p-4 sm:p-5 rounded-xl border border-white/10"
       style={{ backgroundColor: COLORS.surface }}
     >
-      <div className={`text-2xl sm:text-3xl font-extrabold tabular-nums ${color}`}>{number}</div>
+      <div
+        className={`text-2xl sm:text-3xl font-extrabold tabular-nums ${color}`}
+      >
+        {number}
+      </div>
       <div className="text-[11px] sm:text-xs text-[#A5ADCF]">{label}</div>
     </div>
   );
@@ -206,7 +227,8 @@ function BrandLogo() {
           className={`${logo.className} m-0`}
           onError={(e) => {
             (e.currentTarget.style as any).display = "none";
-            const sibling = e.currentTarget.nextElementSibling as HTMLElement | null;
+            const sibling = e.currentTarget
+              .nextElementSibling as HTMLElement | null;
             if (sibling) sibling.style.display = "inline";
           }}
         />
@@ -226,10 +248,18 @@ export function Navbar({ scrolled = false }: { scrolled?: boolean }) {
 
   const navStyles = {
     background: scrolled
-      ? `linear-gradient(120deg, ${withAlpha(COLORS.background, 0.9)}, ${withAlpha(COLORS.background, 0.84)})`
-      : `linear-gradient(120deg, ${withAlpha(COLORS.background, 0.78)}, ${withAlpha(COLORS.background, 0.68)})`,
+      ? `linear-gradient(120deg, ${withAlpha(
+          COLORS.background,
+          0.9
+        )}, ${withAlpha(COLORS.background, 0.84)})`
+      : `linear-gradient(120deg, ${withAlpha(
+          COLORS.background,
+          0.78
+        )}, ${withAlpha(COLORS.background, 0.68)})`,
     borderColor: withAlpha(COLORS.text, scrolled ? 0.12 : 0.08),
-    boxShadow: scrolled ? "0 22px 55px -30px rgba(8, 11, 35, 0.88)" : "0 18px 48px -32px rgba(8, 11, 35, 0.66)",
+    boxShadow: scrolled
+      ? "0 22px 55px -30px rgba(8, 11, 35, 0.88)"
+      : "0 18px 48px -32px rgba(8, 11, 35, 0.66)",
   } as const;
 
   const desktopLink = (item: (typeof SITE.nav)[number]) => (
@@ -246,7 +276,10 @@ export function Navbar({ scrolled = false }: { scrolled?: boolean }) {
       {({ isActive }) => (
         <>
           <span className="relative z-10 flex items-center gap-2">
-            {isActive && <span className="h-1.5 w-1.5 rounded-full bg-[#4F46E5]" />} {item.label}
+            {isActive && (
+              <span className="h-1.5 w-1.5 rounded-full bg-[#4F46E5]" />
+            )}{" "}
+            {item.label}
           </span>
           <span
             className={`absolute bottom-0 left-0 h-0.5 bg-gradient-to-r from-[#4F46E5] via-[#A855F7] to-[#1B1F3B] transition-all duration-300 ${
@@ -278,14 +311,22 @@ export function Navbar({ scrolled = false }: { scrolled?: boolean }) {
   );
 
   return (
-    <nav className="fixed top-0 z-50 w-full transition-all duration-500" aria-label="Primary">
+    <nav
+      className="fixed top-0 z-50 w-full transition-all duration-500"
+      aria-label="Primary"
+    >
       <div className="mx-auto max-w-[95rem] px-3 sm:px-6 lg:px-10 pt-3 sm:pt-4">
-        <div className="rounded-2xl border backdrop-blur-2xl transition-all duration-500" style={navStyles}>
+        <div
+          className="rounded-2xl border backdrop-blur-2xl transition-all duration-500"
+          style={navStyles}
+        >
           <div className="flex h-14 sm:h-16 md:h-[70px] items-center justify-between px-3 sm:px-5">
             <BrandLogo />
 
             <div className="hidden md:flex items-center gap-6">
-              <div className="flex items-center space-x-1">{SITE.nav.map((item) => desktopLink(item))}</div>
+              <div className="flex items-center space-x-1">
+                {SITE.nav.map((item) => desktopLink(item))}
+              </div>
               <Link
                 to="/contact"
                 className="hidden lg:inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-4 py-2 text-sm font-semibold text-white transition hover:border-white/25 hover:bg-white/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#4F46E5]/60"
@@ -301,15 +342,26 @@ export function Navbar({ scrolled = false }: { scrolled?: boolean }) {
               aria-label="Toggle menu"
               aria-expanded={isMenuOpen}
             >
-              {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+              {isMenuOpen ? (
+                <X className="h-6 w-6" />
+              ) : (
+                <Menu className="h-6 w-6" />
+              )}
             </button>
           </div>
 
-          <div className={`md:hidden overflow-hidden transition-all duration-500 ${isMenuOpen ? "max-h-[420px] opacity-100" : "max-h-0 opacity-0"}`}>
+          <div
+            className={`md:hidden overflow-hidden transition-all duration-500 ${
+              isMenuOpen ? "max-h-[420px] opacity-100" : "max-h-0 opacity-0"
+            }`}
+          >
             <div
               className="border-t border-white/10 backdrop-blur-2xl"
               style={{
-                background: `linear-gradient(130deg, ${withAlpha(COLORS.background, 0.94)}, ${withAlpha(COLORS.background, 0.88)})`,
+                background: `linear-gradient(130deg, ${withAlpha(
+                  COLORS.background,
+                  0.94
+                )}, ${withAlpha(COLORS.background, 0.88)})`,
               }}
             >
               <div className="space-y-2 px-4 py-4">
@@ -334,15 +386,10 @@ export function Navbar({ scrolled = false }: { scrolled?: boolean }) {
 /* ================================
    Bot avatar + typing dots
 ================================ */
-// === Minimal Glassy Bot (simple + elegant) ===
-// Minimal glassy avatar that accepts a PNG source.
-// Usage: <BotAvatar size={34} src={botPng} alt="Anonvic Copilot" />
-
-
 
 type BotAvatarProps = {
   size?: number;
-  src?: string;     // PNG/JPG/WebP/etc
+  src?: string;
   alt?: string;
 };
 
@@ -358,10 +405,7 @@ export function BotAvatar({ size = 36, src, alt = "Copilot" }: BotAvatarProps) {
       role={alt ? "img" : undefined}
       aria-label={alt}
     >
-      {/* soft glow */}
       <span className="absolute -inset-2 blur-xl rounded-[20px] bg-gradient-to-br from-[#A855F7]/35 via-[#4F46E5]/30 to-transparent" />
-
-      {/* glass button */}
       <span
         className="relative grid place-items-center rounded-full border border-white/12 overflow-hidden"
         style={{
@@ -369,7 +413,6 @@ export function BotAvatar({ size = 36, src, alt = "Copilot" }: BotAvatarProps) {
           height: s,
           background:
             "linear-gradient(145deg, rgba(255,255,255,0.10), rgba(255,255,255,0.02))",
-          backdropFilter: "blur(8px)",
         }}
       >
         {src && imgOk ? (
@@ -382,7 +425,6 @@ export function BotAvatar({ size = 36, src, alt = "Copilot" }: BotAvatarProps) {
             onError={() => setImgOk(false)}
           />
         ) : (
-          // fallback: minimal “eyes”
           <span className="flex items-center gap-1.5">
             <span className="h-1.5 w-1.5 rounded-full bg-white/90" />
             <span className="h-1.5 w-1.5 rounded-full bg-white/90" />
@@ -393,28 +435,21 @@ export function BotAvatar({ size = 36, src, alt = "Copilot" }: BotAvatarProps) {
   );
 }
 
-
 function TypingDots() {
   return (
     <span className="inline-flex items-center gap-1.5 align-middle">
-      {[0, 1, 2].map((i) => (
-        <span
-          key={i}
-          className="h-1.5 w-1.5 rounded-full bg-white/80"
-          style={{ animation: `dot 1.2s ease-in-out ${i * 0.15}s infinite` }}
-        />
-      ))}
-      <style>{`
-        @keyframes dot { 0%, 80%, 100% { transform: translateY(0); opacity:.6 }
-                          40% { transform: translateY(-3px); opacity:1 } }
-      `}</style>
+      <span className="h-1.5 w-1.5 rounded-full bg-white/80 animate-bounce" />
+      <span className="h-1.5 w-1.5 rounded-full bg-white/80 animate-bounce" />
+      <span className="h-1.5 w-1.5 rounded-full bg-white/80 animate-bounce" />
     </span>
   );
 }
 
 /* ================================
-   Chat panel (themed to match the screenshot)
+   Chat panel – rebuilt, no scroll state
 ================================ */
+type ChatMessage = { role: "user" | "assistant"; text: string };
+
 function ChatPanel({
   chatListRef,
   typing,
@@ -422,30 +457,57 @@ function ChatPanel({
   value,
   setValue,
   onSend,
+  onReset,
 }: {
   chatListRef: React.RefObject<HTMLDivElement | null>;
   typing: boolean;
-  messages: Array<{ role: "user" | "assistant"; text: string }>;
+  messages: ChatMessage[];
   value: string;
   setValue: (v: string) => void;
-  onSend: () => void;
+  onSend: (override?: string) => void;
+  onReset: () => void;
 }) {
-  const handleSend = () => {
-    if (!value.trim()) return;
-    onSend();
+  const hasUserMessage = useMemo(
+    () => messages.some((m) => m.role === "user"),
+    [messages]
+  );
+
+  const quickPrompts = [
+    "Give me a launch plan.",
+    "Review my current site.",
+    "Estimate timeline & budget.",
+  ];
+
+  const handleSend = (override?: string) => {
+    const toSend = (override ?? value).trim();
+    if (!toSend) return;
+    onSend(toSend);
+    setValue("");
   };
 
-  const Bubble = ({ role, children }: { role: "user" | "assistant"; children: React.ReactNode }) => (
-    <div className={`flex ${role === "assistant" ? "justify-start" : "justify-end"}`}>
+  const Bubble = ({
+    role,
+    children,
+  }: {
+    role: "user" | "assistant";
+    children: React.ReactNode;
+  }) => (
+    <div
+      className={`flex ${
+        role === "assistant" ? "justify-start" : "justify-end"
+      }`}
+    >
       {role === "assistant" && (
-        <span className="mr-3 mt-0.5"><BotAvatar size={30} /></span>
+        <span className="mr-3 mt-0.5">
+          <BotAvatar size={30} src={botPng} alt="Anonvic Copilot" />
+        </span>
       )}
       <div
         className={[
-          "max-w-[86%] rounded-2xl px-4 py-2.5 text-[15px] leading-relaxed border backdrop-blur-md",
+          "max-w-[86%] rounded-2xl px-4 py-2.5 text-[15px] leading-relaxed border shadow-[0_16px_38px_-28px_rgba(0,0,0,0.9)]",
           role === "assistant"
-            ? "bg-white/[0.05] border-white/12 text-white"
-            : "bg-[#6D28D9]/25 border-[#6D28D9]/35 text-[#F7F9FF]",
+            ? "bg-[#14193A] border-white/10 text-white"
+            : "bg-[#6D28D9]/35 border-[#6D28D9]/55 text-[#F7F9FF]",
         ].join(" ")}
       >
         {children}
@@ -454,61 +516,110 @@ function ChatPanel({
   );
 
   return (
-    <div
+    <section
       className="fixed z-[70] bottom-[calc(4rem+max(1rem,env(safe-area-inset-bottom)))] right-[max(1rem,env(safe-area-inset-right))] w-[min(94vw,520px)] overflow-hidden rounded-[24px] border border-white/10"
       style={{
-        background: `linear-gradient(160deg, ${withAlpha(COLORS.background, 0.94)}, ${withAlpha(COLORS.background, 0.88)})`,
-        backdropFilter: "blur(20px)",
-        boxShadow: "0 30px 80px -32px rgba(10,15,40,0.85)",
+        background:
+          "linear-gradient(155deg, #15163B 0%, #05061D 55%, #18123F 100%)",
+        boxShadow: "0 30px 80px -32px rgba(10,15,40,0.9)",
       }}
       role="dialog"
       aria-modal="true"
       aria-label="Anonvic Copilot Chat"
     >
-      {/* Header (super minimal) */}
-      <div className="px-5 py-3.5 border-b border-white/10">
-        <div className="flex items-center gap-3">
-          <BotAvatar size={34} />
-          <div className="leading-tight">
-            <p className="text-sm font-semibold text-white">Anonvic Copilot</p>
-            <p className="text-[11px] text-white/60">Glassy, minimal assistant</p>
+      {/* Header */}
+      <div className="px-5 py-3.5 border-b border-white/10 bg-[#15163B]/80">
+        <div className="flex items-center justify-between gap-3">
+          <div className="flex items-center gap-3">
+            <BotAvatar size={34} src={botPng} alt="Anonvic Copilot" />
+            <div className="leading-tight">
+              <p className="text-sm font-semibold text-white">
+                Anonvic Copilot
+              </p>
+              <p className="flex items-center gap-1 text-[11px] text-emerald-300/80">
+                <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                Online · Scoped to this site
+              </p>
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={onReset}
+              className="rounded-full border border-white/12 bg-white/5 px-2.5 py-1 text-[11px] text-white/70 hover:bg-white/10 hover:text-white transition"
+            >
+              Reset
+            </button>
+            <span className="rounded-full bg-[#4F46E5]/30 border border-white/10 px-2 py-1 text-[10px] uppercase tracking-[0.18em] text-white/70">
+              Beta
+            </span>
           </div>
         </div>
-      </div>
 
-      {/* Messages */}
-      <div ref={chatListRef} className="max-h-[56vh] overflow-y-auto px-5 py-4 space-y-3.5" aria-live="polite">
-        {messages.map((m, i) => (
-          <Bubble key={i} role={m.role}>{m.text}</Bubble>
-        ))}
-        {typing && (
-          <div className="flex items-center gap-2 text-white/85">
-            <span className="mr-3 mt-0.5"><BotAvatar size={30} /></span>
-            <div className="px-4 py-2.5 rounded-2xl border border-white/12 bg-white/[0.05]"><TypingDots /></div>
+        {!hasUserMessage && (
+          <div className="mt-3 flex flex-wrap gap-1.5">
+            {quickPrompts.map((p) => (
+              <button
+                key={p}
+                type="button"
+                onClick={() => handleSend(p)}
+                className="text-[11px] sm:text-xs rounded-full border border-white/12 bg-white/5 px-2.5 py-1 text-white/80 hover:bg-white/10 hover:border-white/20 hover:text-white transition"
+              >
+                {p}
+              </button>
+            ))}
           </div>
         )}
       </div>
 
-      {/* Composer (no attachments, just input + send) */}
-      <div className="px-4 py-3 border-t border-white/10 bg-white/[0.02]">
+      {/* Messages (pure native scroll, no React state) */}
+      <div className="bg-[#05061D]/85">
+        <div
+          ref={chatListRef}
+          className="max-h-[56vh] overflow-y-auto px-5 py-4 space-y-3.5"
+          aria-live="polite"
+        >
+          {messages.map((m, i) => (
+            <Bubble key={i} role={m.role}>
+              {m.text}
+            </Bubble>
+          ))}
+          {typing && (
+            <div className="flex items-center gap-2 text-white/85">
+              <span className="mr-3 mt-0.5">
+                <BotAvatar size={30} src={botPng} alt="Anonvic Copilot" />
+              </span>
+              <div className="px-4 py-2.5 rounded-2xl border border-white/12 bg-[#14193A]">
+                <TypingDots />
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Composer */}
+      <div className="px-4 py-3 border-t border-white/10 bg-[#11153A]/95">
         <div className="flex items-end gap-2.5">
           <div className="relative flex-1">
             <textarea
               value={value}
               onChange={(e) => setValue(e.target.value)}
               onKeyDown={(e) => {
-                if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); handleSend(); }
+                if (e.key === "Enter" && !e.shiftKey) {
+                  e.preventDefault();
+                  handleSend();
+                }
               }}
               rows={1}
-              className="peer w-full max-h-[40vh] rounded-2xl bg-white/6 border border-white/12 px-3.5 py-2.5 text-[15px] text-white placeholder-white/45 outline-none focus:border-[#7C3AED] resize-none"
-              placeholder="Write a message… (Shift+Enter for line break)"
+              className="peer w-full max-h-[40vh] rounded-2xl bg-[#050822] border border-white/12 px-3.5 py-2.5 text-[15px] text-white placeholder-white/45 outline-none focus:border-[#7C3AED] resize-none"
+              placeholder="Ask about plans, timelines, or stacks…"
               aria-label="Type your message"
             />
             <span className="pointer-events-none absolute -inset-0.5 rounded-[20px] bg-gradient-to-r from-[#4F46E5]/20 via-[#A855F7]/16 to-transparent blur-md opacity-0 peer-focus:opacity-100" />
           </div>
 
           <button
-            onClick={handleSend}
+            onClick={() => handleSend()}
             disabled={!value.trim()}
             className="shrink-0 inline-flex items-center gap-2 rounded-2xl px-4 py-2.5 bg-gradient-to-r from-[#4F46E5] via-[#A855F7] to-[#4F46E5] text-white text-[15px] font-semibold border border-white/15 hover:scale-[1.04] active:scale-100 transition disabled:opacity-40 disabled:cursor-not-allowed focus:outline-none focus-visible:ring-2 focus-visible:ring-[#A855F7]/60"
             aria-label="Send message"
@@ -518,7 +629,7 @@ function ChatPanel({
           </button>
         </div>
       </div>
-    </div>
+    </section>
   );
 }
 
@@ -572,11 +683,41 @@ export function HeroEdgeIcons({
     title: string;
     glow: string;
   }> = [
-    { key: "ig", Icon: Instagram, href: SITE.socials.instagram, title: "Instagram", glow: "from-[#4F46E5] via-[#A855F7] to-transparent" },
-    { key: "in", Icon: Linkedin, href: SITE.socials.linkedin, title: "LinkedIn", glow: "from-[#4F46E5] via-[#A855F7] to-transparent" },
-    { key: "tw", Icon: Twitter, href: SITE.socials.twitter, title: "Twitter", glow: "from-[#4F46E5] via-[#A855F7] to-transparent" },
-    { key: "fb", Icon: Facebook, href: SITE.socials.facebook, title: "Facebook", glow: "from-[#4F46E5] via-[#A855F7] to-transparent" },
-    { key: "gh", Icon: Github, href: SITE.socials.github, title: "GitHub", glow: "from-[#4F46E5] via-[#A855F7] to-transparent" },
+    {
+      key: "ig",
+      Icon: Instagram,
+      href: SITE.socials.instagram,
+      title: "Instagram",
+      glow: "from-[#4F46E5] via-[#A855F7] to-transparent",
+    },
+    {
+      key: "in",
+      Icon: Linkedin,
+      href: SITE.socials.linkedin,
+      title: "LinkedIn",
+      glow: "from-[#4F46E5] via-[#A855F7] to-transparent",
+    },
+    {
+      key: "tw",
+      Icon: Twitter,
+      href: SITE.socials.twitter,
+      title: "Twitter",
+      glow: "from-[#4F46E5] via-[#A855F7] to-transparent",
+    },
+    {
+      key: "fb",
+      Icon: Facebook,
+      href: SITE.socials.facebook,
+      title: "Facebook",
+      glow: "from-[#4F46E5] via-[#A855F7] to-transparent",
+    },
+    {
+      key: "gh",
+      Icon: Github,
+      href: SITE.socials.github,
+      title: "GitHub",
+      glow: "from-[#4F46E5] via-[#A855F7] to-transparent",
+    },
   ];
 
   const sizeClass = isMobile ? "h-11 w-11" : "h-14 w-14 md:h-16 md:w-16";
@@ -600,12 +741,20 @@ export function HeroEdgeIcons({
               left: `${left}%`,
               top: `${top}%`,
               transform: `translate(-50%, -50%) translateY(${translateY}px)`,
-              animation: reducedMotion ? undefined : `edgeFloat ${6 + (i % 3)}s ease-in-out ${(i * 0.2).toFixed(2)}s infinite`,
+              animation: reducedMotion
+                ? undefined
+                : `edgeFloat ${6 + (i % 3)}s ease-in-out ${(i * 0.2).toFixed(
+                    2
+                  )}s infinite`,
               willChange: "transform",
             }}
           >
-            <span className={`absolute -inset-5 rounded-2xl blur-xl opacity-45 group-hover:opacity-80 transition bg-gradient-to-br ${glow}`} />
-            <span className={`relative grid place-items-center ${sizeClass} rounded-2xl bg-[rgba(57,80,180,0.15)] border border-white/15 shadow-[0_22px_38px_-18px_rgba(106,13,173,0.35)] transition group-hover:scale-110 group-hover:-rotate-3`}>
+            <span
+              className={`absolute -inset-5 rounded-2xl blur-xl opacity-45 group-hover:opacity-80 transition bg-gradient-to-br ${glow}`}
+            />
+            <span
+              className={`relative grid place-items-center ${sizeClass} rounded-2xl bg-[rgba(57,80,180,0.15)] border border-white/15 shadow-[0_22px_38px_-18px_rgba(106,13,173,0.35)] transition group-hover:scale-110 group-hover:-rotate-3`}
+            >
               <Icon className="h-6 w-6 sm:h-7 sm:w-7 text-white" />
             </span>
           </a>
@@ -655,8 +804,10 @@ export function SiteLayout() {
     let raf = 0;
     const tick = () => {
       const ease = 0.12;
-      currentRef.current.x += (targetRef.current.x - currentRef.current.x) * ease;
-      currentRef.current.y += (targetRef.current.y - currentRef.current.y) * ease;
+      currentRef.current.x +=
+        (targetRef.current.x - currentRef.current.x) * ease;
+      currentRef.current.y +=
+        (targetRef.current.y - currentRef.current.y) * ease;
       if (glowRef.current) {
         glowRef.current.style.left = `${currentRef.current.x - 25}%`;
         glowRef.current.style.top = `${currentRef.current.y - 25}%`;
@@ -667,34 +818,76 @@ export function SiteLayout() {
     return () => cancelAnimationFrame(raf);
   }, [reducedMotion]);
 
-  // lightweight background particles
-  type Particle = { left: number; top: number; size: number; layer: 1 | 2; hue: Tone };
-  const P_SYMBOLS = useMemo(() => ["<", ">", "{}", "[]", "()", ";", ":", "=>", "&&", "||", "!", "?", "#", "$", "*", "+", "="] as const, []);
-  const HUES = useMemo(() => ["fuchsia", "indigo", "sky", "cyan", "violet"] as const, []);
-  const particles = useMemo<Particle[]>(() => {
-    const base = isMobile ? 36 : 80;
-    const count = reducedMotion ? Math.ceil(base * 0.4) : base;
-    return Array.from({ length: count }, () => ({
-      left: Math.random() * 100,
-      top: Math.random() * 100,
-      size: (isMobile ? 7 : 9) + Math.floor(Math.random() * (isMobile ? 6 : 10)),
-      layer: Math.random() > 0.45 ? 2 : 1,
-      hue: HUES[Math.floor(Math.random() * HUES.length)] as Tone,
-    }));
-  }, [isMobile, reducedMotion, HUES]);
+  // background particles
+  type Particle = {
+    left: number;
+    top: number;
+    size: number;
+    layer: 1 | 2;
+    hue: Tone;
+  };
+  const P_SYMBOLS = useMemo(
+    () =>
+      [
+        "<",
+        ">",
+        "{}",
+        "[]",
+        "()",
+        ";",
+        ":",
+        "=>",
+        "&&",
+        "||",
+        "!",
+        "?",
+        "#",
+        "$",
+        "*",
+        "+",
+        "=",
+      ] as const,
+    []
+  );
+  const HUES = useMemo(
+    () => ["fuchsia", "indigo", "sky", "cyan", "violet"] as const,
+    []
+  );
+  const particles = useMemo<Particle[]>(
+    () => {
+      const base = isMobile ? 36 : 80;
+      const count = reducedMotion ? Math.ceil(base * 0.4) : base;
+      return Array.from({ length: count }, () => ({
+        left: Math.random() * 100,
+        top: Math.random() * 100,
+        size:
+          (isMobile ? 7 : 9) +
+          Math.floor(Math.random() * (isMobile ? 6 : 10)),
+        layer: Math.random() > 0.45 ? 2 : 1,
+        hue: HUES[Math.floor(Math.random() * HUES.length)] as Tone,
+      }));
+    },
+    [isMobile, reducedMotion, HUES]
+  );
 
   // Chat state
   const [chatOpen, setChatOpen] = useState(false);
   const [typing, setTyping] = useState(false);
   const [chatInput, setChatInput] = useState("");
-  const [chatMessages, setChatMessages] = useState<Array<{ role: "user" | "assistant"; text: string }>>([
-    { role: "assistant", text: "Hi! I'm the Anonvic Copilot. Ask about plans, timelines, or what stack we'll use." },
+  const [chatMessages, setChatMessages] = useState<ChatMessage[]>([
+    {
+      role: "assistant",
+      text: "Hi! I'm the Anonvic Copilot. Ask about plans, timelines, or what stack we'll use.",
+    },
   ]);
   const chatListRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     if (chatOpen) {
-      chatListRef.current?.scrollTo({ top: chatListRef.current.scrollHeight, behavior: "smooth" });
+      chatListRef.current?.scrollTo({
+        top: chatListRef.current.scrollHeight,
+        behavior: "smooth",
+      });
     }
   }, [chatMessages, typing, chatOpen]);
 
@@ -706,14 +899,34 @@ export function SiteLayout() {
     setTyping(true);
     setTimeout(() => {
       const t = msg.toLowerCase();
-      let reply = "We can draft a quick roadmap for you. Do you prefer Launch, Scale, or Pro — and when's your target date?";
-      if (t.includes("plan")) reply = "Launch = fast start; Scale = growth ops; Pro = custom build + SLAs.";
-      else if (t.includes("ecommerce") || t.includes("store")) reply = "Yes. Next.js + Stripe/Shopify, optimized PDPs, bundles, subscriptions, and server-side tracking.";
-      else if (t.includes("seo")) reply = "We deliver CWV > 90, schema, internal linking, and an editorial pipeline with briefs.";
-      else if (t.includes("ai")) reply = "RAG, agents, automation. We'll evaluate latency/cost tradeoffs and add guardrails + evals.";
+      let reply =
+        "We can draft a quick roadmap for you. Do you prefer Launch, Scale, or Pro — and when's your target date?";
+      if (t.includes("plan"))
+        reply =
+          "Launch = fast start; Scale = growth ops; Pro = custom build + SLAs.";
+      else if (t.includes("ecommerce") || t.includes("store"))
+        reply =
+          "Yes. Next.js + Stripe/Shopify, optimized PDPs, bundles, subscriptions, and server-side tracking.";
+      else if (t.includes("seo"))
+        reply =
+          "We deliver CWV > 90, schema, internal linking, and an editorial pipeline with briefs.";
+      else if (t.includes("ai"))
+        reply =
+          "RAG, agents, automation. We'll evaluate latency/cost tradeoffs and add guardrails + evals.";
       setChatMessages((m) => [...m, { role: "assistant", text: reply }]);
       setTyping(false);
     }, 650);
+  };
+
+  const resetChat = () => {
+    setChatInput("");
+    setTyping(false);
+    setChatMessages([
+      {
+        role: "assistant",
+        text: "Hi! I'm the Anonvic Copilot. Ask about plans, timelines, or what stack we'll use.",
+      },
+    ]);
   };
 
   const [copied, setCopied] = useState(false);
@@ -724,29 +937,99 @@ export function SiteLayout() {
 
   const location = useLocation();
   useEffect(() => {
-    chatListRef.current?.scrollTo({ top: chatListRef.current.scrollHeight });
+    chatListRef.current?.scrollTo({
+      top: chatListRef.current.scrollHeight,
+    });
     setChatOpen(false);
   }, [location.pathname]);
 
-  const contextValue: SiteContextValue = { scrollY, scrollProgress, isMobile, reducedMotion, copied, flashCopy };
+  const contextValue: SiteContextValue = {
+    scrollY,
+    scrollProgress,
+    isMobile,
+    reducedMotion,
+    copied,
+    flashCopy,
+  };
 
   return (
     <SiteContext.Provider value={contextValue}>
-      <div className="min-h-screen text-white overflow-x-hidden" style={{ backgroundColor: COLORS.background }} id="app-root">
+      <div
+        className="min-h-screen text-white overflow-x-hidden"
+        style={{ backgroundColor: COLORS.background }}
+        id="app-root"
+      >
         {/* Scroll progress */}
-        <div className="fixed top-0 left-0 right-0 z-[65] h-[3px] bg-transparent" aria-hidden>
-          <div className="h-full bg-gradient-to-r from-[#4F46E5] via-[#A855F7] to-[#1B1F3B] transition-[width] duration-150" style={{ width: `${scrollProgress * 100}%` }} />
+        <div
+          className="fixed top-0 left-0 right-0 z-[65] h-[3px] bg-transparent"
+          aria-hidden
+        >
+          <div
+            className="h-full bg-gradient-to-r from-[#4F46E5] via-[#A855F7] to-[#1B1F3B] transition-[width] duration-150"
+            style={{ width: `${scrollProgress * 100}%` }}
+          />
         </div>
 
         {/* Background */}
-        <div className="fixed inset-0 z-0 pointer-events-none select-none" aria-hidden>
-          <div ref={glowRef} className="absolute h-[520px] sm:h-[680px] w-[520px] sm:w-[680px] rounded-full bg-gradient-to-br from-[#4F46E5]/22 via-[#A855F7]/15 to-[#1B1F3B]/18 blur-3xl" style={{ left: "25%", top: "25%", transform: `translateY(${scrollY * 0.04}px)` }} />
-          <div className="absolute inset-0" style={{ background: "radial-gradient(circle at top, rgba(57,80,180,0.25), transparent 60%)", backgroundColor: COLORS.background }} />
-          <div className="absolute inset-0" style={{ backgroundImage: "linear-gradient(rgba(255,255,255,0.36) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.36) 1px, transparent 1px)", backgroundSize: isMobile ? "24px 24px" : "32px 32px", opacity: 0.45, mixBlendMode: "soft-light", transform: `translateY(${scrollY * 0.08}px)` }} />
-          <div className="absolute inset-0" style={{ backgroundImage: "linear-gradient(rgba(255,255,255,0.10) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.10) 1px, transparent 1px)", backgroundSize: isMobile ? "12px 12px" : "16px 16px", opacity: 0.22, mixBlendMode: "soft-light", transform: `translateY(${scrollY * 0.05}px)` }} />
+        <div
+          className="fixed inset-0 z-0 pointer-events-none select-none"
+          aria-hidden
+        >
+          <div
+            ref={glowRef}
+            className="absolute h-[520px] sm:h-[680px] w-[520px] sm:w-[680px] rounded-full bg-gradient-to-br from-[#4F46E5]/22 via-[#A855F7]/15 to-[#1B1F3B]/18 blur-3xl"
+            style={{
+              left: "25%",
+              top: "25%",
+              transform: `translateY(${scrollY * 0.04}px)`,
+            }}
+          />
+          <div
+            className="absolute inset-0"
+            style={{
+              background:
+                "radial-gradient(circle at top, rgba(57,80,180,0.25), transparent 60%)",
+              backgroundColor: COLORS.background,
+            }}
+          />
+          <div
+            className="absolute inset-0"
+            style={{
+              backgroundImage:
+                "linear-gradient(rgba(255,255,255,0.36) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.36) 1px, transparent 1px)",
+              backgroundSize: isMobile ? "24px 24px" : "32px 32px",
+              opacity: 0.45,
+              mixBlendMode: "soft-light",
+              transform: `translateY(${scrollY * 0.08}px)`,
+            }}
+          />
+          <div
+            className="absolute inset-0"
+            style={{
+              backgroundImage:
+                "linear-gradient(rgba(255,255,255,0.10) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.10) 1px, transparent 1px)",
+              backgroundSize: isMobile ? "12px 12px" : "16px 16px",
+              opacity: 0.22,
+              mixBlendMode: "soft-light",
+              transform: `translateY(${scrollY * 0.05}px)`,
+            }}
+          />
           <div className="absolute inset-0 overflow-visible">
-            {useMemo(() => particles, [particles]).map((p, i) => (
-              <div key={i} className={`absolute font-mono font-bold ${toneToText(p.hue)} ${p.layer === 1 ? "opacity-40" : "opacity-30"}`} style={{ left: `${p.left}%`, top: `${p.top}%`, fontSize: `${p.size}px`, transform: `translateY(${scrollY * (p.layer === 1 ? 0.018 : 0.03)}px)` }}>
+            {particles.map((p, i) => (
+              <div
+                key={i}
+                className={`absolute font-mono font-bold ${toneToText(
+                  p.hue
+                )} ${p.layer === 1 ? "opacity-40" : "opacity-30"}`}
+                style={{
+                  left: `${p.left}%`,
+                  top: `${p.top}%`,
+                  fontSize: `${p.size}px`,
+                  transform: `translateY(${
+                    scrollY * (p.layer === 1 ? 0.018 : 0.03)
+                  }px)`,
+                }}
+              >
                 {P_SYMBOLS[i % P_SYMBOLS.length]}
               </div>
             ))}
@@ -763,19 +1046,58 @@ export function SiteLayout() {
           <div className="mx-auto max-w-[95rem]">
             <div className="flex flex-col items-center justify-between gap-8 sm:flex-row">
               <div className="flex items-center gap-3 min-w-0">
-                <img src={SITE.logo.src} alt={SITE.logo.alt ?? SITE.name} className="h-6 w-auto select-none" onError={(e) => ((e.currentTarget.style as any).display = "none")} />
+                <img
+                  src={SITE.logo.src}
+                  alt={SITE.logo.alt ?? SITE.name}
+                  className="h-6 w-auto select-none"
+                  onError={(e) =>
+                    ((e.currentTarget.style as any).display = "none")
+                  }
+                />
                 <span className="sr-only">{SITE.name}</span>
               </div>
 
               <div className="flex items-center gap-6">
-                <a href={SITE.socials.github} target="_blank" rel="noreferrer noopener" className="text-[#A5ADCF] hover:text-white transition-colors duration-300" aria-label="GitHub"><Github className="h-6 w-6" /></a>
-                <a href={SITE.socials.instagram} target="_blank" rel="noreferrer noopener" className="text-[#A5ADCF] hover:text-white transition-colors duration-300" aria-label="Instagram"><Instagram className="h-6 w-6" /></a>
-                <a href={SITE.socials.facebook} target="_blank" rel="noreferrer noopener" className="text-[#A5ADCF] hover:text-white transition-colors duration-300" aria-label="Facebook"><Facebook className="h-6 w-6" /></a>
-                <a href={SITE.socials.email} className="text-[#A5ADCF] hover:text-white transition-colors duration-300" aria-label="Email"><Mail className="h-6 w-6" /></a>
+                <a
+                  href={SITE.socials.github}
+                  target="_blank"
+                  rel="noreferrer noopener"
+                  className="text-[#A5ADCF] hover:text-white transition-colors duration-300"
+                  aria-label="GitHub"
+                >
+                  <Github className="h-6 w-6" />
+                </a>
+                <a
+                  href={SITE.socials.instagram}
+                  target="_blank"
+                  rel="noreferrer noopener"
+                  className="text-[#A5ADCF] hover:text-white transition-colors duration-300"
+                  aria-label="Instagram"
+                >
+                  <Instagram className="h-6 w-6" />
+                </a>
+                <a
+                  href={SITE.socials.facebook}
+                  target="_blank"
+                  rel="noreferrer noopener"
+                  className="text-[#A5ADCF] hover:text-white transition-colors duration-300"
+                  aria-label="Facebook"
+                >
+                  <Facebook className="h-6 w-6" />
+                </a>
+                <a
+                  href={SITE.socials.email}
+                  className="text-[#A5ADCF] hover:text-white transition-colors duration-300"
+                  aria-label="Email"
+                >
+                  <Mail className="h-6 w-6" />
+                </a>
               </div>
             </div>
 
-            <div className="mt-8 pt-8 border-t border-white/10 text-center text-sm text-[#A5ADCF]">© {new Date().getFullYear()} {SITE.name}. Built for growth.</div>
+            <div className="mt-8 pt-8 border-t border-white/10 text-center text-sm text-[#A5ADCF]">
+              © {new Date().getFullYear()} {SITE.name}. Built for growth.
+            </div>
           </div>
         </footer>
 
@@ -791,7 +1113,11 @@ export function SiteLayout() {
           aria-expanded={chatOpen}
         >
           <span className="grid h-full w-full place-items-center">
-            {chatOpen ? <X className="h-5 w-5 text-white" /> : <Sparkles className="h-5 w-5 text-white" />}
+            {chatOpen ? (
+              <X className="h-5 w-5 text-white" />
+            ) : (
+              <Sparkles className="h-5 w-5 text-white" />
+            )}
           </span>
         </button>
 
@@ -802,16 +1128,18 @@ export function SiteLayout() {
             messages={chatMessages}
             value={chatInput}
             setValue={setChatInput}
-            onSend={() => sendChat()}
+            onSend={sendChat}
+            onReset={resetChat}
           />
         )}
 
         <style>{`
-          @keyframes edgeFloat { 0%, 100% { transform: translate3d(-50%, -50%, 0) translateY(0); } 50% { transform: translate3d(-50%, -50%, 0) translateY(-10px); } }
+          @keyframes edgeFloat {
+            0%, 100% { transform: translate3d(-50%, -50%, 0) translateY(0); }
+            50% { transform: translate3d(-50%, -50%, 0) translateY(-10px); }
+          }
         `}</style>
       </div>
-      <BotAvatar size={34} src={botPng} alt="Anonvic Copilot" />
     </SiteContext.Provider>
-    
   );
 }

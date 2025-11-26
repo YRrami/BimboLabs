@@ -1,6 +1,5 @@
-﻿ 
-/* eslint-disable @typescript-eslint/no-explicit-any */
-// src/App.tsx — Honest early-stage copy, SEO tuned, and TSX-safe
+﻿/* eslint-disable @typescript-eslint/no-explicit-any */
+// src/App.tsx — Lean, readable, and TSX-safe
 
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
@@ -47,7 +46,7 @@ const SITE = {
   },
   contacts: { emailLabel: "business@anonvic.com" },
   description:
-    "Anonvic is a friendly, two-market studio (Egypt & US) offering software and marketing services for SMEs. We build websites/apps, brand foundations, market analysis & strategy, ad setup (Meta/Google), and content — in English and Arabic.",
+    "Anonvic is a two-market studio (Egypt & US) helping SMEs with software and marketing — websites, apps, brand foundations, market analysis, ads, and content in English and Arabic.",
   keywords: [
     "SME software",
     "SME marketing Egypt US",
@@ -66,17 +65,19 @@ function hexToRgb(hex: string) {
   const v = parseInt(h, 16);
   return { r: (v >> 16) & 255, g: (v >> 8) & 255, b: v & 255 };
 }
+
 function withAlpha(hex: string, a: number) {
   const { r, g, b } = hexToRgb(hex);
   return `rgba(${r},${g},${b},${a})`;
 }
+
 const gradientPrimary = (angle = 140) =>
   `linear-gradient(${angle}deg, ${withAlpha(COLORS.primary, 0.18)}, ${withAlpha(
     COLORS.accent,
     0.14
   )}, ${withAlpha(COLORS.background, 0.92)})`;
 
-const gradientSoft = (angle = 135, p = 0.14, a = 0.1, b = 0.88) =>
+const gradientSoft = (angle = 135, p = 0.16, a = 0.12, b = 0.9) =>
   `linear-gradient(${angle}deg, ${withAlpha(COLORS.primary, p)}, ${withAlpha(
     COLORS.accent,
     a
@@ -100,16 +101,16 @@ function SectionShell({
     <Tag
       id={id}
       aria-label={ariaLabel}
-      className={`relative py-16 sm:py-20 md:py-24 px-4 sm:px-6 md:px-10 lg:px-14 ${
+      className={`relative py-20 sm:py-24 md:py-28 px-4 sm:px-6 lg:px-10 ${
         className ?? ""
       }`}
     >
-      <div className="mx-auto max-w-[95rem]">
+      <div className="mx-auto max-w-[90rem]">
         <div
-          className="rounded-3xl border border-white/10 backdrop-blur-xl px-6 sm:px-10 md:px-14 py-12 sm:py-16"
+          className="rounded-[2rem] border border-white/10 backdrop-blur-2xl px-6 sm:px-10 md:px-12 lg:px-14 py-10 sm:py-14 md:py-16"
           style={{
             background: gradientSoft(),
-            boxShadow: "0 30px 80px -40px rgba(0,0,0,0.8)",
+            boxShadow: "0 36px 90px -48px rgba(0,0,0,0.9)",
           }}
         >
           {children}
@@ -131,6 +132,7 @@ function useIsMobile(breakpoint = 640) {
   }, [breakpoint]);
   return isMobile;
 }
+
 function usePrefersReducedMotion() {
   const [reduced, setReduced] = useState(false);
   useEffect(() => {
@@ -161,20 +163,21 @@ function HeroEdgeIcons({
 }) {
   const strength = 0.05;
 
+  // Pushed to the outer frame so they don't crowd the hero text
   const desktop = {
-    ig: { left: 10, top: 20 },
-    in: { left: 26, top: 60 },
-    tw: { left: 12, top: 84 },
-    fb: { left: 90, top: 52 },
-    gh: { left: 86, top: 86 },
+    ig: { left: 6, top: 18 },
+    in: { left: 8, top: 78 },
+    tw: { left: 94, top: 22 },
+    fb: { left: 92, top: 76 },
+    gh: { left: 50, top: 94 },
   } as const;
 
   const mobile = {
-    ig: { left: 12, top: 18 },
-    in: { left: 28, top: 68 },
-    tw: { left: 14, top: 88 },
-    fb: { left: 88, top: 54 },
-    gh: { left: 84, top: 86 },
+    ig: { left: 10, top: 16 },
+    in: { left: 12, top: 86 },
+    tw: { left: 90, top: 18 },
+    fb: { left: 88, top: 90 },
+    gh: { left: 50, top: 96 },
   } as const;
 
   const items: Array<{
@@ -226,14 +229,17 @@ function HeroEdgeIcons({
     Math.max(min, Math.min(max, v));
 
   return (
-    <div className="pointer-events-none absolute inset-0 overflow-visible z-[11]" aria-hidden>
+    <div
+      className="pointer-events-none absolute inset-0 overflow-visible z-[11]"
+      aria-hidden
+    >
       {items.map(({ key, Icon, href, title, glow }, i) => {
         const base = isMobile ? mobile[key] : desktop[key];
-        const left = clamp(base.left, isMobile ? 6 : 0, isMobile ? 94 : 100);
-        const top = clamp(base.top, isMobile ? 9 : 0, isMobile ? 91 : 100);
+        const left = clamp(base.left, isMobile ? 4 : 2, isMobile ? 96 : 98);
+        const top = clamp(base.top, isMobile ? 8 : 6, isMobile ? 96 : 98);
         const translateY = reducedMotion ? 0 : scrollY * strength;
 
-        const IconComp = Icon; // TSX-safe
+        const IconComp = Icon;
 
         return (
           <a
@@ -259,7 +265,7 @@ function HeroEdgeIcons({
               className={`absolute -inset-5 rounded-2xl blur-xl opacity-45 group-hover:opacity-80 transition bg-gradient-to-br ${glow}`}
             />
             <span
-              className={`relative grid place-items-center ${sizeClass} rounded-2xl bg-[rgba(57,80,180,0.15)] border border-white/15 shadow-[0_22px_38px_-18px_rgba(106,13,173,0.35)] transition group-hover:scale-110 group-hover:-rotate-3`}
+              className={`relative grid place-items-center ${sizeClass} rounded-2xl bg-[rgba(57,80,180,0.18)] border border-white/15 shadow-[0_22px_38px_-18px_rgba(106,13,173,0.4)] transition group-hover:scale-110 group-hover:-rotate-3`}
             >
               <IconComp className="h-6 w-6 sm:h-7 sm:w-7 text-white" aria-hidden />
             </span>
@@ -270,36 +276,32 @@ function HeroEdgeIcons({
   );
 }
 
-/* ===================== Home page local data (truth-based) ===================== */
+/* ===================== Home page local data ===================== */
 const overviewTiles = [
   {
     title: "Software",
-    blurb:
-      "Websites and small apps. We use modern stacks and keep the handoff clean.",
+    blurb: "Modern websites and small apps built on clean, maintainable stacks.",
     path: "/solutions#software",
     tag: "Web & App",
     accent: "from-[#4F46E5] via-[#A855F7] to-[#312E81]",
   },
   {
     title: "Branding",
-    blurb:
-      "Foundations that scale: logo, colors, typography, and a voice that fits your market.",
+    blurb: "Logo, colors, type, and tone so your brand feels consistent everywhere.",
     path: "/solutions#branding",
     tag: "Identity",
     accent: "from-[#38BDF8] via-[#0EA5E9] to-[#1E3A8A]",
   },
   {
-    title: "Market Analysis & Strategy",
-    blurb:
-      "We study your audience and competitors, then shape a simple plan you can execute.",
+    title: "Market Strategy",
+    blurb: "Audience, competition, and a simple plan your team can actually use.",
     path: "/solutions#analysis",
     tag: "Strategy",
     accent: "from-[#F472B6] via-[#EC4899] to-[#9D174D]",
   },
   {
     title: "Ads & Content",
-    blurb:
-      "Meta/Google ad setup and helpful content in EN/AR to support steady growth.",
+    blurb: "Meta/Google setup and clear content in EN/AR to support steady growth.",
     path: "/solutions#ads-content",
     tag: "Acquisition",
     accent: "from-[#34D399] via-[#10B981] to-[#065F46]",
@@ -312,18 +314,18 @@ const highlightCards: Array<{
   icon: LucideIcon;
 }> = [
   {
-    title: "SME-focused",
-    copy: "We work with small to medium businesses and keep communication simple.",
+    title: "Focused on SMEs",
+    copy: "We work with small and mid-size teams, not giant org charts.",
     icon: Compass,
   },
   {
-    title: "Friendly cadence",
-    copy: "Weekly online calls and clear notes. Deliverables shared as we go.",
+    title: "Clear rhythm",
+    copy: "Weekly calls, summaries, and visible progress each sprint.",
     icon: GaugeCircle,
   },
   {
-    title: "Measure what matters",
-    copy: "We set up basic tracking so you can see what’s working.",
+    title: "Data-aware",
+    copy: "Basic tracking from day one so you see what’s moving the needle.",
     icon: Lightbulb,
   },
 ];
@@ -331,41 +333,65 @@ const highlightCards: Array<{
 /* ===================== Sections ===================== */
 function ProcessMini() {
   const steps: Array<{ icon: LucideIcon; title: string; text: string }> = [
-    { icon: Target, title: "Discovery", text: "Short call to understand goals and constraints." },
-    { icon: Rocket, title: "Plan", text: "We suggest a case-by-case timeline and a simple backlog." },
-    { icon: Code, title: "Build", text: "Ship in small pieces with reviews and notes after each milestone." },
-    { icon: CalendarCheck, title: "Iterate", text: "Weekly calls, feedback, and adjustments. No heavy handoffs." },
+    {
+      icon: Target,
+      title: "Discovery",
+      text: "Short call to align on goals, market, and constraints.",
+    },
+    {
+      icon: Rocket,
+      title: "Plan",
+      text: "Simple roadmap with a lean backlog and key milestones.",
+    },
+    {
+      icon: Code,
+      title: "Build",
+      text: "Ship in small pieces with frequent, low-friction reviews.",
+    },
+    {
+      icon: CalendarCheck,
+      title: "Iterate",
+      text: "Weekly feedback loops and tweaks instead of big handoffs.",
+    },
   ];
   return (
     <SectionShell ariaLabel="Delivery process">
-      <div className="text-center mb-8 sm:mb-10">
-        <h2 className="text-3xl sm:text-4xl font-bold text-white">How we work</h2>
-        <p className="mt-3 text-[#A5ADCF] max-w-[68ch] mx-auto text-[15px] sm:text-[16px]">
-          Friendly and helpful. We keep things clear and move at a pace that fits your team.
+      <div className="text-center mb-10 sm:mb-12">
+        <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white">
+          How we work
+        </h2>
+        <p className="mt-4 text-base sm:text-lg text-[#A5ADCF] max-w-[60ch] mx-auto leading-relaxed">
+          A simple, transparent flow from first call to live results — no heavy
+          documentation, just clear steps.
         </p>
       </div>
-      <ol className="grid gap-4 sm:gap-6 sm:grid-cols-2 lg:grid-cols-4" aria-label="Process steps">
+      <ol
+        className="grid gap-5 sm:gap-6 sm:grid-cols-2 lg:grid-cols-4"
+        aria-label="Process steps"
+      >
         {steps.map((s, i) => {
           const IconComp = s.icon;
           return (
             <li
               key={s.title}
-              className="rounded-2xl border border-white/12 p-5"
+              className="rounded-2xl border border-white/12 p-6 sm:p-7 flex flex-col h-full"
               style={{ backgroundColor: withAlpha(COLORS.primary, 0.08) }}
             >
               <div className="flex items-center gap-3">
                 <span
-                  className="grid h-10 w-10 place-items-center rounded-xl border border-white/15"
-                  style={{ backgroundColor: withAlpha(COLORS.primary, 0.18) }}
+                  className="grid h-11 w-11 place-items-center rounded-xl border border-white/15"
+                  style={{ backgroundColor: withAlpha(COLORS.primary, 0.22) }}
                   aria-hidden
                 >
                   <IconComp className="h-5 w-5 text-white" />
                 </span>
-                <div className="text-white font-semibold">
+                <div className="text-white font-semibold text-base sm:text-lg">
                   {String(i + 1).padStart(2, "0")} — {s.title}
                 </div>
               </div>
-              <p className="mt-3 text-sm text-white/70 leading-relaxed">{s.text}</p>
+              <p className="mt-4 text-sm sm:text-base text-white/75 leading-relaxed">
+                {s.text}
+              </p>
             </li>
           );
         })}
@@ -377,24 +403,27 @@ function ProcessMini() {
 function FinalCTA() {
   return (
     <SectionShell ariaLabel="Final call to action">
-      <div className="text-center">
-        <h3 className="text-2xl sm:text-3xl font-bold text-white">Let’s talk about your project</h3>
-        <p className="mt-3 text-[#A5ADCF] max-w-[62ch] mx-auto">
-          We’re taking on SMEs in Egypt and the US. Send a short note about your goals and we’ll reply with next steps.
+      <div className="text-center max-w-[52rem] mx-auto">
+        <h3 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white">
+          Ready to scope your project?
+        </h3>
+        <p className="mt-4 text-base sm:text-lg text-[#A5ADCF] leading-relaxed">
+          We’re currently working with SMEs in Egypt and the US. Send a short
+          note about what you need and we’ll follow up with next steps.
         </p>
-        <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
+        <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
           <Link
             to="/solutions"
-            className="group relative rounded-2xl px-6 sm:px-7 py-3.5 text-sm md:text-base font-semibold text-white transition-all duration-300 hover:-translate-y-1 hover:scale-[1.03]"
+            className="group relative rounded-2xl px-7 sm:px-8 py-4 text-base md:text-lg font-semibold text-white transition-all duration-300 hover:-translate-y-1 hover:scale-[1.03]"
             style={{
               background: gradientPrimary(125),
-              boxShadow: "0 24px 50px -32px rgba(79,70,229,0.65)",
+              boxShadow: "0 26px 60px -34px rgba(79,70,229,0.7)",
               backdropFilter: "blur(20px)",
             }}
             aria-label="Explore services"
           >
             <span className="relative z-10 inline-flex items-center gap-2">
-              Explore Services{" "}
+              Explore Services
               <ArrowRight
                 className="h-5 w-5 transition-transform duration-300 group-hover:translate-x-1"
                 aria-hidden
@@ -403,16 +432,17 @@ function FinalCTA() {
           </Link>
           <a
             href={`mailto:${SITE.contacts.emailLabel}`}
-            className="group relative rounded-2xl border border-white/15 px-6 sm:px-7 py-3.5 text-sm md:text-base font-semibold text-white transition-all duration-300 hover:scale-[1.03]"
+            className="group relative rounded-2xl border border-white/18 px-7 sm:px-8 py-4 text-base md:text-lg font-semibold text-white transition-all duration-300 hover:scale-[1.03]"
             style={{
-              backgroundColor: withAlpha(COLORS.accent, 0.12),
-              borderColor: withAlpha(COLORS.primary, 0.25),
+              backgroundColor: withAlpha(COLORS.accent, 0.14),
+              borderColor: withAlpha(COLORS.primary, 0.28),
               backdropFilter: "blur(18px)",
             }}
             aria-label="Email Anonvic"
           >
             <span className="relative z-10 inline-flex items-center gap-2">
-              Email {SITE.name} <Mail className="h-5 w-5" aria-hidden />
+              Email {SITE.name}
+              <Mail className="h-5 w-5" aria-hidden />
             </span>
           </a>
         </div>
@@ -424,12 +454,13 @@ function FinalCTA() {
 function HomeOverview() {
   return (
     <SectionShell ariaLabel="Overview tiles">
-      <div className="text-center mb-14">
+      <div className="text-center mb-10 sm:mb-14">
         <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold bg-gradient-to-r from-white via-gray-100 to-white bg-clip-text text-transparent">
           What we can help with
         </h2>
-        <p className="mt-4 text-[#A5ADCF] max-w-[66ch] mx-auto text-[15px] sm:text-[16px]">
-          Pick the part you need right now. We’re flexible and match your pace.
+        <p className="mt-4 text-base sm:text-lg text-[#A5ADCF] max-w-[60ch] mx-auto leading-relaxed">
+          Start with one piece or mix a few. We adapt to your pace, budget, and
+          team size.
         </p>
       </div>
 
@@ -438,21 +469,25 @@ function HomeOverview() {
           <Link
             key={tile.title}
             to={tile.path}
-            className="group relative overflow-hidden rounded-3xl border border-white/12 bg-white/5 px-6 py-8 transition-all duration-300 hover:-translate-y-2 hover:border-white/20"
+            className="group relative overflow-hidden rounded-3xl border border-white/12 bg-white/[0.06] px-6 py-8 sm:px-7 sm:py-9 transition-all duration-300 hover:-translate-y-2 hover:border-white/20"
             aria-label={`Open ${tile.title}`}
           >
             <span
               className={`absolute -inset-2 opacity-0 transition-opacity duration-300 group-hover:opacity-60 blur-2xl bg-gradient-to-br ${tile.accent}`}
             />
             <div className="relative space-y-4">
-              <span className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1 text-xs uppercase tracking-[0.32em] text-white/70">
+              <span className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1 text-[0.7rem] sm:text-xs uppercase tracking-[0.28em] text-white/70">
                 <Sparkles className="h-3.5 w-3.5" aria-hidden />
                 {tile.tag}
               </span>
-              <h3 className="text-2xl font-semibold text-white">{tile.title}</h3>
-              <p className="text-sm text-white/70 leading-relaxed">{tile.blurb}</p>
-              <span className="inline-flex items-center gap-2 text-sm font-medium text-white">
-                Explore{" "}
+              <h3 className="text-2xl sm:text-2xl font-semibold text-white">
+                {tile.title}
+              </h3>
+              <p className="text-sm sm:text-base text-white/75 leading-relaxed">
+                {tile.blurb}
+              </p>
+              <span className="inline-flex items-center gap-2 text-sm sm:text-base font-medium text-white/90">
+                Explore
                 <ArrowRight
                   className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1"
                   aria-hidden
@@ -470,30 +505,26 @@ function Highlights() {
   return (
     <SectionShell ariaLabel="Why teams work with us">
       <div className="grid lg:grid-cols-[1.1fr_1fr] gap-10 sm:gap-12 items-start">
-        <div className="space-y-6">
+        <div className="space-y-6 sm:space-y-7">
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white">
             Why SMEs pick {SITE.name}
           </h2>
-          <p className="text-[#A5ADCF] text-[15px] sm:text-[16px] leading-relaxed">
-            We’re a small studio. You’ll speak directly with the people doing the work. Clear notes,
-            quick replies, and honest timelines.
+          <p className="text-base sm:text-lg text-[#A5ADCF] leading-relaxed max-w-[60ch]">
+            You speak directly with the people doing the work. Fewer layers,
+            faster answers, and realistic timelines.
           </p>
-          <ul className="space-y-3 text-sm text-[#A5ADCF]">
+          <ul className="space-y-3.5 text-sm sm:text-base text-[#A5ADCF]">
             <li className="flex items-start gap-3">
-              <Check className="h-4 w-4 text-[#4F46E5] mt-0.5" aria-hidden />
-              Weekly online calls and simple action lists.
+              <Check className="h-4 w-4 text-[#4F46E5] mt-1" aria-hidden />
+              Weekly online calls with clear next steps after each session.
             </li>
             <li className="flex items-start gap-3">
-              <Check className="h-4 w-4 text-[#4F46E5] mt-0.5" aria-hidden />
-              Bilingual delivery (EN/AR) for Egypt and US markets.
+              <Check className="h-4 w-4 text-[#4F46E5] mt-1" aria-hidden />
+              Bilingual delivery (EN/AR) tuned for Egypt and US markets.
             </li>
             <li className="flex items-start gap-3">
-              <Check className="h-4 w-4 text-[#4F46E5] mt-0.5" aria-hidden />
-              Case-by-case timelines that fit your team’s bandwidth.
-            </li>
-            <li className="flex items-start gap-3">
-              <Check className="h-4 w-4 text-[#4F46E5] mt-0.5" aria-hidden />
-              Basic tracking from day one so progress is visible.
+              <Check className="h-4 w-4 text-[#4F46E5] mt-1" aria-hidden />
+              Case-by-case pacing that fits your internal capacity.
             </li>
           </ul>
         </div>
@@ -504,23 +535,30 @@ function Highlights() {
             return (
               <div
                 key={title}
-                className="relative overflow-hidden rounded-2xl border border-white/12 bg-white/5 p-6"
-                style={{ boxShadow: "0 24px 60px -40px rgba(5,6,29,0.65)" }}
+                className="relative overflow-hidden rounded-2xl border border-white/12 bg-white/[0.06] p-6 sm:p-7"
+                style={{ boxShadow: "0 26px 70px -42px rgba(5,6,29,0.75)" }}
               >
                 <span className="absolute -inset-1 opacity-0 blur-2xl transition-opacity duration-300 hover:opacity-60 bg-gradient-to-br from-[#4F46E5] via-[#A855F7] to-transparent" />
                 <div className="relative flex items-start gap-4">
                   <span
                     className="grid h-11 w-11 place-items-center rounded-xl border border-white/15"
-                    style={{ backgroundColor: withAlpha(COLORS.primary, 0.18) }}
+                    style={{ backgroundColor: withAlpha(COLORS.primary, 0.2) }}
                     aria-hidden
                   >
                     <IconComp className="h-5 w-5 text-white" />
                   </span>
-                  <div className="space-y-2">
-                    <h3 className="text-lg font-semibold text-white">{title}</h3>
-                    <p className="text-sm text-white/70 leading-relaxed">{copy}</p>
+                  <div className="space-y-1.5">
+                    <h3 className="text-lg sm:text-xl font-semibold text-white">
+                      {title}
+                    </h3>
+                    <p className="text-sm sm:text-base text-white/75 leading-relaxed">
+                      {copy}
+                    </p>
                   </div>
-                  <span className="ml-auto text-sm text-white/40 font-mono" aria-hidden>
+                  <span
+                    className="ml-auto text-xs sm:text-sm text-white/40 font-mono"
+                    aria-hidden
+                  >
                     0{idx + 1}
                   </span>
                 </div>
@@ -558,8 +596,7 @@ export default function App() {
 
   const mainId = "main";
 
-  // (SEO meta and JSON-LD are injected into document.head in an effect below)
-
+  // SEO meta and JSON-LD
   useEffect(() => {
     const prevTitle = document.title;
     document.title = `${SITE.name} — Software & Marketing for SMEs (EN/AR)`;
@@ -589,7 +626,9 @@ export default function App() {
     ensureMeta("property", "og:url", SITE.domain);
 
     // canonical link
-    let canonical = document.head.querySelector('link[rel="canonical"]') as HTMLLinkElement | null;
+    let canonical = document.head.querySelector(
+      'link[rel="canonical"]'
+    ) as HTMLLinkElement | null;
     if (!canonical) {
       canonical = document.createElement("link");
       canonical.rel = "canonical";
@@ -600,7 +639,7 @@ export default function App() {
       canonical.href = SITE.domain;
     }
 
-    // JSON-LD scripts (built inside the effect so dependencies don't change)
+    // JSON-LD scripts
     const orgJsonLd = {
       "@context": "https://schema.org",
       "@type": "Organization",
@@ -645,14 +684,14 @@ export default function App() {
 
     return () => {
       document.title = prevTitle;
-      // remove injected metas/links/scripts
-      document.head.querySelectorAll('[data-_injected="1"]').forEach((n) => n.remove());
+      document.head
+        .querySelectorAll('[data-_injected="1"]')
+        .forEach((n) => n.remove());
     };
-  }, []); 
+  }, []);
 
   return (
     <>
-
       {/* Skip Link */}
       <a
         href={`#${mainId}`}
@@ -662,99 +701,127 @@ export default function App() {
       </a>
 
       <header className="relative" aria-label="Hero header">
-        <section className="relative min-h-[90vh] pt-28 sm:pt-32 md:pt-30 flex items-center justify-center px-4 sm:px-6 md:px-10 lg:px-14">
-          {/* subtle background accents */}
+        <section className="relative min-h-[92vh] pt-28 sm:pt-32 md:pt-32 flex items-center justify-center px-4 sm:px-6 lg:px-10">
+          {/* base background */}
           <div
             aria-hidden
-            className="absolute inset-0 -z-10"
+            className="absolute inset-0 -z-20"
             style={{
               background:
-                "radial-gradient(circle at top, rgba(57,80,180,0.25), transparent 60%)",
+                "radial-gradient(circle at top, rgba(57,80,180,0.28), transparent 60%)",
               backgroundColor: COLORS.background,
             }}
           />
-          <div className="relative z-10 mx-auto max-w-screen-xl w-full text-center">
-            <div className="space-y-8 sm:space-y-10 md:space-y-12">
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, ease: "easeOut" }}
-                className="inline-flex items-center gap-2 rounded-full border border-white/15 px-4 sm:px-5 py-2.5 backdrop-blur-xl shadow-[0_12px_38px_-28px_rgba(79,70,229,0.85)]"
-                style={{ backgroundColor: withAlpha(COLORS.primary, 0.16) }}
-              >
-                <Zap className="h-4 w-4 text-[#4F46E5]" aria-hidden />
-                <span className="text-xs sm:text-sm font-medium text-white/80">
-                  Friendly software & marketing for SMEs (EN/AR)
-                </span>
-                <Sparkles className="h-3.5 w-3.5 text-[#A855F7]" aria-hidden />
-              </motion.div>
 
-              <motion.div
-                initial={{ opacity: 0, y: 24 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.7, delay: 0.1, ease: "easeOut" }}
-                className="space-y-3"
-              >
-                <h1
-                  className="font-black tracking-tight leading-[1.05] text-balance"
-                  style={{ fontSize: "clamp(32px, 6.2vw, 65px)" }}
-                >
-                  <span className="relative block bg-gradient-to-r from-white via-gray-100 to-white bg-clip-text text-transparent">
-                    Build the basics. Grow steadily.
-                  </span>
-                  <span className="relative block -mt-1 bg-gradient-to-r from-[#4F46E5] via-[#A855F7] to-[#1B1F3B] bg-clip-text text-transparent">
-                    Web & app, branding, analysis, ads, and content
-                  </span>
-                </h1>
-                <p className="mx-auto max-w-[66ch] px-1 text-[15px] sm:text-[16px] md:text-[17px] leading-relaxed text-[#A5ADCF]">
-                  We serve small to medium businesses in Egypt and the US. Case-by-case timelines,
-                  weekly online calls, and clear deliverables.
-                </p>
-              </motion.div>
+          {/* animated blobs to make the hero feel alive */}
+          <div
+            aria-hidden
+            className="pointer-events-none absolute inset-0 -z-10 overflow-hidden"
+          >
+            <div className="hero-blob hero-blob-1" />
+            <div className="hero-blob hero-blob-2" />
+            <div className="hero-blob hero-blob-3" />
+          </div>
 
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.2, ease: "easeOut" }}
-                className="flex flex-wrap items-center justify-center gap-2 sm:gap-3"
-              >
-                <Link
-                  to="/solutions"
-                  className="group relative min-w-[150px] sm:min-w-[180px] rounded-2xl px-6 sm:px-7 py-3.5 text-sm md:text-base font-semibold text-white transition-all duration-300 hover:-translate-y-1 hover:scale-[1.03]"
-                  style={{
-                    background: gradientPrimary(125),
-                    boxShadow: "0 24px 50px -32px rgba(79,70,229,0.65)",
-                    backdropFilter: "blur(20px)",
-                  }}
-                  aria-label="See services"
+          <div className="relative z-10 mx-auto max-w-screen-xl w-full">
+            {/* keep content centered, icons float around on the edges */}
+            <div className="mx-auto max-w-3xl text-center">
+              <div className="space-y-8 sm:space-y-10 md:space-y-12">
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, ease: "easeOut" }}
+                  className="inline-flex items-center gap-2 rounded-full border border-white/15 px-4 sm:px-6 py-2.5 sm:py-3 backdrop-blur-xl shadow-[0_16px_40px_-28px_rgba(79,70,229,0.9)] bg-white/5"
+                  style={{ backgroundColor: withAlpha(COLORS.primary, 0.18) }}
                 >
-                  <span className="relative z-10 flex items-center justify-center gap-2">
-                    <ArrowRight
-                      className="h-5 w-5 transition-transform duration-300 group-hover:translate-x-1"
-                      aria-hidden
-                    />
-                    <span>See Services</span>
+                  <Zap className="h-4 w-4 text-[#C4C6FF]" aria-hidden />
+                  <span className="text-sm sm:text-base font-medium text-white/85">
+                    Software & marketing for SMEs in Egypt and the US
                   </span>
-                </Link>
+                  <Sparkles className="h-3.5 w-3.5 text-[#F9A8FF]" aria-hidden />
+                </motion.div>
 
-                <a
-                  href={`mailto:${SITE.contacts.emailLabel}`}
-                  className="group relative min-w-[150px] sm:min-w-[180px] rounded-2xl border border-white/15 px-6 sm:px-7 py-3.5 text-sm md:text-base font-semibold text-white transition-all duration-300 hover:scale-[1.03]"
-                  style={{
-                    backgroundColor: withAlpha(COLORS.accent, 0.12),
-                    borderColor: withAlpha(COLORS.primary, 0.25),
-                    backdropFilter: "blur(18px)",
-                  }}
-                  aria-label="Email us"
+                <motion.div
+                  initial={{ opacity: 0, y: 24 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.7, delay: 0.1, ease: "easeOut" }}
+                  className="space-y-4"
                 >
-                  <span className="relative z-10 flex items-center justify-center gap-2">
-                    <Mail className="h-5 w-5" aria-hidden />
-                    <span>Email Us</span>
-                  </span>
-                </a>
-              </motion.div>
+                  <h1
+                    className="font-black tracking-tight leading-[1.05] text-balance"
+                    style={{ fontSize: "clamp(2.4rem, 6.4vw, 4.4rem)" }}
+                  >
+                    <span className="relative block bg-gradient-to-r from-white via-gray-100 to-white bg-clip-text text-transparent">
+                      Build the essentials. Grow steadily.
+                    </span>
+                    <span className="relative block -mt-1 bg-gradient-to-r from-[#4F46E5] via-[#A855F7] to-[#1B1F3B] bg-clip-text text-transparent">
+                      Web, brand, strategy, ads, and content in EN/AR.
+                    </span>
+                  </h1>
+                  <p className="mx-auto max-w-[60ch] px-1 text-base sm:text-lg md:text-xl leading-relaxed text-[#A5ADCF]">
+                    A compact studio for SMEs. Simple timelines, weekly online
+                    check-ins, and clear deliverables you can share with your team.
+                  </p>
+                </motion.div>
+
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: 0.2, ease: "easeOut" }}
+                  className="flex flex-wrap items-center justify-center gap-3 sm:gap-4"
+                >
+                  <Link
+                    to="/solutions"
+                    className="group relative min-w-[170px] sm:min-w-[190px] rounded-2xl px-7 sm:px-8 py-4 text-base md:text-lg font-semibold text-white transition-all duration-300 hover:-translate-y-1 hover:scale-[1.03]"
+                    style={{
+                      background: gradientPrimary(125),
+                      boxShadow: "0 28px 60px -34px rgba(79,70,229,0.8)",
+                      backdropFilter: "blur(20px)",
+                    }}
+                    aria-label="See services"
+                  >
+                    <span className="relative z-10 flex items-center justify-center gap-2">
+                      <ArrowRight
+                        className="h-5 w-5 transition-transform duration-300 group-hover:translate-x-1"
+                        aria-hidden
+                      />
+                      <span>See Services</span>
+                    </span>
+                  </Link>
+
+                  <a
+                    href={`mailto:${SITE.contacts.emailLabel}`}
+                    className="group relative min-w-[170px] sm:min-w-[190px] rounded-2xl border border-white/16 px-7 sm:px-8 py-4 text-base md:text-lg font-semibold text-white transition-all duration-300 hover:scale-[1.03]"
+                    style={{
+                      backgroundColor: withAlpha(COLORS.accent, 0.14),
+                      borderColor: withAlpha(COLORS.primary, 0.26),
+                      backdropFilter: "blur(18px)",
+                    }}
+                    aria-label="Email us"
+                  >
+                    <span className="relative z-10 flex items-center justify-center gap-2">
+                      <Mail className="h-5 w-5" aria-hidden />
+                      <span>Email Us</span>
+                    </span>
+                  </a>
+                </motion.div>
+
+                {/* Scroll indicator — subtle cue to explore more */}
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.7, delay: 0.35, ease: "easeOut" }}
+                  className="mt-8 sm:mt-10 flex justify-center"
+                >
+                  <div className="flex flex-col items-center gap-2 text-[0.7rem] sm:text-xs text-white/60 uppercase tracking-[0.24em]">
+                    <span>Scroll to explore</span>
+                    <span className="scroll-indicator-line" aria-hidden />
+                  </div>
+                </motion.div>
+              </div>
             </div>
 
+            {/* Edge icons float around the frame, away from the text block */}
             <HeroEdgeIcons
               scrollY={scrollY}
               isMobile={isMobile}
@@ -772,11 +839,11 @@ export default function App() {
         <FinalCTA />
       </main>
 
-      <footer className="px-4 sm:px-6 md:px-10 lg:px-14 py-10 text-center text-white/60">
-        <p className="text-sm">
+      <footer className="px-4 sm:px-6 lg:px-10 py-10 sm:py-12 text-center text-white/65 border-t border-white/10 mt-8">
+        <p className="text-sm sm:text-base">
           © {new Date().getFullYear()} {SITE.name}. All rights reserved.
         </p>
-        <p className="text-xs mt-2">
+        <p className="text-xs sm:text-sm mt-2">
           Contact:{" "}
           <a href={`mailto:${SITE.contacts.emailLabel}`} className="underline">
             {SITE.contacts.emailLabel}
@@ -784,24 +851,110 @@ export default function App() {
         </p>
       </footer>
 
-      {/* local styles used by home (chips + floats) */}
+      {/* local styles used by home (chips + floats + blobs + scroll indicator) */}
       <style>{`
         @keyframes edgeFloat {
           0%, 100% { transform: translate3d(-50%, -50%, 0) translateY(0); }
           50% { transform: translate3d(-50%, -50%, 0) translateY(-10px); }
         }
+
         .chip {
           display:inline-flex; align-items:center; gap:.5rem;
-          border-radius:9999px; padding:.5rem .75rem;
+          border-radius:9999px; padding:.55rem .85rem;
           border:1px solid ${withAlpha(COLORS.primary, 0.45)};
-          background:${withAlpha(COLORS.primary, 0.18)};
+          background:${withAlpha(COLORS.primary, 0.2)};
           color:${COLORS.text}; backdrop-filter: blur(14px);
+          font-size:0.875rem;
           transition: transform .2s ease, background-color .2s ease, border-color .2s ease;
         }
-        .chip:hover { background:${withAlpha(COLORS.primary, 0.28)}; border-color:${withAlpha(COLORS.primary, 0.6)}; transform: translateY(-1px); }
-        section + section { scroll-margin-top: 80px; }
-        .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border-width: 0; }
-        .focus\\:not-sr-only:focus { position: static; width: auto; height: auto; margin: 0; overflow: visible; clip: auto; white-space: normal; }
+        .chip:hover {
+          background:${withAlpha(COLORS.primary, 0.28)};
+          border-color:${withAlpha(COLORS.primary, 0.65)};
+          transform: translateY(-1px);
+        }
+
+        section + section { scroll-margin-top: 88px; }
+
+        .sr-only {
+          position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+          overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border-width: 0;
+        }
+        .focus\\:not-sr-only:focus {
+          position: static; width: auto; height: auto; margin: 0;
+          overflow: visible; clip: auto; white-space: normal;
+        }
+
+        /* Hero animated blobs */
+        .hero-blob {
+          position: absolute;
+          border-radius: 9999px;
+          filter: blur(50px);
+          opacity: 0.7;
+          mix-blend-mode: screen;
+        }
+        .hero-blob-1 {
+          width: 260px;
+          height: 260px;
+          left: -100px;
+          top: 10px;
+          background: radial-gradient(circle at 30% 30%, rgba(79,70,229,0.9), transparent 60%);
+          animation: blobFloat1 22s ease-in-out infinite;
+        }
+        .hero-blob-2 {
+          width: 280px;
+          height: 280px;
+          right: -80px;
+          top: 30%;
+          background: radial-gradient(circle at 70% 30%, rgba(168,85,247,0.9), transparent 60%);
+          animation: blobFloat2 26s ease-in-out infinite;
+        }
+        .hero-blob-3 {
+          width: 260px;
+          height: 260px;
+          left: 20%;
+          bottom: -120px;
+          background: radial-gradient(circle at 50% 50%, rgba(59,130,246,0.75), transparent 65%);
+          animation: blobFloat3 30s ease-in-out infinite;
+        }
+
+        @keyframes blobFloat1 {
+          0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+          50% { transform: translate3d(12px, -18px, 0) scale(1.05); }
+        }
+        @keyframes blobFloat2 {
+          0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+          50% { transform: translate3d(-18px, 16px, 0) scale(1.06); }
+        }
+        @keyframes blobFloat3 {
+          0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+          50% { transform: translate3d(10px, -10px, 0) scale(1.04); }
+        }
+
+        /* Scroll indicator */
+        .scroll-indicator-line {
+          position: relative;
+          width: 1.5px;
+          height: 34px;
+          border-radius: 9999px;
+          background: linear-gradient(to bottom, rgba(255,255,255,0.8), rgba(255,255,255,0.12));
+          overflow: hidden;
+        }
+        .scroll-indicator-line::after {
+          content: "";
+          position: absolute;
+          left: 0;
+          right: 0;
+          top: -40%;
+          height: 40%;
+          background: rgba(255,255,255,0.95);
+          box-shadow: 0 0 10px rgba(255,255,255,0.7);
+          animation: scrollPulse 1.4s ease-in-out infinite;
+        }
+
+        @keyframes scrollPulse {
+          0% { transform: translateY(0); opacity: 1; }
+          100% { transform: translateY(150%); opacity: 0; }
+        }
       `}</style>
     </>
   );
