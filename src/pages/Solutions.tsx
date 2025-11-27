@@ -1,5 +1,5 @@
 // src/pages/SolutionsPage.tsx
-/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import * as React from "react";
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
@@ -14,7 +14,11 @@ import {
   Layout,
   Code,
 } from "lucide-react";
-import { SectionShell, withAlpha, COLORS } from "../components/layout/SiteLayout";
+import {
+  SectionShell,
+  withAlpha,
+  COLORS,
+} from "../components/layout/SiteLayout";
 
 /* ===================== Data & Types ===================== */
 
@@ -38,7 +42,11 @@ const SOLUTIONS: Solution[] = [
     icon: Code,
     accent: "#4F46E5",
     cta: "Discuss a build",
-    sampleBullets: ["Landing pages & sites", "Dashboards & portals", "Integrations & automations"],
+    sampleBullets: [
+      "Landing pages & sites",
+      "Dashboards & portals",
+      "Integrations & automations",
+    ],
   },
   {
     id: "branding",
@@ -48,7 +56,11 @@ const SOLUTIONS: Solution[] = [
     icon: Sparkles,
     accent: "#A855F7",
     cta: "Ask about branding",
-    sampleBullets: ["Logo & colors", "Social profile & cover", "Business card"],
+    sampleBullets: [
+      "Logo & colors",
+      "Social profile & cover",
+      "Business card",
+    ],
   },
   {
     id: "social",
@@ -103,7 +115,7 @@ type PlanTier = {
   badge?: string;
   summary: string;
   bestFor: string;
-  bullets: string[]; // "You get"
+  bullets: string[];
   footnote?: string;
 };
 
@@ -159,9 +171,13 @@ const WEBSITE_PLANS: PlanTier[] = [
   },
 ];
 
-const WEBSITE_INCLUDES = ["Figma handoff", "Responsive layouts", "Fast loading"] as const;
+const WEBSITE_INCLUDES = [
+  "Figma handoff",
+  "Responsive layouts",
+  "Fast loading",
+] as const;
 
-/* ---------- Branding & Social (Core Packages: $200 / $300 / $450 / $600) ---------- */
+/* ---------- Branding & Social (Core Packages) ---------- */
 
 const MARKETING_PLANS: PlanTier[] = [
   {
@@ -289,7 +305,11 @@ const BRAND_SYSTEM_PLANS: PlanTier[] = [
     badge: "Custom",
     summary: "Custom scope if your needs don’t fit a box.",
     bestFor: "Special markets or complex setups.",
-    bullets: ["Scope defined together", "Flexible cadence", "Tailored deliverables"],
+    bullets: [
+      "Scope defined together",
+      "Flexible cadence",
+      "Tailored deliverables",
+    ],
     footnote: "We agree on scope and timing first, then price.",
   },
 ];
@@ -320,19 +340,26 @@ function useScrollProgress() {
 
 function useScrollSpy(ids: string[], offset = 120) {
   const [active, setActive] = useState<string | null>(null);
+
   useEffect(() => {
     const sections = ids
       .map((id) => document.getElementById(id))
       .filter((el): el is HTMLElement => !!el);
+
+    if (!sections.length) return;
 
     const observer = new IntersectionObserver(
       (entries) => {
         const visible = entries
           .filter((e) => e.isIntersecting)
           .sort((a, b) => b.intersectionRatio - a.intersectionRatio);
+
         if (visible[0]) setActive(visible[0].target.id);
       },
-      { rootMargin: `-${offset}px 0px -60% 0px`, threshold: [0.1, 0.25, 0.6] }
+      {
+        rootMargin: `-${offset}px 0px -60% 0px`,
+        threshold: [0.1, 0.25, 0.6],
+      }
     );
 
     sections.forEach((s) => observer.observe(s));
@@ -344,7 +371,10 @@ function useScrollSpy(ids: string[], offset = 120) {
 
 /* ===================== Small UI bits ===================== */
 
-const AccentChip: React.FC<{ text: string; accent: string }> = ({ text, accent }) => (
+const AccentChip: React.FC<{
+  text: string;
+  accent: string;
+}> = ({ text, accent }) => (
   <span
     className="inline-flex items-center gap-2 rounded-full border px-3 py-1 text-[11px] uppercase tracking-[0.2em]"
     style={{
@@ -360,8 +390,7 @@ const AccentChip: React.FC<{ text: string; accent: string }> = ({ text, accent }
 const StickyNav: React.FC<{ activeId: string | null }> = ({ activeId }) => (
   <nav
     aria-label="Services navigation"
-    className="hidden lg:block sticky top-24 self-start rounded-2xl border border-white/10 bg-white/5 p-4"
-    style={{ backdropFilter: "blur(16px)" }}
+    className="hidden lg:block sticky top-24 self-start rounded-2xl border border-white/10 bg-white/5 p-4 backdrop-blur-xl max-h-[70vh] overflow-y-auto"
   >
     <div className="mb-3 text-[11px] uppercase tracking-[0.18em] text-white/55">
       Services
@@ -379,10 +408,14 @@ const StickyNav: React.FC<{ activeId: string | null }> = ({ activeId }) => (
                 className="h-2.5 w-2.5 rounded-full transition"
                 style={{
                   backgroundColor: withAlpha(s.accent, isActive ? 1 : 0.5),
-                  boxShadow: isActive ? `0 0 0 4px ${withAlpha(s.accent, 0.22)}` : "none",
+                  boxShadow: isActive
+                    ? `0 0 0 4px ${withAlpha(s.accent, 0.22)}`
+                    : "none",
                 }}
               />
-              <span className={isActive ? "text-white" : undefined}>{s.title}</span>
+              <span className={isActive ? "text-white" : undefined}>
+                {s.title}
+              </span>
             </a>
           </li>
         );
@@ -425,9 +458,18 @@ const MediaFrame: React.FC<{ accent: string; children: React.ReactNode }> = ({
     }}
   >
     <div className="flex items-center gap-1.5 pb-3">
-      <span className="h-2.5 w-2.5 rounded-full" style={{ background: withAlpha("#ff5f56", 1) }} />
-      <span className="h-2.5 w-2.5 rounded-full" style={{ background: withAlpha("#ffbd2e", 1) }} />
-      <span className="h-2.5 w-2.5 rounded-full" style={{ background: withAlpha("#27c93f", 1) }} />
+      <span
+        className="h-2.5 w-2.5 rounded-full"
+        style={{ background: withAlpha("#ff5f56", 1) }}
+      />
+      <span
+        className="h-2.5 w-2.5 rounded-full"
+        style={{ background: withAlpha("#ffbd2e", 1) }}
+      />
+      <span
+        className="h-2.5 w-2.5 rounded-full"
+        style={{ background: withAlpha("#27c93f", 1) }}
+      />
     </div>
     <div className="rounded-xl border border-white/10 bg-white/[.03] p-4 min-h-[160px]">
       {children}
@@ -458,14 +500,16 @@ const ServiceOverviewCard: React.FC<{ data: Solution }> = ({ data }) => (
       >
         <data.icon className="h-5 w-5 text-white" />
       </span>
-      <div>
+      <div className="min-w-0">
         <div className="text-sm font-semibold text-white">{data.title}</div>
         <div className="text-[11px] uppercase tracking-[0.18em] text-white/55">
           {data.focus}
         </div>
       </div>
     </div>
-    <p className="text-xs sm:text-sm text-white/70 line-clamp-2">{data.description}</p>
+    <p className="text-xs sm:text-sm text-white/70 line-clamp-2">
+      {data.description}
+    </p>
     <div className="mt-auto flex items-center gap-2 text-[12px] text-white/80">
       <span>View details</span>
       <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" />
@@ -473,13 +517,19 @@ const ServiceOverviewCard: React.FC<{ data: Solution }> = ({ data }) => (
   </a>
 );
 
-/* ===================== Sections ===================== */
+/* ===================== Zigzag Section ===================== */
 
-const SolutionZigzag: React.FC<{ data: Solution; index: number }> = ({ data, index }) => {
+const SolutionZigzag: React.FC<{ data: Solution; index: number }> = ({
+  data,
+  index,
+}) => {
   const alignRight = index % 2 === 1;
 
   return (
-    <section id={data.id} className="relative grid items-stretch gap-8 md:grid-cols-2">
+    <section
+      id={data.id}
+      className="relative grid items-stretch gap-8 lg:gap-10 md:grid-cols-2 scroll-mt-28"
+    >
       {/* Accent sweep */}
       <span
         aria-hidden
@@ -491,13 +541,13 @@ const SolutionZigzag: React.FC<{ data: Solution; index: number }> = ({ data, ind
           )}, transparent 60%)`,
         }}
       />
+
       {/* Text card */}
       <div className={alignRight ? "order-2 md:order-1" : "order-1"}>
         <article
-          className="relative h-full overflow-hidden rounded-3xl border p-6 sm:p-8"
+          className="relative h-full overflow-hidden rounded-3xl border p-6 sm:p-8 bg-white/[.05] backdrop-blur-xl"
           style={{
             borderColor: withAlpha(data.accent, 0.28),
-            backgroundColor: withAlpha(data.accent, 0.08),
             boxShadow: `0 28px 60px -32px ${withAlpha(data.accent, 0.6)}`,
           }}
         >
@@ -509,7 +559,9 @@ const SolutionZigzag: React.FC<{ data: Solution; index: number }> = ({ data, ind
               <data.icon className="h-7 w-7 text-white" aria-hidden />
             </span>
             <div className="min-w-0">
-              <h2 className="text-2xl font-semibold text-white">{data.title}</h2>
+              <h2 className="text-2xl sm:text-3xl font-semibold text-white">
+                {data.title}
+              </h2>
               <div className="mt-2">
                 <AccentChip text={data.focus} accent={data.accent} />
               </div>
@@ -552,16 +604,22 @@ const SolutionZigzag: React.FC<{ data: Solution; index: number }> = ({ data, ind
           <div className="grid gap-3">
             <div className="flex items-center gap-2">
               <Target className="h-4 w-4 text-white/70" />
-              <span className="text-sm font-medium text-white/80">What you see from us</span>
+              <span className="text-sm font-medium text-white/80">
+                What you see from us
+              </span>
             </div>
-            <div className="grid grid-cols-2 gap-2 text-[12px] text-white/75">
+            <div className="grid grid-cols-2 gap-2 text-[12px] sm:text-[13px] text-white/75">
               <div className="rounded-md border border-white/10 bg-white/5 p-3">
                 <div className="text-white/90 font-medium">Short updates</div>
-                <div className="mt-1 text-white/60">Quick check-ins, not long reports</div>
+                <div className="mt-1 text-white/60">
+                  Quick check-ins, not long reports
+                </div>
               </div>
               <div className="rounded-md border border-white/10 bg-white/5 p-3">
                 <div className="text-white/90 font-medium">Clear tasks</div>
-                <div className="mt-1 text-white/60">What’s in progress this week</div>
+                <div className="mt-1 text-white/60">
+                  What’s in progress this week
+                </div>
               </div>
               <div className="rounded-md border border-white/10 bg-white/5 p-3">
                 <div className="text-white/90 font-medium">Simple numbers</div>
@@ -569,7 +627,9 @@ const SolutionZigzag: React.FC<{ data: Solution; index: number }> = ({ data, ind
               </div>
               <div className="rounded-md border border-white/10 bg-white/5 p-3">
                 <div className="text-white/90 font-medium">Final files</div>
-                <div className="mt-1 text-white/60">Easy to reuse or hand to your team</div>
+                <div className="mt-1 text-white/60">
+                  Easy to reuse or hand to your team
+                </div>
               </div>
             </div>
           </div>
@@ -583,7 +643,7 @@ const SolutionZigzag: React.FC<{ data: Solution; index: number }> = ({ data, ind
 
 const PlanCard: React.FC<{ plan: PlanTier }> = ({ plan }) => (
   <div
-    className={`group relative flex flex-col gap-5 overflow-hidden rounded-3xl border bg-white/[.05] p-7 backdrop-blur-xl transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_30px_80px_-40px_rgba(0,0,0,.9)] ${
+    className={`group relative flex flex-col gap-5 overflow-hidden rounded-3xl border bg-white/[.05] p-6 sm:p-7 backdrop-blur-xl transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_30px_80px_-40px_rgba(0,0,0,.9)] ${
       plan.badge ? "md:scale-[1.02] md:border-white/25" : ""
     }`}
     style={{
@@ -597,7 +657,6 @@ const PlanCard: React.FC<{ plan: PlanTier }> = ({ plan }) => (
       )}, transparent 55%)`,
     }}
   >
-    {/* Glow overlay */}
     <div
       aria-hidden
       className="pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
@@ -609,12 +668,14 @@ const PlanCard: React.FC<{ plan: PlanTier }> = ({ plan }) => (
       }}
     />
 
-    {/* Top gradient bar */}
     <div
       aria-hidden
       className="pointer-events-none absolute inset-x-0 top-0 h-1"
       style={{
-        background: `linear-gradient(90deg, ${withAlpha(plan.accent, 0.2)}, transparent 70%)`,
+        background: `linear-gradient(90deg, ${withAlpha(
+          plan.accent,
+          0.2
+        )}, transparent 70%)`,
       }}
     />
 
@@ -628,18 +689,23 @@ const PlanCard: React.FC<{ plan: PlanTier }> = ({ plan }) => (
       </span>
     )}
 
-    {/* Head */}
     <div className="relative space-y-1">
       <div className="flex items-center justify-between gap-2">
-        <h3 className="text-lg font-semibold text-white">{plan.title}</h3>
+        <h3 className="text-base sm:text-lg font-semibold text-white">
+          {plan.title}
+        </h3>
         <span className="rounded-full border border-white/20 bg-white/10 px-2 py-0.5 text-[11px] text-white/75">
           {plan.cadence}
         </span>
       </div>
       <div className="flex items-baseline gap-2">
-        <div className="text-3xl font-bold text-white">{plan.price}</div>
+        <div className="text-2xl sm:text-3xl font-bold text-white">
+          {plan.price}
+        </div>
         {plan.cadence === "Monthly" && plan.price !== "Contact" && (
-          <span className="text-xs uppercase tracking-[0.18em] text-white/70">/ month</span>
+          <span className="text-xs uppercase tracking-[0.18em] text-white/70">
+            / month
+          </span>
         )}
         {plan.price === "Contact" && (
           <span className="text-[11px] rounded-full border border-white/20 bg-white/10 px-2 py-0.5 text-white/70">
@@ -650,7 +716,6 @@ const PlanCard: React.FC<{ plan: PlanTier }> = ({ plan }) => (
       <p className="text-sm text-white/70">{plan.summary}</p>
     </div>
 
-    {/* Body */}
     <div className="relative text-[13px] text-white/85">
       <div className="mb-1 text-white/60">You get:</div>
       <ul className="space-y-1.5">
@@ -668,10 +733,11 @@ const PlanCard: React.FC<{ plan: PlanTier }> = ({ plan }) => (
         <span className="text-white/50">Best for: </span>
         {plan.bestFor}
       </div>
-      {plan.footnote && <div className="text-white/65">{plan.footnote}</div>}
+      {plan.footnote && (
+        <div className="text-white/65">{plan.footnote}</div>
+      )}
     </div>
 
-    {/* CTA */}
     <div className="relative mt-auto pt-1">
       <Link
         to="/contact"
@@ -691,9 +757,13 @@ const PlanCard: React.FC<{ plan: PlanTier }> = ({ plan }) => (
 
 /* ===================== Package Switcher ===================== */
 
-function PackageSwitcher() {
-  const [tab, setTab] = useState<"website" | "marketing" | "branding">("marketing");
-
+function PackageSwitcher({
+  tab,
+  setTab,
+}: {
+  tab: "website" | "marketing" | "branding";
+  setTab: (t: "website" | "marketing" | "branding") => void;
+}) {
   const TabButton = ({
     id,
     label,
@@ -705,14 +775,17 @@ function PackageSwitcher() {
     return (
       <button
         onClick={() => setTab(id)}
-        className={`relative flex items-center gap-2 rounded-xl px-2 py-1 text-sm font-semibold transition ${
+        className={`relative flex items-center gap-2 rounded-xl px-1.5 py-1 text-xs sm:text-sm font-semibold transition ${
           active ? "text-white" : "text-white/70 hover:text-white"
         }`}
       >
         <span
-          className="block rounded-[0.9rem] px-4 py-2"
+          className="block rounded-[0.9rem] px-3 sm:px-4 py-1.5 sm:py-2"
           style={{
-            border: `1px solid ${withAlpha(COLORS.text, active ? 0.28 : 0.12)}`,
+            border: `1px solid ${withAlpha(
+              COLORS.text,
+              active ? 0.28 : 0.12
+            )}`,
             background: active
               ? `radial-gradient(circle at top, ${withAlpha(
                   COLORS.primary,
@@ -735,13 +808,14 @@ function PackageSwitcher() {
       return (
         <>
           <p className="mx-auto max-w-[60ch] text-sm sm:text-base text-white/70">
-            Website plans with clear scope. You choose pages, we handle design, build, and launch.
+            Website plans with clear scope. You choose pages, we handle design,
+            build, and launch.
           </p>
           <div className="flex flex-wrap justify-center gap-3">
             {WEBSITE_INCLUDES.map((item) => (
               <span
                 key={item}
-                className="inline-flex items-center gap-2 rounded-full border border-white/12 bg-white/[.06] px-4 py-2 text-[12px] uppercase tracking-[0.18em] text-white/75"
+                className="inline-flex items-center gap-2 rounded-full border border-white/12 bg-white/[.06] px-4 py-2 text-[11px] uppercase tracking-[0.18em] text-white/75"
               >
                 <Check className="h-3.5 w-3.5" />
                 {item}
@@ -755,8 +829,8 @@ function PackageSwitcher() {
       return (
         <>
           <p className="mx-auto max-w-[60ch] text-sm sm:text-base text-white/70">
-            Core branding and social packages with fixed outputs and clear prices. English and
-            Arabic content supported.
+            Core branding and social packages with fixed outputs and clear
+            prices. English and Arabic content supported.
           </p>
           <div className="flex flex-wrap justify-center gap-2">
             {["Branding", "Social posts", "Reels & stories"].map((k) => (
@@ -767,12 +841,11 @@ function PackageSwitcher() {
         </>
       );
     }
-    // branding systems
     return (
       <>
         <p className="mx-auto max-w-[60ch] text-sm sm:text-base text-white/70">
-          Deeper brand work with rules, systems, and rollout plans so your team uses the brand the
-          same way everywhere.
+          Deeper brand work with rules, systems, and rollout plans so your team
+          uses the brand the same way everywhere.
         </p>
         <div className="flex flex-wrap justify-center gap-2">
           {["Guidelines", "Templates", "For teams"].map((k) => (
@@ -784,8 +857,6 @@ function PackageSwitcher() {
     );
   };
 
-  const gridCols = "grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 sm:gap-8";
-
   const activePlans =
     tab === "website"
       ? WEBSITE_PLANS
@@ -794,10 +865,10 @@ function PackageSwitcher() {
       : BRAND_SYSTEM_PLANS;
 
   return (
-    <SectionShell className="py-10 sm:py-12">
+    <SectionShell className="py-8 sm:py-10">
       <div className="space-y-10">
         <div className="text-center space-y-4">
-          <div className="inline-flex gap-1 rounded-2xl p-1 border border-white/10 bg-white/5 backdrop-blur">
+          <div className="inline-flex flex-wrap gap-1 rounded-2xl p-1 border border-white/10 bg-white/5 backdrop-blur">
             <TabButton id="website" label="Website" />
             <TabButton id="marketing" label="Branding & Social" />
             <TabButton id="branding" label="Brand Systems" />
@@ -805,7 +876,7 @@ function PackageSwitcher() {
           <HeaderCopy />
         </div>
 
-        <div className={gridCols}>
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6 sm:gap-8">
           {activePlans.map((plan) => (
             <PlanCard key={plan.id} plan={plan} />
           ))}
@@ -820,6 +891,9 @@ function PackageSwitcher() {
 export default function SolutionsPage() {
   const progress = useScrollProgress();
   const activeId = useScrollSpy(SOLUTIONS.map((s) => s.id));
+  const [tab, setTab] = useState<"website" | "marketing" | "branding">(
+    "marketing"
+  );
 
   return (
     <section className="relative py-16 sm:py-20 md:py-24 px-4 sm:px-6 md:px-8">
@@ -869,7 +943,7 @@ export default function SolutionsPage() {
             <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
             Services & Packages
           </div>
-          <h1 className="text-4xl sm:text-5xl font-extrabold text-white">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-white">
             Clear branding, social & software pods that{" "}
             <span className="bg-gradient-to-r from-[#38BDF8] via-[#A855F7] to-[#4F46E5] bg-clip-text text-transparent">
               are easy to buy
@@ -877,8 +951,8 @@ export default function SolutionsPage() {
             .
           </h1>
           <p className="mx-auto max-w-[62ch] text-white/70 text-sm sm:text-base leading-relaxed">
-            One-time branding, simple monthly social packages, and software builds. Fixed outputs,
-            clear prices, and English or Arabic content.
+            One-time branding, simple monthly social packages, and software
+            builds. Fixed outputs, clear prices, and English or Arabic content.
           </p>
 
           <div className="flex flex-wrap justify-center gap-3 pt-2">
@@ -891,14 +965,16 @@ export default function SolutionsPage() {
           <MobileChipRail />
 
           <div className="flex flex-wrap justify-center gap-3 pt-3">
-            {["Branding", "Social media", "Software", "Strategy"].map((label) => (
-              <span
-                key={label}
-                className="rounded-full border border-white/15 bg-white/5 px-4 py-1 text-[11px] font-medium uppercase tracking-[0.18em] text-white/60"
-              >
-                {label}
-              </span>
-            ))}
+            {["Branding", "Social media", "Software", "Strategy"].map(
+              (label) => (
+                <span
+                  key={label}
+                  className="rounded-full border border-white/15 bg-white/5 px-4 py-1 text-[11px] font-medium uppercase tracking-[0.18em] text-white/60"
+                >
+                  {label}
+                </span>
+              )
+            )}
           </div>
 
           <div className="flex flex-wrap justify-center gap-3 pt-4">
@@ -931,18 +1007,22 @@ export default function SolutionsPage() {
                 <div className="text-xs uppercase tracking-[0.24em] text-white/60">
                   {item.label}
                 </div>
-                <div className="mt-3 text-xl font-semibold text-white">{item.value}</div>
+                <div className="mt-3 text-xl font-semibold text-white">
+                  {item.value}
+                </div>
               </div>
             ))}
           </div>
         </SectionShell>
 
-        {/* Services overview grid (quick scan) */}
+        {/* Services overview grid */}
         <SectionShell className="py-6 sm:py-8">
-          <div className="mb-5 flex items-center justify-between gap-3">
+          <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
             <div className="flex items-center gap-2">
               <Layout className="h-5 w-5 text-white/80" />
-              <h3 className="text-lg font-semibold text-white">What we can run for you</h3>
+              <h3 className="text-lg font-semibold text-white">
+                What we can run for you
+              </h3>
             </div>
             <span className="hidden md:inline text-[12px] text-white/55">
               Click a card to jump to details.
@@ -957,9 +1037,9 @@ export default function SolutionsPage() {
 
         {/* Services body: sticky nav + zigzag */}
         <SectionShell className="pt-4 pb-10">
-          <div className="grid lg:grid-cols-[240px_minmax(0,1fr)] gap-6">
+          <div className="grid lg:grid-cols-[240px_minmax(0,1fr)] gap-6 lg:gap-10 items-start">
             <StickyNav activeId={activeId} />
-            <div className="space-y-12">
+            <div className="space-y-12 sm:space-y-14">
               {SOLUTIONS.map((s, i) => (
                 <SolutionZigzag key={s.id} data={s} index={i} />
               ))}
@@ -968,7 +1048,7 @@ export default function SolutionsPage() {
         </SectionShell>
 
         {/* Packages Switcher */}
-        <PackageSwitcher />
+        <PackageSwitcher tab={tab} setTab={setTab} />
 
         {/* Footer CTA */}
         <div className="text-center">
