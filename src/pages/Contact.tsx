@@ -18,6 +18,7 @@ import {
   Sparkles,
 } from "lucide-react";
 import { useState } from "react";
+import type { ReactNode, FormEvent, ChangeEvent } from "react";
 
 /* ====================== Local UI tokens & primitives ====================== */
 const COLORS = {
@@ -44,22 +45,30 @@ const gradientSoft = (
   accentStop = 0.1,
   backgroundStop = 0.88
 ) =>
-  `linear-gradient(${angle}deg, ${withAlpha(COLORS.primary, primaryStop)}, ${withAlpha(
-    COLORS.accent,
-    accentStop
-  )}, ${withAlpha(COLORS.background, backgroundStop)})`;
+  `linear-gradient(${angle}deg, ${withAlpha(
+    COLORS.primary,
+    primaryStop
+  )}, ${withAlpha(COLORS.accent, accentStop)}, ${withAlpha(
+    COLORS.background,
+    backgroundStop
+  )})`;
 
 function SectionShell({
   children,
   className,
 }: {
-  children: React.ReactNode;
+  children: ReactNode;
   className?: string;
 }) {
   return (
     <div
-      className={`rounded-3xl border border-white/10 backdrop-blur-xl px-6 sm:px-10 md:px-14 py-12 sm:py-16 ${className ?? ""}`}
-      style={{ background: gradientSoft(), boxShadow: "0 30px 80px -40px rgba(0,0,0,0.8)" }}
+      className={`rounded-3xl border border-white/10 backdrop-blur-xl px-6 sm:px-10 md:px-14 py-12 sm:py-16 ${
+        className ?? ""
+      }`}
+      style={{
+        background: gradientSoft(),
+        boxShadow: "0 30px 80px -40px rgba(0,0,0,0.8)",
+      }}
     >
       {children}
     </div>
@@ -69,10 +78,34 @@ function SectionShell({
 /* ====================== Local Testimonials (used by ContactSection) ====================== */
 function TestimonialsSection() {
   const testimonials = [
-    { name: "Mariam B.", role: "Head of Growth, Retail", quote: "Anonvic launched new funnels in three weeks. We now run weekly creative tests with clean revenue attribution.", result: "+162% ROAS" },
-    { name: "Omar S.", role: "Founder, DTC", quote: "They rebuilt our Shopify stack, automated retention, and our returning customer rate spiked within the first month.", result: "+38% LTV" },
-    { name: "J. Park", role: "VP Product, SaaS", quote: "The product pod shipped an MVP with analytics and docs. We onboarded customers the same week it went live.", result: "6-week MVP" },
-    { name: "Noor K.", role: "Marketing Lead, Fintech", quote: "SEO workflows, social playbooks, and media pacing finally live in one place. Reporting is a breeze for the exec team.", result: "+4x organic" },
+    {
+      name: "Mariam B.",
+      role: "Head of Growth, Retail",
+      quote:
+        "Anonvic launched new funnels in three weeks. We now run weekly creative tests with clean revenue attribution.",
+      result: "+162% ROAS",
+    },
+    {
+      name: "Omar S.",
+      role: "Founder, DTC",
+      quote:
+        "They rebuilt our Shopify stack, automated retention, and our returning customer rate spiked within the first month.",
+      result: "+38% LTV",
+    },
+    {
+      name: "J. Park",
+      role: "VP Product, SaaS",
+      quote:
+        "The product pod shipped an MVP with analytics and docs. We onboarded customers the same week it went live.",
+      result: "6-week MVP",
+    },
+    {
+      name: "Noor K.",
+      role: "Marketing Lead, Fintech",
+      quote:
+        "SEO workflows, social playbooks, and media pacing finally live in one place. Reporting is a breeze for the exec team.",
+      result: "+4x organic",
+    },
   ] as const;
 
   return (
@@ -84,11 +117,15 @@ function TestimonialsSection() {
           style={{ backgroundColor: withAlpha(COLORS.primary, 0.1) }}
         >
           <Quote className="h-6 w-6 text-white/70" />
-          <p className="mt-4 text-white/85 text-base leading-relaxed">"{t.quote}"</p>
+          <p className="mt-4 text-white/85 text-base leading-relaxed">
+            "{t.quote}"
+          </p>
           <div className="mt-6 flex items-center justify-between gap-3">
             <div>
               <p className="text-sm font-semibold text-white">{t.name}</p>
-              <p className="text-xs uppercase tracking-[0.18em] text-white/50">{t.role}</p>
+              <p className="text-xs uppercase tracking-[0.18em] text-white/50">
+                {t.role}
+              </p>
             </div>
             <span className="inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-white/10 px-3 py-1 text-xs text-white/80">
               <Sparkles className="h-3.5 w-3.5" />
@@ -103,24 +140,51 @@ function TestimonialsSection() {
 
 /* ====================== Local ContactSection (form + cards + socials) ====================== */
 function ContactSection() {
-  const [formData, setFormData] = useState({ name: "", email: "", message: "" });
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    message: "",
+  });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    if (!formData.name || !formData.email || !formData.message) return;
+
     setIsSubmitting(true);
-    // TODO: replace with real submit -> fetch("/api/contact", { method:"POST", body: JSON.stringify(formData) })
-    setTimeout(() => {
-      setIsSubmitting(false);
+    setSubmitted(false);
+
+    try {
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+
+      if (!res.ok) {
+        throw new Error("Failed to submit");
+      }
+
       setSubmitted(true);
       setFormData({ name: "", email: "", message: "" });
+    } catch (err) {
+      console.error("Contact form submission error:", err);
+      alert(
+        "Something went wrong while sending your message. Please try again or email hello@anonvic.com."
+      );
+    } finally {
+      setIsSubmitting(false);
       setTimeout(() => setSubmitted(false), 3000);
-    }, 1500);
+    }
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+  const handleChange = (
+    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const socials = [
@@ -135,28 +199,54 @@ function ContactSection() {
       {/* Left: intro + direct contacts + socials + testimonials */}
       <div className="space-y-8">
         <div>
-          <h3 className="text-2xl sm:text-3xl font-bold text-white mb-4">Let's Build Growth</h3>
+          <h3 className="text-2xl sm:text-3xl font-bold text-white mb-4">
+            Let's Build Growth
+          </h3>
           <p className="text-[#A5ADCF] text-lg leading-relaxed mb-6">
-            Anonvic blends <span className="text-[#4F46E5] font-medium">digital marketing</span> with{" "}
-            <span className="text-[#4F46E5] font-medium">software craftsmanship</span>. Tell us what you're trying to ship, and we'll propose the fastest path to impact.
+            Anonvic blends{" "}
+            <span className="text-[#4F46E5] font-medium">
+              digital marketing
+            </span>{" "}
+            with{" "}
+            <span className="text-[#4F46E5] font-medium">
+              software craftsmanship
+            </span>
+            . Tell us what you're trying to ship, and we'll propose the fastest
+            path to impact.
           </p>
         </div>
 
         <div className="grid sm:grid-cols-2 gap-4">
-          <div className="p-6 rounded-2xl border border-white/10" style={{ backgroundColor: withAlpha(COLORS.primary, 0.1) }}>
+          <div
+            className="p-6 rounded-2xl border border-white/10"
+            style={{ backgroundColor: withAlpha(COLORS.primary, 0.1) }}
+          >
             <div className="flex items-center gap-3 mb-3">
               <Mail className="h-6 w-6 text-[#4F46E5]" />
               <h4 className="font-semibold text-white">Email</h4>
             </div>
-            <a href="mailto:hello@anonvic.com" className="text-[#A5ADCF] hover:text-white">hello@anonvic.com</a>
+            <a
+              href="mailto:hello@anonvic.com"
+              className="text-[#A5ADCF] hover:text-white"
+            >
+              hello@anonvic.com
+            </a>
           </div>
 
-          <div className="p-6 rounded-2xl border border-white/10" style={{ backgroundColor: withAlpha(COLORS.primary, 0.1) }}>
+          <div
+            className="p-6 rounded-2xl border border-white/10"
+            style={{ backgroundColor: withAlpha(COLORS.primary, 0.1) }}
+          >
             <div className="flex items-center gap-3 mb-3">
               <Phone className="h-6 w-6 text-[#4F46E5]" />
               <h4 className="font-semibold text-white">Phone</h4>
             </div>
-            <a href="tel:+201148000500" className="text-[#A5ADCF] hover:text-white">+20 114 800 0500</a>
+            <a
+              href="tel:+201148000500"
+              className="text-[#A5ADCF] hover:text-white"
+            >
+              +20 114 800 0500
+            </a>
           </div>
         </div>
 
@@ -183,7 +273,12 @@ function ContactSection() {
       <div className="relative">
         <form onSubmit={handleSubmit} className="space-y-6" aria-live="polite">
           <div>
-            <label htmlFor="name" className="block text-sm font-medium text-[#A5ADCF] mb-2">Name</label>
+            <label
+              htmlFor="name"
+              className="block text-sm font-medium text-[#A5ADCF] mb-2"
+            >
+              Name
+            </label>
             <input
               type="text"
               id="name"
@@ -198,7 +293,12 @@ function ContactSection() {
           </div>
 
           <div>
-            <label htmlFor="email" className="block text-sm font-medium text-[#A5ADCF] mb-2">Email</label>
+            <label
+              htmlFor="email"
+              className="block text-sm font-medium text-[#A5ADCF] mb-2"
+            >
+              Email
+            </label>
             <input
               type="email"
               id="email"
@@ -213,7 +313,12 @@ function ContactSection() {
           </div>
 
           <div>
-            <label htmlFor="message" className="block text-sm font-medium text-[#A5ADCF] mb-2">Message</label>
+            <label
+              htmlFor="message"
+              className="block text-sm font-medium text-[#A5ADCF] mb-2"
+            >
+              Message
+            </label>
             <textarea
               id="message"
               name="message"
@@ -231,7 +336,10 @@ function ContactSection() {
             type="submit"
             disabled={isSubmitting}
             className="w-full group relative px-6 py-4 rounded-xl text-white font-semibold transition-all duration-300 hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus-visible:ring-2 focus-visible:ring-[#4F46E5]/60"
-            style={{ backgroundColor: withAlpha(COLORS.primary, 0.24), boxShadow: "0 22px 45px -22px rgba(0,0,0,0.55)" }}
+            style={{
+              backgroundColor: withAlpha(COLORS.primary, 0.24),
+              boxShadow: "0 22px 45px -22px rgba(0,0,0,0.55)",
+            }}
           >
             <span
               className="absolute -inset-[2px] rounded-xl opacity-0 blur-md transition-opacity duration-300 group-hover:opacity-80"
@@ -290,7 +398,7 @@ export default function ContactPage() {
               target="_blank"
               rel="noreferrer noopener"
               className="group rounded-2xl border border-white/12 p-6 flex items-start gap-4 transition hover:border-white/25"
-              style={{ backgroundColor: withAlpha(COLORS.primary, 0.10) }}
+              style={{ backgroundColor: withAlpha(COLORS.primary, 0.1) }}
             >
               <span
                 className="grid h-11 w-11 place-items-center rounded-xl border border-white/15"
@@ -313,7 +421,7 @@ export default function ContactPage() {
             <a
               href="mailto:hello@anonvic.com"
               className="group rounded-2xl border border-white/12 p-6 flex items-start gap-4 transition hover:border-white/25"
-              style={{ backgroundColor: withAlpha(COLORS.primary, 0.10) }}
+              style={{ backgroundColor: withAlpha(COLORS.primary, 0.1) }}
             >
               <span
                 className="grid h-11 w-11 place-items-center rounded-xl border border-white/15"
@@ -324,7 +432,7 @@ export default function ContactPage() {
               <div className="min-w-0">
                 <h3 className="text-white font-semibold">Email</h3>
                 <p className="text-sm text-white/70">hello@anonvic.com</p>
-                <span className="inline-flex items-center gap-1 text-sm mt-2 text-white/90">
+                <span className="inline-flex items-center gap-1 text-sm mt-2 text:white/90">
                   Write to us <ArrowRight className="h-4 w-4" />
                 </span>
               </div>
@@ -334,7 +442,7 @@ export default function ContactPage() {
             <a
               href="tel:+201148000500"
               className="group rounded-2xl border border-white/12 p-6 flex items-start gap-4 transition hover:border-white/25"
-              style={{ backgroundColor: withAlpha(COLORS.primary, 0.10) }}
+              style={{ backgroundColor: withAlpha(COLORS.primary, 0.1) }}
             >
               <span
                 className="grid h-11 w-11 place-items-center rounded-xl border border-white/15"
@@ -366,7 +474,9 @@ export default function ContactPage() {
               style={{ backgroundColor: withAlpha(COLORS.primary, 0.08) }}
             >
               <p className="text-sm text-white/70">
-                <span className="font-semibold text-white">Response time:</span>{" "}
+                <span className="font-semibold text-white">
+                  Response time:
+                </span>{" "}
                 We usually reply within one business day. For urgent launches,
                 add <span className="text-white">“rush”</span> to your subject.
               </p>
@@ -376,7 +486,7 @@ export default function ContactPage() {
               style={{ backgroundColor: withAlpha(COLORS.primary, 0.08) }}
             >
               <p className="text-sm text-white/70">
-                <span className="font-semibold text-white">NDA-friendly:</span>{" "}
+                <span className="font-semibold text:white">NDA-friendly:</span>{" "}
                 Happy to sign mutual NDAs before deeper scoping.
               </p>
             </div>
@@ -385,8 +495,8 @@ export default function ContactPage() {
               style={{ backgroundColor: withAlpha(COLORS.primary, 0.08) }}
             >
               <p className="text-sm text-white/70">
-                <span className="font-semibold text-white">Next step:</span>{" "}
-                We’ll share a short plan with timeline, resourcing, and pricing.
+                <span className="font-semibold text-white">Next step:</span> We’ll
+                share a short plan with timeline, resourcing, and pricing.
               </p>
             </div>
           </div>
@@ -439,7 +549,7 @@ export default function ContactPage() {
             <a
               href="mailto:support@anonvic.com"
               className="group rounded-2xl border border-white/12 p-6 flex items-start gap-3 transition hover:border-white/25"
-              style={{ backgroundColor: withAlpha(COLORS.primary, 0.10) }}
+              style={{ backgroundColor: withAlpha(COLORS.primary, 0.1) }}
             >
               <Mail className="h-5 w-5 text-white mt-0.5" />
               <div>
@@ -451,7 +561,7 @@ export default function ContactPage() {
             <a
               href="mailto:billing@anonvic.com"
               className="group rounded-2xl border border-white/12 p-6 flex items-start gap-3 transition hover:border-white/25"
-              style={{ backgroundColor: withAlpha(COLORS.primary, 0.10) }}
+              style={{ backgroundColor: withAlpha(COLORS.primary, 0.1) }}
             >
               <FileText className="h-5 w-5 text-white mt-0.5" />
               <div>
@@ -463,7 +573,7 @@ export default function ContactPage() {
             <a
               href="mailto:careers@anonvic.com"
               className="group rounded-2xl border border-white/12 p-6 flex items-start gap-3 transition hover:border-white/25"
-              style={{ backgroundColor: withAlpha(COLORS.primary, 0.10) }}
+              style={{ backgroundColor: withAlpha(COLORS.primary, 0.1) }}
             >
               <ArrowRight className="h-5 w-5 text-white mt-0.5" />
               <div>
@@ -478,7 +588,6 @@ export default function ContactPage() {
       {/* JSON-LD: Organization + ContactPoint */}
       <script
         type="application/ld+json"
-        
         dangerouslySetInnerHTML={{
           __html: JSON.stringify({
             "@context": "https://schema.org",
@@ -486,9 +595,24 @@ export default function ContactPage() {
             name: "Anonvic",
             url: "https://anonvic.com",
             contactPoint: [
-              { "@type": "ContactPoint", email: "hello@anonvic.com", contactType: "sales", availableLanguage: ["en"] },
-              { "@type": "ContactPoint", email: "support@anonvic.com", contactType: "customer support", availableLanguage: ["en"] },
-              { "@type": "ContactPoint", email: "billing@anonvic.com", contactType: "billing", availableLanguage: ["en"] },
+              {
+                "@type": "ContactPoint",
+                email: "hello@anonvic.com",
+                contactType: "sales",
+                availableLanguage: ["en"],
+              },
+              {
+                "@type": "ContactPoint",
+                email: "support@anonvic.com",
+                contactType: "customer support",
+                availableLanguage: ["en"],
+              },
+              {
+                "@type": "ContactPoint",
+                email: "billing@anonvic.com",
+                contactType: "billing",
+                availableLanguage: ["en"],
+              },
             ],
             sameAs: [
               "https://twitter.com/",
