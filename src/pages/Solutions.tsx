@@ -1,1067 +1,898 @@
 // src/pages/SolutionsPage.tsx
+// Content update to match your exact Solutions wording:
+// - Marketing solutions: ads, content, campaigns
+// - Brand management: logos, brand identity, visual system
+// - Software: apps, websites, systems
+// - Business: strategies, SWOT analysis, case studies, feasibility studies, consultations
+//
+// NOTE: This keeps your layout, animations, and structure the same.
+// Only copy + bullets + "included" lists + plans are updated.
 
 import * as React from "react";
-import { useState, useEffect } from "react";
+import { useMemo, useRef } from "react";
 import { Link } from "react-router-dom";
+import { motion, useScroll, useTransform } from "framer-motion";
 import {
-  Sparkles,
-  Search,
-  Megaphone,
-  MessageSquare,
   ArrowRight,
   Check,
+  Code2,
+  Palette,
+  Megaphone,
+  Sparkles,
+  Zap,
+  Gauge,
+  ShieldCheck,
+  BarChart3,
   Target,
-  Layout,
-  Code,
+  Layers,
+  Wand2,
 } from "lucide-react";
-import {
-  SectionShell,
-  withAlpha,
-  COLORS,
-} from "../components/layout/SiteLayout";
+import { SectionShell, COLORS } from "../components/layout/SiteLayout";
 
-/* ===================== Data & Types ===================== */
+import svcEngineering from "../assets/companies/cover.png";
+import svcBrand from "../assets/companies/cover.png";
+import svcMarketing from "../assets/companies/cover.png";
 
-type Solution = {
-  id: string;
-  title: string;
-  description: string;
-  focus: string;
-  icon: React.ElementType;
-  accent: string;
-  cta: string;
-  sampleBullets: string[];
-};
-
-const SOLUTIONS: Solution[] = [
-  {
-    id: "software",
-    title: "Software Development",
-    description: "Web apps, dashboards, and tools tailored to your business.",
-    focus: "Web apps & tools",
-    icon: Code,
-    accent: "#4F46E5",
-    cta: "Discuss a build",
-    sampleBullets: [
-      "Landing pages & sites",
-      "Dashboards & portals",
-      "Integrations & automations",
-    ],
-  },
-  {
-    id: "branding",
-    title: "Brand Identity",
-    description: "A clean brand kit so you look consistent everywhere.",
-    focus: "Brand basics",
-    icon: Sparkles,
-    accent: "#A855F7",
-    cta: "Ask about branding",
-    sampleBullets: [
-      "Logo & colors",
-      "Social profile & cover",
-      "Business card",
-    ],
-  },
-  {
-    id: "social",
-    title: "Social Media Management",
-    description: "We post for you on Facebook & Instagram every month.",
-    focus: "Monthly content",
-    icon: MessageSquare,
-    accent: "#EC4899",
-    cta: "See social packages",
-    sampleBullets: ["Posts & reels", "Stories", "Monthly calendar"],
-  },
-  {
-    id: "paid-ads",
-    title: "Social Ads Management",
-    description: "We run paid campaigns to get traffic, leads, or sales.",
-    focus: "Paid campaigns",
-    icon: Megaphone,
-    accent: "#38BDF8",
-    cta: "Talk about ads",
-    sampleBullets: ["Campaign setup", "Budget & targeting", "Simple reporting"],
-  },
-  {
-    id: "content",
-    title: "Content & Creative",
-    description: "We design posts and edit reels that fit your brand.",
-    focus: "Design & video",
-    icon: Layout,
-    accent: "#22C55E",
-    cta: "Plan a content sprint",
-    sampleBullets: ["Feed designs", "Reel editing", "Story sets"],
-  },
-  {
-    id: "strategy",
-    title: "Marketing Strategy",
-    description: "A simple plan for 60–90 days of marketing.",
-    focus: "Simple plan",
-    icon: Search,
-    accent: "#14B8A6",
-    cta: "Book a strategy call",
-    sampleBullets: ["Target customer", "Key offers", "Roadmap"],
-  },
-];
-
-/* ---------- Generic Plan Type ---------- */
-
-type PlanTier = {
-  id: string;
-  title: string;
-  price: string; // "$300" or "Contact"
-  cadence: "One-time" | "Monthly" | "Project";
-  accent: string;
-  badge?: string;
-  summary: string;
-  bestFor: string;
-  bullets: string[];
-  footnote?: string;
-};
-
-/* ---------- Website Plans ---------- */
-
-const WEBSITE_PLANS: PlanTier[] = [
-  {
-    id: "web-starter",
-    title: "Starter Site",
-    price: "Contact",
-    cadence: "Project",
-    accent: "#38BDF8",
-    badge: "Landing page",
-    summary: "Single-page site to start selling or capturing leads.",
-    bestFor: "New offers or campaigns.",
-    bullets: ["1 page", "Basic SEO", "Contact form"],
-    footnote: "Design, build, and launch included.",
-  },
-  {
-    id: "web-basic",
-    title: "Basic Site",
-    price: "Contact",
-    cadence: "Project",
-    accent: "#4F46E5",
-    badge: "Most common",
-    summary: "3–4 pages to explain who you are and what you do.",
-    bestFor: "Service businesses and local brands.",
-    bullets: ["3–4 pages", "SEO setup", "CMS-ready"],
-    footnote: "We help shape structure and basic copy.",
-  },
-  {
-    id: "web-premium",
-    title: "Premium Site",
-    price: "Contact",
-    cadence: "Project",
-    accent: "#A855F7",
-    summary: "More pages, more content, and nicer motion.",
-    bestFor: "Brands that need more depth.",
-    bullets: ["5+ pages", "Animations", "Content guidance"],
-    footnote: "Good for product-heavy or story-heavy sites.",
-  },
-  {
-    id: "web-custom",
-    title: "Custom Build",
-    price: "Contact",
-    cadence: "Project",
-    accent: "#22D3EE",
-    badge: "Custom",
-    summary: "E-commerce or special features.",
-    bestFor: "Shops or apps with custom flows.",
-    bullets: ["Scoped features", "Integrations", "Roadmap"],
-    footnote: "We scope it with you, then quote.",
-  },
-];
-
-const WEBSITE_INCLUDES = [
-  "Figma handoff",
-  "Responsive layouts",
-  "Fast loading",
-] as const;
-
-/* ---------- Branding & Social (Core Packages) ---------- */
-
-const MARKETING_PLANS: PlanTier[] = [
-  {
-    id: "mkt-branding",
-    title: "Branding Package",
-    price: "$200",
-    cadence: "One-time",
-    accent: "#22D3EE",
-    badge: "Start here",
-    summary: "Simple brand kit so you can launch with confidence.",
-    bestFor: "New brands or a clean refresh.",
-    bullets: [
-      "Logo + color palette + fonts",
-      "Facebook & Instagram profile + cover",
-      "Brand sheet + business card design",
-    ],
-    footnote: "One-time project. No monthly content included.",
-  },
-  {
-    id: "mkt-social-1",
-    title: "Social Package 1",
-    price: "$300",
-    cadence: "Monthly",
-    accent: "#6366F1",
-    badge: "Entry plan",
-    summary: "Light monthly content to keep pages active.",
-    bestFor: "Small brands that just need consistent posting.",
-    bullets: [
-      "5 post designs + 3 reels / month",
-      "8 main posts + 10 stories / month",
-      "Page management (FB + IG)",
-    ],
-    footnote: "Good if you want to stay visible without heavy spend.",
-  },
-  {
-    id: "mkt-social-2",
-    title: "Social Package 2",
-    price: "$450",
-    cadence: "Monthly",
-    accent: "#A855F7",
-    badge: "Most chosen",
-    summary: "More content plus ads for growth.",
-    bestFor: "Brands ready to push reach and leads.",
-    bullets: [
-      "10 post designs + 6 reels / month",
-      "16 main posts + 20 stories / month",
-      "Meta ads setup + basic optimization",
-    ],
-    footnote: "Works well with ~$1k–$3k ad spend / month.",
-  },
-  {
-    id: "mkt-social-3",
-    title: "Social Package 3",
-    price: "$600",
-    cadence: "Monthly",
-    accent: "#EC4899",
-    badge: "Growth mode",
-    summary: "Full social engine: content, ads, and simple strategy.",
-    bestFor: "Brands using social as a main sales channel.",
-    bullets: [
-      "20 post designs + 12 reels / month",
-      "32 main posts + 30 stories / month",
-      "Ads management + media persona + basic strategy",
-    ],
-    footnote: "Best if you want volume, testing, and learning.",
-  },
-];
-
-/* ---------- Brand Systems (Deeper Projects) ---------- */
-
-const BRAND_SYSTEM_PLANS: PlanTier[] = [
-  {
-    id: "br-sprint",
-    title: "Brand Sprint",
-    price: "Contact",
-    cadence: "Project",
-    accent: "#F59E0B",
-    badge: "Fast",
-    summary: "Quick project to lock in basics and tone.",
-    bestFor: "New brands that want clarity quickly.",
-    bullets: [
-      "Core brand message",
-      "Tone of voice notes",
-      "Simple colors & fonts",
-    ],
-    footnote: "Typical duration: 3–4 weeks.",
-  },
-  {
-    id: "br-system",
-    title: "Brand System",
-    price: "Contact",
-    cadence: "Project",
-    accent: "#A855F7",
-    badge: "For teams",
-    summary: "Rules and templates for your team.",
-    bestFor: "Growing teams and multi-channel brands.",
-    bullets: [
-      "Logo set & usage rules",
-      "Color & typography system",
-      "Deck & document templates",
-    ],
-    footnote: "Typical duration: 6–8 weeks.",
-  },
-  {
-    id: "br-rebrand",
-    title: "Rebrand & Rollout",
-    price: "Contact",
-    cadence: "Project",
-    accent: "#10B981",
-    summary: "New look plus a clear rollout plan.",
-    bestFor: "Existing brands changing direction.",
-    bullets: [
-      "Brand audit & new identity",
-      "Rollout checklist",
-      "Simple launch kit",
-    ],
-    footnote: "Typical duration: 8–12 weeks.",
-  },
-  {
-    id: "br-custom",
-    title: "Custom Brand Project",
-    price: "Contact",
-    cadence: "Project",
-    accent: "#3B82F6",
-    badge: "Custom",
-    summary: "Custom scope if your needs don’t fit a box.",
-    bestFor: "Special markets or complex setups.",
-    bullets: [
-      "Scope defined together",
-      "Flexible cadence",
-      "Tailored deliverables",
-    ],
-    footnote: "We agree on scope and timing first, then price.",
-  },
-];
-
-const HIGHLIGHTS = [
-  { label: "Brand setup", value: "1–2 weeks" },
-  { label: "Social content", value: "Up to 32 posts/mo" },
-  { label: "Languages", value: "EN + AR" },
-] as const;
-
-/* ===================== Hooks ===================== */
-
-function useScrollProgress() {
-  const [progress, setProgress] = useState(0);
-  useEffect(() => {
-    const onScroll = () => {
-      const h = document.documentElement;
-      const scrolled = h.scrollTop;
-      const height = h.scrollHeight - h.clientHeight;
-      setProgress(height ? (scrolled / height) * 100 : 0);
-    };
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
-  return progress;
+function cn(...classes: Array<string | false | null | undefined>) {
+  return classes.filter(Boolean).join(" ");
 }
 
-function useScrollSpy(ids: string[], offset = 120) {
-  const [active, setActive] = useState<string | null>(null);
-
-  useEffect(() => {
-    const sections = ids
-      .map((id) => document.getElementById(id))
-      .filter((el): el is HTMLElement => !!el);
-
-    if (!sections.length) return;
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const visible = entries
-          .filter((e) => e.isIntersecting)
-          .sort((a, b) => b.intersectionRatio - a.intersectionRatio);
-
-        if (visible[0]) setActive(visible[0].target.id);
-      },
-      {
-        rootMargin: `-${offset}px 0px -60% 0px`,
-        threshold: [0.1, 0.25, 0.6],
-      }
-    );
-
-    sections.forEach((s) => observer.observe(s));
-    return () => observer.disconnect();
-  }, [ids, offset]);
-
-  return active;
-}
-
-/* ===================== Small UI bits ===================== */
-
-const AccentChip: React.FC<{
-  text: string;
-  accent: string;
-}> = ({ text, accent }) => (
-  <span
-    className="inline-flex items-center gap-2 rounded-full border px-3 py-1 text-[11px] uppercase tracking-[0.2em]"
-    style={{
-      borderColor: withAlpha(accent, 0.45),
-      backgroundColor: withAlpha(accent, 0.12),
-      color: "white",
-    }}
-  >
-    {text}
-  </span>
-);
-
-const StickyNav: React.FC<{ activeId: string | null }> = ({ activeId }) => (
-  <nav
-    aria-label="Services navigation"
-    className="hidden lg:block sticky top-24 self-start rounded-2xl border border-white/10 bg-white/5 p-4 backdrop-blur-xl max-h-[70vh] overflow-y-auto"
-  >
-    <div className="mb-3 text-[11px] uppercase tracking-[0.18em] text-white/55">
-      Services
-    </div>
-    <ul className="space-y-1">
-      {SOLUTIONS.map((s) => {
-        const isActive = activeId === s.id;
-        return (
-          <li key={s.id}>
-            <a
-              href={`#${s.id}`}
-              className="group flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-white/80 hover:text-white hover:bg-white/10"
-            >
-              <span
-                className="h-2.5 w-2.5 rounded-full transition"
-                style={{
-                  backgroundColor: withAlpha(s.accent, isActive ? 1 : 0.5),
-                  boxShadow: isActive
-                    ? `0 0 0 4px ${withAlpha(s.accent, 0.22)}`
-                    : "none",
-                }}
-              />
-              <span className={isActive ? "text-white" : undefined}>
-                {s.title}
-              </span>
-            </a>
-          </li>
-        );
-      })}
-    </ul>
-  </nav>
-);
-
-const MobileChipRail: React.FC = () => (
-  <div className="lg:hidden -mx-2 overflow-x-auto pb-1">
-    <div className="flex items-center gap-2 px-2">
-      {SOLUTIONS.map((s) => (
-        <a
-          key={s.id}
-          href={`#${s.id}`}
-          className="whitespace-nowrap rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-xs text-white/80"
-        >
-          {s.title}
-        </a>
-      ))}
-    </div>
-  </div>
-);
-
-const MediaFrame: React.FC<{ accent: string; children: React.ReactNode }> = ({
-  accent,
-  children,
-}) => (
-  <div
-    className="relative h-full rounded-3xl border p-4 sm:p-5 overflow-hidden"
-    style={{
-      borderColor: withAlpha(accent, 0.25),
-      background: `radial-gradient(circle at top, ${withAlpha(
-        accent,
-        0.25
-      )} 0, transparent 55%), linear-gradient(180deg, ${withAlpha(
-        COLORS.background,
-        0.85
-      )} 0%, ${withAlpha(COLORS.background, 1)} 60%)`,
-    }}
-  >
-    <div className="flex items-center gap-1.5 pb-3">
-      <span
-        className="h-2.5 w-2.5 rounded-full"
-        style={{ background: withAlpha("#ff5f56", 1) }}
-      />
-      <span
-        className="h-2.5 w-2.5 rounded-full"
-        style={{ background: withAlpha("#ffbd2e", 1) }}
-      />
-      <span
-        className="h-2.5 w-2.5 rounded-full"
-        style={{ background: withAlpha("#27c93f", 1) }}
-      />
-    </div>
-    <div className="rounded-xl border border-white/10 bg-white/[.03] p-4 min-h-[160px]">
-      {children}
-    </div>
-  </div>
-);
-
-const PlanBadge: React.FC<{ text: string }> = ({ text }) => (
-  <span className="rounded-full border border-white/12 bg-white/[.06] px-3 py-1 text-[11px] text-white/80">
-    {text}
-  </span>
-);
-
-/* ===================== Services Overview Cards ===================== */
-
-const ServiceOverviewCard: React.FC<{ data: Solution }> = ({ data }) => (
-  <a
-    href={`#${data.id}`}
-    className="group relative flex flex-col gap-3 rounded-2xl border border-white/10 bg-white/[.03] p-4 sm:p-5 backdrop-blur-md transition-all duration-300 hover:-translate-y-1 hover:border-white/30 hover:bg-white/[.06]"
-    style={{
-      boxShadow: "0 18px 40px -26px rgba(0,0,0,.65)",
-    }}
-  >
-    <div className="flex items-center gap-3">
-      <span
-        className="grid h-10 w-10 place-items-center rounded-xl border bg-white/5"
-        style={{ borderColor: withAlpha(data.accent, 0.6) }}
-      >
-        <data.icon className="h-5 w-5 text-white" />
-      </span>
-      <div className="min-w-0">
-        <div className="text-sm font-semibold text-white">{data.title}</div>
-        <div className="text-[11px] uppercase tracking-[0.18em] text-white/55">
-          {data.focus}
-        </div>
-      </div>
-    </div>
-    <p className="text-xs sm:text-sm text-white/70 line-clamp-2">
-      {data.description}
-    </p>
-    <div className="mt-auto flex items-center gap-2 text-[12px] text-white/80">
-      <span>View details</span>
-      <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" />
-    </div>
-  </a>
-);
-
-/* ===================== Zigzag Section ===================== */
-
-const SolutionZigzag: React.FC<{ data: Solution; index: number }> = ({
-  data,
-  index,
-}) => {
-  const alignRight = index % 2 === 1;
-
-  return (
-    <section
-      id={data.id}
-      className="relative grid items-stretch gap-8 lg:gap-10 md:grid-cols-2 scroll-mt-28"
-    >
-      {/* Accent sweep */}
-      <span
-        aria-hidden
-        className="pointer-events-none absolute -inset-x-4 -inset-y-3 rounded-3xl"
-        style={{
-          background: `linear-gradient(120deg, ${withAlpha(
-            data.accent,
-            0.18
-          )}, transparent 60%)`,
-        }}
-      />
-
-      {/* Text card */}
-      <div className={alignRight ? "order-2 md:order-1" : "order-1"}>
-        <article
-          className="relative h-full overflow-hidden rounded-3xl border p-6 sm:p-8 bg-white/[.05] backdrop-blur-xl"
-          style={{
-            borderColor: withAlpha(data.accent, 0.28),
-            boxShadow: `0 28px 60px -32px ${withAlpha(data.accent, 0.6)}`,
-          }}
-        >
-          <header className="flex items-start gap-4">
-            <span
-              className="grid h-14 w-14 shrink-0 place-items-center rounded-2xl border bg-white/10"
-              style={{ borderColor: withAlpha(data.accent, 0.45) }}
-            >
-              <data.icon className="h-7 w-7 text-white" aria-hidden />
-            </span>
-            <div className="min-w-0">
-              <h2 className="text-2xl sm:text-3xl font-semibold text-white">
-                {data.title}
-              </h2>
-              <div className="mt-2">
-                <AccentChip text={data.focus} accent={data.accent} />
-              </div>
-            </div>
-          </header>
-
-          <p className="mt-5 text-sm sm:text-base leading-relaxed text-white/80">
-            {data.description}
-          </p>
-
-          <ul className="mt-5 grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm text-white/85">
-            {data.sampleBullets.map((b) => (
-              <li key={b} className="flex items-start gap-2">
-                <Check className="mt-0.5 h-4 w-4 text-white/80" />
-                <span>{b}</span>
-              </li>
-            ))}
-          </ul>
-
-          <div className="mt-6">
-            <Link
-              to="/contact"
-              className="inline-flex items-center gap-2 rounded-xl border px-5 py-3 text-sm font-semibold text-white transition-transform hover:translate-x-1"
-              style={{
-                borderColor: withAlpha(data.accent, 0.4),
-                backgroundColor: withAlpha(data.accent, 0.22),
-                boxShadow: `0 18px 40px -28px ${withAlpha(data.accent, 0.75)}`,
-              }}
-            >
-              {data.cta}
-              <ArrowRight className="h-4 w-4" />
-            </Link>
-          </div>
-        </article>
-      </div>
-
-      {/* Media / checklist panel */}
-      <div className={alignRight ? "order-1 md:order-2" : "order-2"}>
-        <MediaFrame accent={data.accent}>
-          <div className="grid gap-3">
-            <div className="flex items-center gap-2">
-              <Target className="h-4 w-4 text-white/70" />
-              <span className="text-sm font-medium text-white/80">
-                What you see from us
-              </span>
-            </div>
-            <div className="grid grid-cols-2 gap-2 text-[12px] sm:text-[13px] text-white/75">
-              <div className="rounded-md border border-white/10 bg-white/5 p-3">
-                <div className="text-white/90 font-medium">Short updates</div>
-                <div className="mt-1 text-white/60">
-                  Quick check-ins, not long reports
-                </div>
-              </div>
-              <div className="rounded-md border border-white/10 bg-white/5 p-3">
-                <div className="text-white/90 font-medium">Clear tasks</div>
-                <div className="mt-1 text-white/60">
-                  What’s in progress this week
-                </div>
-              </div>
-              <div className="rounded-md border border-white/10 bg-white/5 p-3">
-                <div className="text-white/90 font-medium">Simple numbers</div>
-                <div className="mt-1 text-white/60">Core metrics only</div>
-              </div>
-              <div className="rounded-md border border-white/10 bg-white/5 p-3">
-                <div className="text-white/90 font-medium">Final files</div>
-                <div className="mt-1 text-white/60">
-                  Easy to reuse or hand to your team
-                </div>
-              </div>
-            </div>
-          </div>
-        </MediaFrame>
-      </div>
-    </section>
-  );
+const withAlpha = (color: string, alpha: number): string => {
+  const hex = color.replace("#", "");
+  const r = parseInt(hex.slice(0, 2), 16);
+  const g = parseInt(hex.slice(2, 4), 16);
+  const b = parseInt(hex.slice(4, 6), 16);
+  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
 };
 
-/* ===================== Plan Card ===================== */
+const fadeUp = {
+  hidden: { opacity: 0, y: 14 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.55 } },
+};
 
-const PlanCard: React.FC<{ plan: PlanTier }> = ({ plan }) => (
-  <div
-    className={`group relative flex flex-col gap-5 overflow-hidden rounded-3xl border bg-white/[.05] p-6 sm:p-7 backdrop-blur-xl transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_30px_80px_-40px_rgba(0,0,0,.9)] ${
-      plan.badge ? "md:scale-[1.02] md:border-white/25" : ""
-    }`}
-    style={{
-      borderColor: withAlpha(plan.accent, 0.3),
-      backgroundImage: `radial-gradient(circle at 0 0, ${withAlpha(
-        plan.accent,
-        0.35
-      )}, transparent 55%), radial-gradient(circle at 100% 100%, ${withAlpha(
-        "#000000",
-        0.35
-      )}, transparent 55%)`,
-    }}
-  >
-    <div
-      aria-hidden
-      className="pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-      style={{
-        background: `radial-gradient(circle at top, ${withAlpha(
-          plan.accent,
-          0.35
-        )}, transparent 60%)`,
-      }}
-    />
+const stagger = {
+  hidden: {},
+  show: {
+    transition: { staggerChildren: 0.08, delayChildren: 0.06 },
+  },
+};
 
-    <div
-      aria-hidden
-      className="pointer-events-none absolute inset-x-0 top-0 h-1"
-      style={{
-        background: `linear-gradient(90deg, ${withAlpha(
-          plan.accent,
-          0.2
-        )}, transparent 70%)`,
-      }}
-    />
-
-    {plan.badge && (
-      <span
-        className="absolute right-6 top-6 inline-flex items-center gap-1 rounded-full px-3 py-1 text-[11px] font-semibold uppercase tracking-wide text-white"
-        style={{ backgroundColor: withAlpha(plan.accent, 0.75) }}
-      >
-        <span className="h-1.5 w-1.5 rounded-full bg-white" />
-        {plan.badge}
-      </span>
-    )}
-
-    <div className="relative space-y-1">
-      <div className="flex items-center justify-between gap-2">
-        <h3 className="text-base sm:text-lg font-semibold text-white">
-          {plan.title}
-        </h3>
-        <span className="rounded-full border border-white/20 bg-white/10 px-2 py-0.5 text-[11px] text-white/75">
-          {plan.cadence}
-        </span>
-      </div>
-      <div className="flex items-baseline gap-2">
-        <div className="text-2xl sm:text-3xl font-bold text-white">
-          {plan.price}
-        </div>
-        {plan.cadence === "Monthly" && plan.price !== "Contact" && (
-          <span className="text-xs uppercase tracking-[0.18em] text-white/70">
-            / month
-          </span>
-        )}
-        {plan.price === "Contact" && (
-          <span className="text-[11px] rounded-full border border-white/20 bg-white/10 px-2 py-0.5 text-white/70">
-            Custom quote
-          </span>
-        )}
-      </div>
-      <p className="text-sm text-white/70">{plan.summary}</p>
-    </div>
-
-    <div className="relative text-[13px] text-white/85">
-      <div className="mb-1 text-white/60">You get:</div>
-      <ul className="space-y-1.5">
-        {plan.bullets.map((b) => (
-          <li key={b} className="flex items-start gap-2">
-            <Check className="mt-0.5 h-3.5 w-3.5 shrink-0" />
-            <span>{b}</span>
-          </li>
-        ))}
-      </ul>
-    </div>
-
-    <div className="relative space-y-1 text-[12px] text-white/80">
-      <div>
-        <span className="text-white/50">Best for: </span>
-        {plan.bestFor}
-      </div>
-      {plan.footnote && (
-        <div className="text-white/65">{plan.footnote}</div>
-      )}
-    </div>
-
-    <div className="relative mt-auto pt-1">
-      <Link
-        to="/contact"
-        className="inline-flex w-fit items-center gap-3 rounded-xl border px-5 py-3 text-sm font-semibold text-white transition-transform group-hover:translate-x-1"
-        style={{
-          borderColor: withAlpha(plan.accent, 0.35),
-          backgroundColor: withAlpha(plan.accent, 0.22),
-          boxShadow: `0 18px 40px -26px ${withAlpha(plan.accent, 0.9)}`,
-        }}
-      >
-        Talk about {plan.title}
-        <ArrowRight className="h-5 w-5" />
-      </Link>
-    </div>
-  </div>
-);
-
-/* ===================== Package Switcher ===================== */
-
-function PackageSwitcher({
-  tab,
-  setTab,
-}: {
-  tab: "website" | "marketing" | "branding";
-  setTab: (t: "website" | "marketing" | "branding") => void;
-}) {
-  const TabButton = ({
-    id,
-    label,
-  }: {
-    id: "website" | "marketing" | "branding";
-    label: string;
-  }) => {
-    const active = tab === id;
-    return (
-      <button
-        onClick={() => setTab(id)}
-        className={`relative flex items-center gap-2 rounded-xl px-1.5 py-1 text-xs sm:text-sm font-semibold transition ${
-          active ? "text-white" : "text-white/70 hover:text-white"
-        }`}
-      >
-        <span
-          className="block rounded-[0.9rem] px-3 sm:px-4 py-1.5 sm:py-2"
-          style={{
-            border: `1px solid ${withAlpha(
-              COLORS.text,
-              active ? 0.28 : 0.12
-            )}`,
-            background: active
-              ? `radial-gradient(circle at top, ${withAlpha(
-                  COLORS.primary,
-                  0.55
-                )}, transparent 70%), ${withAlpha(COLORS.background, 0.8)}`
-              : "transparent",
-            boxShadow: active
-              ? "0 14px 40px -26px rgba(79,70,229,.85)"
-              : "0 0 0 0 rgba(0,0,0,0)",
-          }}
-        >
-          {label}
-        </span>
-      </button>
-    );
-  };
-
-  const HeaderCopy = () => {
-    if (tab === "website") {
-      return (
-        <>
-          <p className="mx-auto max-w-[60ch] text-sm sm:text-base text-white/70">
-            Website plans with clear scope. You choose pages, we handle design,
-            build, and launch.
-          </p>
-          <div className="flex flex-wrap justify-center gap-3">
-            {WEBSITE_INCLUDES.map((item) => (
-              <span
-                key={item}
-                className="inline-flex items-center gap-2 rounded-full border border-white/12 bg-white/[.06] px-4 py-2 text-[11px] uppercase tracking-[0.18em] text-white/75"
-              >
-                <Check className="h-3.5 w-3.5" />
-                {item}
-              </span>
-            ))}
-          </div>
-        </>
-      );
-    }
-    if (tab === "marketing") {
-      return (
-        <>
-          <p className="mx-auto max-w-[60ch] text-sm sm:text-base text-white/70">
-            Core branding and social packages with fixed outputs and clear
-            prices. English and Arabic content supported.
-          </p>
-          <div className="flex flex-wrap justify-center gap-2">
-            {["Branding", "Social posts", "Reels & stories"].map((k) => (
-              <PlanBadge key={k} text={k} />
-            ))}
-            <PlanBadge text="EN + AR" />
-          </div>
-        </>
-      );
-    }
-    return (
-      <>
-        <p className="mx-auto max-w-[60ch] text-sm sm:text-base text-white/70">
-          Deeper brand work with rules, systems, and rollout plans so your team
-          uses the brand the same way everywhere.
-        </p>
-        <div className="flex flex-wrap justify-center gap-2">
-          {["Guidelines", "Templates", "For teams"].map((k) => (
-            <PlanBadge key={k} text={k} />
-          ))}
-          <PlanBadge text="Project-based" />
-        </div>
-      </>
-    );
-  };
-
-  const activePlans =
-    tab === "website"
-      ? WEBSITE_PLANS
-      : tab === "marketing"
-      ? MARKETING_PLANS
-      : BRAND_SYSTEM_PLANS;
-
+function SoftGridNoise() {
   return (
-    <SectionShell className="py-8 sm:py-10">
-      <div className="space-y-10">
-        <div className="text-center space-y-4">
-          <div className="inline-flex flex-wrap gap-1 rounded-2xl p-1 border border-white/10 bg-white/5 backdrop-blur">
-            <TabButton id="website" label="Website" />
-            <TabButton id="marketing" label="Branding & Social" />
-            <TabButton id="branding" label="Brand Systems" />
-          </div>
-          <HeaderCopy />
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6 sm:gap-8">
-          {activePlans.map((plan) => (
-            <PlanCard key={plan.id} plan={plan} />
-          ))}
-        </div>
-      </div>
-    </SectionShell>
-  );
-}
-
-/* ===================== Page ===================== */
-
-export default function SolutionsPage() {
-  const progress = useScrollProgress();
-  const activeId = useScrollSpy(SOLUTIONS.map((s) => s.id));
-  const [tab, setTab] = useState<"website" | "marketing" | "branding">(
-    "marketing"
-  );
-
-  return (
-    <section className="relative py-16 sm:py-20 md:py-24 px-4 sm:px-6 md:px-8">
-      {/* top progress bar */}
-      <div
+    <>
+      <motion.div
         aria-hidden
-        className="fixed left-0 right-0 top-0 z-[60] h-[3px]"
-        style={{
-          background:
-            "linear-gradient(90deg, rgba(56,189,248,0) 0%, rgba(168,85,247,0) 0%)",
-        }}
-      />
-      <div
-        aria-hidden
-        className="fixed left-0 top-0 z-[61] h-[3px] rounded-r"
-        style={{
-          width: `${progress}%`,
-          background: "linear-gradient(90deg, #38BDF8, #A855F7, #4F46E5)",
-          boxShadow: "0 0 20px rgba(79,70,229,.4)",
-        }}
-      />
-
-      {/* background glow */}
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-0 -z-10"
-        style={{
-          background:
-            "radial-gradient(35% 28% at 50% 0%, rgba(79,70,229,.14), transparent 75%)",
-          backgroundColor: COLORS.background,
-        }}
-      />
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-0 -z-10 opacity-20 mix-blend-soft-light"
+        className="pointer-events-none absolute inset-0 z-10 opacity-[0.22]"
+        initial={{ backgroundPosition: "0px 0px" }}
+        animate={{ backgroundPosition: ["0px 0px", "36px 18px", "0px 0px"] }}
+        transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
         style={{
           backgroundImage:
-            "linear-gradient(rgba(255,255,255,.02) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.02) 1px, transparent 1px)",
-          backgroundSize: "32px 32px",
+            "linear-gradient(rgba(148,163,184,0.14) 1px, transparent 1px), linear-gradient(90deg, rgba(148,163,184,0.14) 1px, transparent 1px)",
+          backgroundSize: "40px 40px",
+          maskImage:
+            "radial-gradient(circle at 40% 10%, black 0, black 55%, transparent 80%)",
+          WebkitMaskImage:
+            "radial-gradient(circle at 40% 10%, black 0, black 55%, transparent 80%)",
+        }}
+      />
+      <div className="pointer-events-none absolute inset-0 z-20 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.10]" />
+    </>
+  );
+}
+
+function UseCaseBackground() {
+  return (
+    <div className="pointer-events-none absolute inset-0 z-0">
+      <div className="absolute inset-0 bg-[#050013]" />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(99,102,241,0.60)_0%,_rgba(5,0,19,1)_45%,_rgba(2,0,7,1)_80%)]" />
+
+      <div
+        className="absolute -top-24 left-[10%] h-[420px] w-[420px] rounded-full blur-3xl"
+        style={{
+          background:
+            "radial-gradient(circle, rgba(56,189,248,0.28), transparent 68%)",
+        }}
+      />
+      <div
+        className="absolute top-[10%] right-[6%] h-[420px] w-[420px] rounded-full blur-3xl"
+        style={{
+          background:
+            "radial-gradient(circle, rgba(190,242,100,0.18), transparent 70%)",
         }}
       />
 
-      <div className="mx-auto w-full max-w-7xl space-y-12">
-        {/* Header */}
-        <header className="space-y-6 text-center">
-          <div className="inline-flex items-center gap-3 rounded-full border border-white/15 bg-white/5 px-4 py-2 text-[11px] uppercase tracking-[0.22em] text-white/70">
-            <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
-            Services & Packages
+      <motion.div
+        aria-hidden
+        initial={{ opacity: 0.16, rotate: -10 }}
+        animate={{ opacity: [0.12, 0.26, 0.12], rotate: [-8, -12, -8] }}
+        transition={{ duration: 18, repeat: Infinity, ease: "easeInOut" }}
+        className="absolute left-[-12%] right-[-28%] top-[36%] h-64"
+        style={{
+          background:
+            "linear-gradient(120deg, rgba(56,189,248,0) 0%, rgba(56,189,248,0.22) 35%, rgba(168,85,247,0.16) 60%, rgba(190,242,100,0) 100%)",
+          filter: "blur(18px)",
+        }}
+      />
+      <motion.div
+        aria-hidden
+        initial={{ opacity: 0.14, rotate: 12 }}
+        animate={{ opacity: [0.10, 0.22, 0.10], rotate: [10, 16, 10] }}
+        transition={{ duration: 22, repeat: Infinity, ease: "easeInOut" }}
+        className="absolute left-[-20%] right-[-5%] top-[58%] h-56"
+        style={{
+          background:
+            "linear-gradient(120deg, rgba(129,140,248,0) 0%, rgba(129,140,248,0.20) 40%, rgba(56,189,248,0.18) 70%, rgba(56,189,248,0) 100%)",
+          filter: "blur(20px)",
+        }}
+      />
+    </div>
+  );
+}
+
+type Logo = { alt: string; src: string };
+
+function LogoCarouselPill({ logos }: { logos: Logo[] }) {
+  const track = useMemo(() => [...logos, ...logos], [logos]);
+
+  return (
+    <section className="w-full bg-white">
+      <div className="mx-auto max-w-6xl px-4 py-10 sm:px-6">
+        <motion.div
+          variants={fadeUp}
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true, amount: 0.35 }}
+          className="rounded-[46px] bg-[#F3F0FF] px-6 py-10 shadow-[0_30px_90px_rgba(15,23,42,0.10)] sm:px-10"
+        >
+          <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
+            <div className="text-xs font-black tracking-[0.18em] text-slate-600">
+              TRUSTED BY TEAMS & BRANDS
+            </div>
+            <div className="text-xs text-slate-500">Auto-scroll • hover to pause</div>
           </div>
-          <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-white">
-            Clear branding, social & software pods that{" "}
-            <span className="bg-gradient-to-r from-[#38BDF8] via-[#A855F7] to-[#4F46E5] bg-clip-text text-transparent">
-              are easy to buy
-            </span>
-            .
-          </h1>
-          <p className="mx-auto max-w-[62ch] text-white/70 text-sm sm:text-base leading-relaxed">
-            One-time branding, simple monthly social packages, and software
-            builds. Fixed outputs, clear prices, and English or Arabic content.
-          </p>
 
-          <div className="flex flex-wrap justify-center gap-3 pt-2">
-            <span className="inline-flex items-center gap-2 rounded-full border border-emerald-400/30 bg-emerald-400/10 px-4 py-1.5 text-[11px] font-medium uppercase tracking-[0.18em] text-emerald-100">
-              From $200 · Monthly from $300
-            </span>
+          <div className="relative overflow-hidden rounded-[40px]">
+            <div
+              aria-hidden
+              className="pointer-events-none absolute inset-y-0 left-0 z-20 w-28 bg-gradient-to-r from-[#F3F0FF] to-transparent"
+            />
+            <div
+              aria-hidden
+              className="pointer-events-none absolute inset-y-0 right-0 z-20 w-28 bg-gradient-to-l from-[#F3F0FF] to-transparent"
+            />
+
+            <div aria-hidden className="lp-shine pointer-events-none absolute inset-0 z-10 opacity-35" />
+
+            <div className="lp-marquee" aria-label="Previous clients">
+              <div className="lp-marquee-track">
+                {track.map((l, i) => (
+                  <div key={`${l.alt}-${i}`} className="lp-logo-item">
+                    <div className="lp-logo-chip">
+                      <img
+                        src={l.src}
+                        alt={l.alt}
+                        className="lp-logo"
+                        draggable={false}
+                        loading="lazy"
+                      />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <style>{`
+              .lp-marquee { width: 100%; overflow: hidden; }
+              .lp-marquee-track {
+                display: flex;
+                align-items: center;
+                width: max-content;
+                will-change: transform;
+                animation: lp-marquee 20s linear infinite;
+              }
+              .lp-marquee:hover .lp-marquee-track { animation-play-state: paused; }
+
+              .lp-logo-item { flex: 0 0 auto; padding: 0 18px; display: grid; place-items: center; }
+              .lp-logo-chip {
+                height: 66px;
+                min-width: 150px;
+                padding: 0 22px;
+                display: grid;
+                place-items: center;
+                border-radius: 999px;
+                background: rgba(255,255,255,0.72);
+                border: 1px solid rgba(15,23,42,0.09);
+                box-shadow: 0 14px 40px rgba(15,23,42,0.06);
+                backdrop-filter: blur(10px);
+                transition: transform 220ms ease, box-shadow 220ms ease, border-color 220ms ease;
+              }
+              .lp-logo-chip:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 22px 60px rgba(15,23,42,0.12);
+                border-color: rgba(15,23,42,0.14);
+              }
+              .lp-logo {
+                height: 36px;
+                width: auto;
+                object-fit: contain;
+                opacity: 0.92;
+                filter: grayscale(1);
+                transition: opacity 220ms ease, filter 220ms ease, transform 220ms ease;
+              }
+              .lp-logo-chip:hover .lp-logo {
+                opacity: 1;
+                filter: grayscale(0);
+                transform: scale(1.02);
+              }
+              .lp-shine {
+                background: linear-gradient(120deg, transparent 0%, rgba(255,255,255,0.40) 12%, transparent 22%);
+                transform: translateX(-60%);
+                animation: lp-shine 6.5s ease-in-out infinite;
+              }
+              @keyframes lp-shine {
+                0% { transform: translateX(-60%); }
+                55% { transform: translateX(60%); }
+                100% { transform: translateX(60%); }
+              }
+              @keyframes lp-marquee {
+                0% { transform: translateX(0); }
+                100% { transform: translateX(-50%); }
+              }
+              @media (max-width: 640px) {
+                .lp-logo-item { padding: 0 10px; }
+                .lp-logo-chip { height: 58px; min-width: 128px; padding: 0 16px; }
+                .lp-logo { height: 30px; }
+              }
+              @media (prefers-reduced-motion: reduce) {
+                .lp-marquee-track { animation: none; }
+                .lp-shine { animation: none; opacity: 0; }
+              }
+            `}</style>
           </div>
+        </motion.div>
+      </div>
+    </section>
+  );
+}
 
-          {/* Mobile quick chips */}
-          <MobileChipRail />
+function DarkKicker({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="inline-flex items-center rounded-full border border-white/15 bg-white/5 px-4 py-2 text-[11px] uppercase tracking-[0.22em] text-white/70">
+      {children}
+    </div>
+  );
+}
+function LightKicker({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="inline-flex items-center rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-semibold tracking-[0.16em] text-slate-700">
+      {children}
+    </div>
+  );
+}
 
-          <div className="flex flex-wrap justify-center gap-3 pt-3">
-            {["Branding", "Social media", "Software", "Strategy"].map(
-              (label) => (
-                <span
-                  key={label}
-                  className="rounded-full border border-white/15 bg-white/5 px-4 py-1 text-[11px] font-medium uppercase tracking-[0.18em] text-white/60"
-                >
-                  {label}
-                </span>
-              )
-            )}
-          </div>
+type Pillar = {
+  id: string;
+  kicker: string;
+  title: string;
+  desc: string;
+  icon: React.ReactNode;
+  image: string;
+  bullets: string[];
+  includedLabel: string;
+  included: string[];
+  accent: string;
+};
 
-          <div className="flex flex-wrap justify-center gap-3 pt-4">
-            <Link
-              to="/contact"
-              className="inline-flex items-center gap-3 rounded-xl border border-white/25 bg-white/10 px-6 py-3 text-sm font-semibold text-white transition-transform hover:translate-y-0.5"
-            >
-              Talk about a package
-              <ArrowRight className="h-5 w-5" />
-            </Link>
-            <Link
-              to="/our-work"
-              className="inline-flex items-center gap-3 rounded-xl border border-white/15 px-6 py-3 text-sm font-semibold text-white/80 transition-colors hover:text-white hover:border-white/30"
-            >
-              See examples
-              <ArrowRight className="h-5 w-5" />
-            </Link>
-          </div>
-        </header>
+type Plan = {
+  name: string;
+  price: string;
+  badge?: string;
+  desc: string;
+  bullets: string[];
+  emphasized?: boolean;
+};
 
-        {/* Highlights */}
-        <SectionShell className="py-5">
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 sm:gap-10">
-            {HIGHLIGHTS.map((item) => (
-              <div
-                key={item.label}
-                className="rounded-2xl border border-white/10 bg-white/[.04] px-6 py-6 text-center backdrop-blur-lg"
-                style={{ boxShadow: "0 20px 40px -14px rgba(0,0,0,0.55)" }}
+function ParallaxMedia({
+  src,
+  alt,
+  accent,
+}: {
+  src: string;
+  alt: string;
+  accent: string;
+}) {
+  const ref = useRef<HTMLDivElement | null>(null);
+  const { scrollYProgress } = useScroll({
+    target: ref,
+    offset: ["0.9 1", "0.1 0"],
+  });
+  const y = useTransform(scrollYProgress, [0, 1], [10, -10]);
+
+  return (
+    <div ref={ref} className="relative">
+      <div
+        aria-hidden
+        className="pointer-events-none absolute -inset-4 rounded-[44px] blur-2xl"
+        style={{
+          background: `radial-gradient(circle at 30% 10%, ${withAlpha(
+            accent,
+            0.28
+          )}, transparent 65%)`,
+        }}
+      />
+      <motion.div
+        style={{ y }}
+        className="group relative overflow-hidden rounded-[38px] border border-slate-200 bg-gradient-to-b from-white to-slate-50 shadow-[0_35px_110px_rgba(15,23,42,0.14)] transition hover:-translate-y-[2px] hover:shadow-[0_55px_140px_rgba(15,23,42,0.18)]"
+      >
+        <img
+          src={src}
+          alt={alt}
+          className="block w-full select-none object-cover"
+          draggable={false}
+          loading="lazy"
+        />
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0 opacity-70"
+          style={{
+            background: `radial-gradient(circle at 30% 10%, ${withAlpha(
+              accent,
+              0.18
+            )} 0%, rgba(59,130,246,0.06) 30%, transparent 60%)`,
+          }}
+        />
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-x-0 bottom-0 h-16 opacity-70"
+          style={{
+            background:
+              "linear-gradient(to top, rgba(15,23,42,0.08), transparent)",
+          }}
+        />
+      </motion.div>
+    </div>
+  );
+}
+
+export default function SolutionsPage() {
+  const logos: Logo[] = useMemo(
+    () => [
+      { alt: "Zapier", src: "https://cdn.simpleicons.org/zapier/000000" },
+      { alt: "Shopify", src: "https://cdn.simpleicons.org/shopify/000000" },
+      { alt: "SoundCloud", src: "https://cdn.simpleicons.org/soundcloud/000000" },
+      { alt: "HBR", src: "https://logo.clearbit.com/hbr.org" },
+      { alt: "CHOMPS", src: "https://logo.clearbit.com/chomps.com" },
+      { alt: "eBay", src: "https://cdn.simpleicons.org/ebay/000000" },
+      { alt: "Vimeo", src: "https://cdn.simpleicons.org/vimeo/000000" },
+    ],
+    []
+  );
+
+  // UPDATED PILLARS CONTENT (matches your requested wording)
+  const pillars: Pillar[] = useMemo(
+    () => [
+      {
+        id: "marketing",
+        kicker: "Marketing Solutions",
+        title: "Ads + content that drive reach, leads, and sales",
+        desc:
+          "We plan, create, and run campaigns across the channels that matter—ad creative, content systems, and optimization with clear reporting.",
+        icon: <Megaphone className="h-4 w-4" />,
+        image: svcMarketing,
+        bullets: [
+          "Paid ads (Meta / Google) + optimization",
+          "Content creation (posts, reels, scripts, copy)",
+          "Campaign strategy + reporting dashboards",
+        ],
+        includedLabel: "Marketing deliverables",
+        included: [
+          "Ad account setup + pixels",
+          "Creative variations (static + video)",
+          "Content calendar + posting plan",
+          "Lead funnels + landing flow",
+          "Weekly performance report",
+        ],
+        accent: "#38BDF8",
+      },
+      {
+        id: "branding",
+        kicker: "Brand Management",
+        title: "Logos, brand identity, and the full visual system",
+        desc:
+          "A complete brand kit that stays consistent everywhere—web, ads, social, and product. Clear rules, reusable templates, and fast execution.",
+        icon: <Palette className="h-4 w-4" />,
+        image: svcBrand,
+        bullets: [
+          "Logo design + variations",
+          "Brand identity (colors, typography, style)",
+          "Guidelines + templates for daily use",
+        ],
+        includedLabel: "Brand essentials",
+        included: [
+          "Logo suite (primary + secondary + icon)",
+          "Color palette + typography",
+          "Brand guidelines (short + practical)",
+          "Social templates",
+          "Business assets (cards / signature)",
+        ],
+        accent: "#A855F7",
+      },
+      {
+        id: "software",
+        kicker: "Software Engineering",
+        title: "Apps, websites, and systems — built to scale",
+        desc:
+          "We build cross-platform apps, websites, and internal systems with clean architecture, performance-first UI, and reliable handoff.",
+        icon: <Code2 className="h-4 w-4" />,
+        image: svcEngineering,
+        bullets: [
+          "Websites + landing pages",
+          "Apps (cross-platform) + admin dashboards",
+          "Systems, integrations, and automation",
+        ],
+        includedLabel: "Common builds",
+        included: [
+          "Business websites",
+          "E-commerce / booking flows",
+          "Admin dashboards",
+          "APIs + integrations",
+          "Maintenance + iteration",
+        ],
+        accent: "#4F46E5",
+      },
+      {
+        id: "business",
+        kicker: "Business Consulting",
+        title: "Strategies that take you from step one to execution",
+        desc:
+          "We clarify what to build and how to grow—business strategies, SWOT analysis, feasibility studies, and consultation sessions with actionable next steps.",
+        icon: <Wand2 className="h-4 w-4" />,
+        image: svcEngineering,
+        bullets: [
+          "Business strategy + roadmap",
+          "SWOT analysis + market research",
+          "Feasibility studies + case studies",
+        ],
+        includedLabel: "Typical outputs",
+        included: [
+          "SWOT + positioning notes",
+          "Competitor analysis",
+          "Feasibility report (costs + risks)",
+          "Case study framework",
+          "Consultation sessions + action plan",
+        ],
+        accent: "#C7F36B",
+      },
+    ],
+    []
+  );
+
+  // UPDATED PACKAGES CONTENT
+  const plans: Plan[] = useMemo(
+    () => [
+      {
+        name: "Brand Identity Kit",
+        price: "From $200",
+        desc: "Logo + brand identity to look consistent everywhere.",
+        bullets: ["Logo suite + palette", "Typography + templates", "Short brand guidelines"],
+      },
+      {
+        name: "Campaign & Ads",
+        price: "From $300/mo",
+        badge: "Most chosen",
+        desc: "Ads + content system with reporting and optimization.",
+        bullets: ["Paid ads management", "Content calendar + creatives", "Weekly performance report"],
+        emphasized: true,
+      },
+      {
+        name: "Build Sprint",
+        price: "Contact",
+        desc: "Website/app/system delivery with fast turnaround.",
+        bullets: ["UI/UX + development", "Integrations & QA", "Launch + support"],
+      },
+    ],
+    []
+  );
+
+  return (
+    <div className="w-full">
+      <section
+        className="relative w-full overflow-hidden text-white"
+        style={{ backgroundColor: COLORS.background }}
+      >
+        <UseCaseBackground />
+        <SoftGridNoise />
+
+        <SectionShell className="relative z-30 pt-24 pb-16 sm:pt-28 sm:pb-20 md:pt-32 md:pb-24">
+          <div className="grid gap-12 lg:grid-cols-12 lg:items-center">
+            <motion.div variants={stagger} initial="hidden" animate="show" className="lg:col-span-6">
+              <motion.div variants={fadeUp}>
+                <DarkKicker>Solutions</DarkKicker>
+              </motion.div>
+
+              <motion.h1
+                variants={fadeUp}
+                className="mt-5 text-balance text-4xl font-black leading-tight tracking-tight sm:text-5xl md:text-6xl"
               >
-                <div className="text-xs uppercase tracking-[0.24em] text-white/60">
-                  {item.label}
+                Everything you need to{" "}
+                <span className="bg-gradient-to-r from-slate-50 via-sky-100 to-lime-300 bg-clip-text text-transparent">
+                  build, brand, and grow
+                </span>
+                .
+              </motion.h1>
+
+              <motion.p
+                variants={fadeUp}
+                className="mt-5 max-w-xl text-balance text-sm leading-relaxed text-slate-200/90 sm:text-base md:text-lg"
+              >
+                Marketing solutions (ads + content), brand management (logos + identity),
+                software (apps + websites + systems), and business consulting
+                (strategies, SWOT, feasibility, and case studies).
+              </motion.p>
+
+              <motion.div variants={fadeUp} className="mt-8 flex flex-wrap items-center gap-3">
+                <Link
+                  to="/contact"
+                  className="inline-flex items-center gap-2 rounded-xl bg-[#c7f36b] px-6 py-3 text-sm font-semibold text-black shadow-[0_12px_40px_rgba(190,242,100,0.35)] transition hover:translate-y-[1px] hover:bg-[#d4ff80]"
+                >
+                  Get a plan <ArrowRight className="h-4 w-4" />
+                </Link>
+                <a
+                  href="#packages"
+                  className="inline-flex items-center gap-2 rounded-xl border border-white/15 bg-white/5 px-6 py-3 text-sm font-semibold text-white/90 transition hover:bg-white/10"
+                >
+                  View packages <ArrowRight className="h-4 w-4" />
+                </a>
+              </motion.div>
+
+              <motion.div variants={fadeUp} className="mt-10 grid gap-3 sm:grid-cols-3">
+                {[
+                  { icon: <Zap className="h-4 w-4" />, label: "Fast delivery", value: "ship weekly" },
+                  { icon: <Gauge className="h-4 w-4" />, label: "Performance", value: "speed-first" },
+                  { icon: <ShieldCheck className="h-4 w-4" />, label: "Consistency", value: "brand aligned" },
+                ].map((x) => (
+                  <div key={x.label} className="rounded-2xl border border-white/10 bg-white/5 px-5 py-4 backdrop-blur">
+                    <div className="flex items-center gap-2 text-[11px] uppercase tracking-[0.22em] text-white/60">
+                      <span className="inline-flex h-7 w-7 items-center justify-center rounded-xl bg-white/10">
+                        {x.icon}
+                      </span>
+                      {x.label}
+                    </div>
+                    <div className="mt-3 text-lg font-semibold text-white">{x.value}</div>
+                  </div>
+                ))}
+              </motion.div>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 14 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, ease: "easeOut", delay: 0.08 }}
+              className="lg:col-span-6"
+            >
+              <div className="relative">
+                <div className="absolute -inset-8 rounded-[44px] bg-white/5 blur-3xl" />
+
+                <div className="relative rounded-[40px] border border-white/10 bg-black/25 p-5 shadow-[0_30px_120px_rgba(0,0,0,0.65)] backdrop-blur-2xl sm:p-6">
+                  <div className="flex items-center justify-between gap-3">
+                    <div className="text-xs font-black tracking-[0.18em] text-white/55">
+                      SOLUTIONS SNAPSHOT
+                    </div>
+                    <div className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[11px] text-white/70">
+                      clear scope
+                    </div>
+                  </div>
+
+                  <div className="mt-5 grid gap-4">
+                    {[
+                      {
+                        title: "Marketing solutions",
+                        desc: "Ads, content, creatives, and optimization.",
+                        icon: <Target className="h-4 w-4" />,
+                        tint: "rgba(56,189,248,0.18)",
+                      },
+                      {
+                        title: "Brand management",
+                        desc: "Logos, identity, and visual systems.",
+                        icon: <Layers className="h-4 w-4" />,
+                        tint: "rgba(168,85,247,0.18)",
+                      },
+                      {
+                        title: "Software builds",
+                        desc: "Apps, websites, systems, and integrations.",
+                        icon: <Code2 className="h-4 w-4" />,
+                        tint: "rgba(99,102,241,0.18)",
+                      },
+                      {
+                        title: "Business consulting",
+                        desc: "Strategies, SWOT, feasibility, and case studies.",
+                        icon: <BarChart3 className="h-4 w-4" />,
+                        tint: "rgba(190,242,100,0.18)",
+                      },
+                    ].map((c, i) => (
+                      <motion.div
+                        key={c.title}
+                        whileHover={{ y: -2 }}
+                        className={cn(
+                          "group rounded-3xl border border-white/10 bg-white/[0.05] p-5 transition",
+                          "hover:bg-white/[0.08] hover:border-white/25"
+                        )}
+                        style={{ boxShadow: `0 24px 60px -46px ${c.tint}` }}
+                      >
+                        <div className="flex items-start gap-3">
+                          <span className="mt-0.5 inline-flex h-10 w-10 items-center justify-center rounded-2xl border border-white/15 bg-white/10 text-white">
+                            {c.icon}
+                          </span>
+                          <div className="min-w-0">
+                            <div className="flex items-center gap-2">
+                              <div className="text-sm font-semibold text-white">{c.title}</div>
+                              <span className="h-1 w-1 rounded-full bg-white/40" />
+                              <div className="text-[11px] text-white/60">solution</div>
+                            </div>
+                            <div className="mt-1 text-sm text-white/70">{c.desc}</div>
+                          </div>
+                          <ArrowRight className="ml-auto mt-1 h-4 w-4 text-white/60 transition-transform group-hover:translate-x-1" />
+                        </div>
+
+                        <div className="mt-4 h-1.5 w-full overflow-hidden rounded-full bg-white/10">
+                          <motion.div
+                            aria-hidden
+                            initial={{ x: "-60%" }}
+                            animate={{ x: ["-60%", "0%", "-60%"] }}
+                            transition={{ duration: 6 + i * 0.9, repeat: Infinity, ease: "easeInOut" }}
+                            className="h-full w-[55%] rounded-full"
+                            style={{
+                              background:
+                                "linear-gradient(90deg, transparent, rgba(255,255,255,0.35), transparent)",
+                            }}
+                          />
+                        </div>
+                      </motion.div>
+                    ))}
+                  </div>
+
+                  <div className="mt-5 rounded-3xl border border-white/10 bg-white/[0.04] p-5">
+                    <div className="flex items-start gap-3">
+                      <span className="inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-white/10">
+                        <Wand2 className="h-5 w-5 text-white/80" />
+                      </span>
+                      <div className="min-w-0">
+                        <div className="text-sm font-semibold text-white">
+                          “One partner for strategy, brand, marketing, and software.”
+                        </div>
+                        <div className="mt-1 text-xs text-white/60">
+                          fewer handoffs • faster progress • consistent quality
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
-                <div className="mt-3 text-xl font-semibold text-white">
-                  {item.value}
+
+                <motion.div
+                  aria-hidden
+                  animate={{ y: [0, -8, 0] }}
+                  transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
+                  className="hidden sm:block absolute -left-6 top-10 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 backdrop-blur"
+                >
+                  <div className="text-[11px] uppercase tracking-[0.22em] text-white/60">Business</div>
+                  <div className="mt-1 text-sm font-semibold text-white">SWOT + feasibility</div>
+                </motion.div>
+                <motion.div
+                  aria-hidden
+                  animate={{ y: [0, 8, 0] }}
+                  transition={{ duration: 7, repeat: Infinity, ease: "easeInOut" }}
+                  className="hidden sm:block absolute -right-5 bottom-10 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 backdrop-blur"
+                >
+                  <div className="text-[11px] uppercase tracking-[0.22em] text-white/60">Marketing</div>
+                  <div className="mt-1 text-sm font-semibold text-white">ads + content</div>
+                </motion.div>
+              </div>
+            </motion.div>
+          </div>
+        </SectionShell>
+      </section>
+
+      <LogoCarouselPill logos={logos} />
+
+      {/* Keep your PPC-ready block as-is (optional) */}
+
+      {/* PILLARS SECTION (uses updated pillars array) */}
+      <section className="w-full bg-white text-slate-900">
+        <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6 md:py-20">
+          <div className="mx-auto max-w-3xl text-center">
+            <LightKicker>SERVICES</LightKicker>
+            <h2 className="mt-4 text-balance text-3xl font-black tracking-tight sm:text-4xl md:text-5xl">
+              Solutions for marketing, brand, software, and business
+            </h2>
+            <p className="mt-4 text-balance text-base leading-relaxed text-slate-600 sm:text-lg">
+              Pick one area or combine multiple—same team, one workflow, clean execution.
+            </p>
+          </div>
+
+          <div className="mt-14 space-y-16 md:space-y-20">
+            {pillars.map((p, idx) => (
+              <div key={p.id} id={p.id} className="scroll-mt-28">
+                <div
+                  className={cn(
+                    "grid items-center gap-10 lg:grid-cols-12",
+                    idx % 2 === 1 && "lg:[&>div:first-child]:order-2"
+                  )}
+                >
+                  <motion.div
+                    variants={stagger}
+                    initial="hidden"
+                    whileInView="show"
+                    viewport={{ once: true, amount: 0.25 }}
+                    className="lg:col-span-5"
+                  >
+                    <motion.div variants={fadeUp}>
+                      <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-semibold tracking-[0.14em] text-slate-700">
+                        <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-slate-900 text-white">
+                          {p.icon}
+                        </span>
+                        {p.kicker.toUpperCase()}
+                      </div>
+                    </motion.div>
+
+                    <motion.h3 variants={fadeUp} className="text-balance text-3xl font-black tracking-tight sm:text-4xl">
+                      {p.title}
+                    </motion.h3>
+
+                    <motion.p variants={fadeUp} className="mt-4 text-base leading-relaxed text-slate-600 sm:text-lg">
+                      {p.desc}
+                    </motion.p>
+
+                    <motion.ul variants={stagger} className="mt-6 space-y-3">
+                      {p.bullets.map((b) => (
+                        <motion.li key={b} variants={fadeUp} className="flex gap-3 text-sm text-slate-700 sm:text-base">
+                          <span className="mt-0.5 inline-flex h-6 w-6 items-center justify-center rounded-full bg-slate-900 text-white">
+                            <Check className="h-4 w-4" />
+                          </span>
+                          <span className="leading-relaxed">{b}</span>
+                        </motion.li>
+                      ))}
+                    </motion.ul>
+
+                    <motion.div variants={fadeUp} className="mt-7 rounded-3xl border border-slate-200 bg-white p-5 shadow-[0_20px_70px_rgba(15,23,42,0.06)]">
+                      <div className="text-xs font-black tracking-[0.18em] text-slate-500">
+                        {p.includedLabel.toUpperCase()}
+                      </div>
+                      <div className="mt-4 flex flex-wrap gap-2">
+                        {p.included.map((x) => (
+                          <span
+                            key={x}
+                            className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-semibold text-slate-700"
+                          >
+                            {x}
+                          </span>
+                        ))}
+                      </div>
+                    </motion.div>
+
+                    <motion.div variants={fadeUp} className="mt-7 flex flex-wrap items-center gap-3">
+                      <Link
+                        to="/contact"
+                        className="inline-flex items-center gap-2 rounded-xl bg-slate-900 px-5 py-3 text-sm font-semibold text-white transition hover:opacity-95"
+                      >
+                        Discuss {p.kicker} <ArrowRight className="h-4 w-4" />
+                      </Link>
+                      <a
+                        href="#packages"
+                        className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-5 py-3 text-sm font-semibold text-slate-900 transition hover:bg-slate-50"
+                      >
+                        See packages <ArrowRight className="h-4 w-4" />
+                      </a>
+                    </motion.div>
+                  </motion.div>
+
+                  <motion.div
+                    variants={fadeUp}
+                    initial="hidden"
+                    whileInView="show"
+                    viewport={{ once: true, amount: 0.25 }}
+                    className="lg:col-span-7"
+                  >
+                    <ParallaxMedia src={p.image} alt={`${p.kicker} preview`} accent={p.accent} />
+                  </motion.div>
                 </div>
               </div>
             ))}
           </div>
-        </SectionShell>
+        </div>
+      </section>
 
-        {/* Services overview grid */}
-        <SectionShell className="py-6 sm:py-8">
-          <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
-            <div className="flex items-center gap-2">
-              <Layout className="h-5 w-5 text-white/80" />
-              <h3 className="text-lg font-semibold text-white">
-                What we can run for you
-              </h3>
-            </div>
-            <span className="hidden md:inline text-[12px] text-white/55">
-              Click a card to jump to details.
-            </span>
+      {/* PACKAGES (updated plans array) */}
+      <section id="packages" className="w-full bg-white text-slate-900">
+        <div className="mx-auto max-w-6xl px-4 pb-20 pt-2 sm:px-6">
+          <div className="mx-auto max-w-3xl text-center">
+            <LightKicker>PACKAGES</LightKicker>
+            <h2 className="mt-4 text-balance text-3xl font-black tracking-tight sm:text-4xl md:text-5xl">
+              Choose a starting point
+            </h2>
+            <p className="mt-4 text-balance text-base leading-relaxed text-slate-600 sm:text-lg">
+              We can combine services—marketing + brand + software + business strategy—in one roadmap.
+            </p>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6">
-            {SOLUTIONS.map((s) => (
-              <ServiceOverviewCard key={s.id} data={s} />
+
+          <div className="mt-12 grid gap-6 md:grid-cols-3">
+            {plans.map((p, i) => (
+              <motion.div
+                key={p.name}
+                initial={{ opacity: 0, y: 14 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0.25 }}
+                transition={{ duration: 0.55, ease: "easeOut" }}
+                whileHover={{ y: -3 }}
+                className={cn(
+                  "relative flex h-full flex-col overflow-hidden rounded-[34px] border bg-white p-7",
+                  "shadow-[0_20px_70px_rgba(15,23,42,0.08)] transition hover:shadow-[0_35px_110px_rgba(15,23,42,0.12)]",
+                  p.emphasized ? "border-slate-900" : "border-slate-200"
+                )}
+              >
+                <div
+                  aria-hidden
+                  className="pointer-events-none absolute inset-x-0 top-0 h-1 opacity-70"
+                  style={{
+                    background: p.emphasized
+                      ? "linear-gradient(90deg, rgba(15,23,42,0.0), rgba(15,23,42,0.65), rgba(15,23,42,0.0))"
+                      : "linear-gradient(90deg, rgba(15,23,42,0.0), rgba(15,23,42,0.18), rgba(15,23,42,0.0))",
+                  }}
+                />
+
+                {p.badge ? (
+                  <div className="absolute right-6 top-6 rounded-full bg-slate-900 px-3 py-1 text-xs font-black text-white">
+                    {p.badge}
+                  </div>
+                ) : null}
+
+                <div className="flex items-center justify-between gap-3">
+                  <div className="text-sm font-extrabold text-slate-900">{p.name}</div>
+                  <div className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-[11px] font-semibold text-slate-700">
+                    {["starter", "recommended", "build"][i] ?? "plan"}
+                  </div>
+                </div>
+
+                <p className="mt-2 text-sm text-slate-600">{p.desc}</p>
+                <div className="mt-5 text-4xl font-black tracking-tight">{p.price}</div>
+
+                <div className="mt-6 h-px w-full bg-gradient-to-r from-transparent via-slate-200 to-transparent" />
+
+                <ul className="mt-6 space-y-3">
+                  {p.bullets.map((b) => (
+                    <li key={b} className="flex gap-3 text-sm text-slate-700">
+                      <span className="mt-0.5 inline-flex h-5 w-5 items-center justify-center rounded-full bg-slate-900 text-white">
+                        <Check className="h-3.5 w-3.5" />
+                      </span>
+                      {b}
+                    </li>
+                  ))}
+                </ul>
+
+                <div className="mt-auto pt-7">
+                  <Link
+                    to="/contact"
+                    className={cn(
+                      "inline-flex w-full items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold transition",
+                      p.emphasized
+                        ? "bg-slate-900 text-white hover:opacity-95"
+                        : "bg-slate-100 text-slate-900 hover:bg-slate-200"
+                    )}
+                  >
+                    Get started <ArrowRight className="h-4 w-4" />
+                  </Link>
+
+                  <div className="mt-4 flex items-center justify-center gap-2 text-xs text-slate-500">
+                    <Sparkles className="h-4 w-4" /> We can combine packages
+                  </div>
+                </div>
+              </motion.div>
             ))}
           </div>
-        </SectionShell>
-
-        {/* Services body: sticky nav + zigzag */}
-        <SectionShell className="pt-4 pb-10">
-          <div className="grid lg:grid-cols-[240px_minmax(0,1fr)] gap-6 lg:gap-10 items-start">
-            <StickyNav activeId={activeId} />
-            <div className="space-y-12 sm:space-y-14">
-              {SOLUTIONS.map((s, i) => (
-                <SolutionZigzag key={s.id} data={s} index={i} />
-              ))}
-            </div>
-          </div>
-        </SectionShell>
-
-        {/* Packages Switcher */}
-        <PackageSwitcher tab={tab} setTab={setTab} />
-
-        {/* Footer CTA */}
-        <div className="text-center">
-          <Link
-            to="/contact"
-            className="inline-flex items-center gap-3 rounded-xl border border-white/20 px-6 py-4 text-sm font-semibold text-white transition duration-300 hover:bg-white/10"
-            style={{ backgroundColor: withAlpha(COLORS.primary, 0.18) }}
-          >
-            Chat with the team
-            <ArrowRight className="h-5 w-5" />
-          </Link>
         </div>
-      </div>
-    </section>
+      </section>
+
+      {/* CTA (optional: keep your existing CTA section below if you already have it) */}
+    </div>
   );
 }

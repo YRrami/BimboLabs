@@ -1,83 +1,182 @@
-/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
 // src/pages/WorkPage.tsx
-// Tailwind + React only. No new deps.
+// Minimalized + improved UX:
+// - One clean “Work” page with a simple view switch: Demos / Case Studies / Visuals
+// - Less UI noise (fewer boxes, fewer repeated CTAs) + more whitespace
+// - Case studies as minimal accordions with metrics chips (scannable)
+// - Visuals as horizontal gallery (simple, premium)
+// - Demos section keeps your navigator + device preview (best part), but with cleaner framing
+// - Stronger hierarchy + clearer “SMEs/startups in & out of Egypt” copy
 
 import React, { useEffect, useMemo, useRef, useState } from "react";
+import { Link } from "react-router-dom";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   ArrowRight,
   ExternalLink,
-  Trophy,
   Eye,
-  Quote,
-  Sparkles,
   Filter as FilterIcon,
   Link2,
   Pause,
   Play,
   ChevronRight,
+  Sparkles,
+  Search,
+  SlidersHorizontal,
+  Laptop,
+  Tablet,
+  Smartphone,
+  CheckCircle2,
+  Info,
+  BarChart3,
+  TrendingUp,
+  Target,
+  Palette,
+  Megaphone,
+  Code2,
+  Plus,
+  Minus,
 } from "lucide-react";
+import { SectionShell } from "../components/layout/SiteLayout";
 
-/* ===================== Local tokens & helpers ===================== */
+// Replace with real visuals
+import visualMock1 from "../assets/companies/cover.png";
+import visualMock2 from "../assets/companies/cover.png";
+import visualMock3 from "../assets/companies/cover.png";
+
+/* ===================== helpers ===================== */
+
+function cn(...classes: Array<string | false | null | undefined>) {
+  return classes.filter(Boolean).join(" ");
+}
+
+const withAlpha = (color: string, alpha: number): string => {
+  const hex = color.replace("#", "");
+  const r = parseInt(hex.slice(0, 2), 16);
+  const g = parseInt(hex.slice(2, 4), 16);
+  const b = parseInt(hex.slice(4, 6), 16);
+  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+};
 
 const COLORS = {
-  background: "#05061D",
+  bg: "#050013",
   primary: "#4F46E5",
-  accent: "#A855F7",
-  text: "#F7F9FF",
-  muted: "#A5ADCF",
+  accent: "#EC4899",
+  sky: "#38BDF8",
+  lime: "#BEF264",
+  ink: "#0F172A",
 } as const;
 
-function hexToRgb(hex: string) {
-  const normalized = hex.replace("#", "");
-  const bigint = parseInt(normalized, 16);
-  return { r: (bigint >> 16) & 255, g: (bigint >> 8) & 255, b: bigint & 255 };
-}
+/* ===================== Motion ===================== */
 
-function withAlpha(hex: string, alpha: number) {
-  const { r, g, b } = hexToRgb(hex);
-  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
-}
+const fadeUp = {
+  hidden: { opacity: 0, y: 14 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.55 } },
+};
 
-const gradientSoft = (
-  angle = 135,
-  p = 0.14,
-  a = 0.1,
-  b = 0.88
-) => `linear-gradient(${angle}deg, ${withAlpha(COLORS.primary, p)}, ${withAlpha(
-  COLORS.accent,
-  a
-)}, ${withAlpha(COLORS.background, b)})`;
+const stagger = {
+  hidden: {},
+  show: { transition: { staggerChildren: 0.08, delayChildren: 0.06 } },
+};
 
-const gradientPrimary = (angle = 140) =>
-  `linear-gradient(${angle}deg, ${withAlpha(COLORS.primary, 0.18)}, ${withAlpha(
-    COLORS.accent,
-    0.14
-  )}, ${withAlpha(COLORS.background, 0.92)})`;
+/* ------------------------------ Background (hero) ------------------------------ */
 
-function SectionShell({
-  children,
-  className,
-}: {
-  children: React.ReactNode;
-  className?: string;
-}) {
+function SoftGridNoise() {
   return (
-    <div
-      className={`rounded-3xl border border-white/10 backdrop-blur-xl px-4 sm:px-8 md:px-12 py-10 sm:py-14 ${
-        className ?? ""
-      }`}
-      style={{
-        background: gradientSoft(),
-        boxShadow: "0 30px 80px -40px rgba(0,0,0,0.8)",
-      }}
-    >
+    <>
+      <motion.div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 z-10 opacity-[0.22]"
+        initial={{ backgroundPosition: "0px 0px" }}
+        animate={{ backgroundPosition: ["0px 0px", "36px 18px", "0px 0px"] }}
+        transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
+        style={{
+          backgroundImage:
+            "linear-gradient(rgba(148,163,184,0.14) 1px, transparent 1px), linear-gradient(90deg, rgba(148,163,184,0.14) 1px, transparent 1px)",
+          backgroundSize: "40px 40px",
+          maskImage:
+            "radial-gradient(circle at 40% 10%, black 0, black 55%, transparent 80%)",
+          WebkitMaskImage:
+            "radial-gradient(circle at 40% 10%, black 0, black 55%, transparent 80%)",
+        }}
+      />
+      <div className="pointer-events-none absolute inset-0 z-20 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.10]" />
+    </>
+  );
+}
+
+function UseCaseBackground() {
+  return (
+    <div className="pointer-events-none absolute inset-0 z-0">
+      <div className="absolute inset-0" style={{ background: COLORS.bg }} />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(99,102,241,0.62)_0%,_rgba(5,0,19,1)_45%,_rgba(2,0,7,1)_80%)]" />
+      <div
+        className="absolute -top-24 left-[10%] h-[460px] w-[460px] rounded-full blur-3xl"
+        style={{ background: "radial-gradient(circle, rgba(56,189,248,0.28), transparent 68%)" }}
+      />
+      <div
+        className="absolute top-[6%] right-[6%] h-[460px] w-[460px] rounded-full blur-3xl"
+        style={{ background: "radial-gradient(circle, rgba(190,242,100,0.16), transparent 70%)" }}
+      />
+      <motion.div
+        aria-hidden
+        initial={{ opacity: 0.16, rotate: -10 }}
+        animate={{ opacity: [0.12, 0.26, 0.12], rotate: [-8, -12, -8] }}
+        transition={{ duration: 18, repeat: Infinity, ease: "easeInOut" }}
+        className="absolute left-[-12%] right-[-28%] top-[36%] h-64"
+        style={{
+          background:
+            "linear-gradient(120deg, rgba(56,189,248,0) 0%, rgba(56,189,248,0.22) 35%, rgba(168,85,247,0.16) 60%, rgba(190,242,100,0) 100%)",
+          filter: "blur(18px)",
+        }}
+      />
+      <motion.div
+        aria-hidden
+        initial={{ opacity: 0.14, rotate: 12 }}
+        animate={{ opacity: [0.10, 0.22, 0.10], rotate: [10, 16, 10] }}
+        transition={{ duration: 22, repeat: Infinity, ease: "easeInOut" }}
+        className="absolute left-[-20%] right-[-5%] top-[58%] h-56"
+        style={{
+          background:
+            "linear-gradient(120deg, rgba(129,140,248,0) 0%, rgba(129,140,248,0.20) 40%, rgba(56,189,248,0.18) 70%, rgba(56,189,248,0) 100%)",
+          filter: "blur(20px)",
+        }}
+      />
+    </div>
+  );
+}
+
+function DarkKicker({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-4 py-2 text-[11px] uppercase tracking-[0.22em] text-white/70">
       {children}
     </div>
   );
 }
 
+function LightKicker({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="inline-flex items-center rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-semibold tracking-[0.16em] text-slate-700">
+      {children}
+    </div>
+  );
+}
+
+function Chip({ children }: { children: React.ReactNode }) {
+  return (
+    <span className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-semibold text-slate-700">
+      {children}
+    </span>
+  );
+}
+
 /* ===================== Data ===================== */
+
+type ViewMode = "Demos" | "Case Studies" | "Visuals";
+
+type Category = "All" | "Web" | "SEO" | "AI";
+type SortMode = "Featured" | "Newest" | "A→Z";
 
 type Project = {
   id: number;
@@ -87,7 +186,8 @@ type Project = {
   tags: string[];
   year: string;
   emoji: string;
-  category: "Web" | "SEO" | "AI";
+  category: Exclude<Category, "All">;
+  featured?: boolean;
 };
 
 const PROJECTS: Project[] = [
@@ -95,52 +195,50 @@ const PROJECTS: Project[] = [
     id: 1,
     title: "Marketing Agency",
     url: "https://leadmagnett.vercel.app/",
-    brief:
-      "High-converting lead funnel with clear services, offers, and booked-call flow.",
+    brief: "Lead funnel with clear services + booked-call flow.",
     tags: ["React", "Stripe", "SEO"],
     year: "2025",
     emoji: "🛒",
     category: "Web",
+    featured: true,
   },
   {
     id: 2,
     title: "Medical Tourism Organization",
     url: "https://healthtrip-opal.vercel.app/",
-    brief:
-      "Programmatic city/service pages with schema and analytics-ready structure.",
+    brief: "Programmatic pages + schema + analytics-ready structure.",
     tags: ["Next.js", "Schema", "Analytics"],
     year: "2025",
     emoji: "🔎",
-    category: "Web",
+    category: "SEO",
+    featured: true,
   },
   {
     id: 3,
     title: "Student Union of ASU",
     url: "https://sfeclub.site/",
-    brief:
-      "Campus assistant with RAG, events tools, and docs access for students and admins.",
+    brief: "RAG assistant + events tools + docs access.",
     tags: ["OpenAI", "RAG", "FastAPI"],
     year: "2025",
     emoji: "🤖",
-    category: "Web",
+    category: "AI",
+    featured: true,
   },
   {
     id: 4,
     title: "Luxurious uPVC Industry Leader",
     url: "https://egywin-luxury.vercel.app/",
-    brief:
-      "Product catalog, lead capture, and SEO collections with fast on-site search.",
+    brief: "Catalog + lead capture + SEO collections + fast search.",
     tags: ["Next.js", "SEO", "Lead Forms"],
     year: "2025",
     emoji: "🏗️",
-    category: "Web",
+    category: "SEO",
   },
   {
     id: 5,
     title: "Automation Systems Service",
     url: "https://leadsconnector.vercel.app/",
-    brief:
-      "Automations landing with offer stack, industry use-cases, and lead forms.",
+    brief: "Offer stack + use-cases + lead forms.",
     tags: ["React", "SEO", "Lead Forms"],
     year: "2025",
     emoji: "⚙️",
@@ -150,7 +248,7 @@ const PROJECTS: Project[] = [
     id: 6,
     title: "Marketing Agency in KSA",
     url: "https://fantasydeall.vercel.app/",
-    brief: "Localized marketing services page tuned for GCC audiences.",
+    brief: "Localized services page tuned for GCC audiences.",
     tags: ["React", "SEO", "Lead Forms"],
     year: "2025",
     emoji: "🌍",
@@ -160,8 +258,7 @@ const PROJECTS: Project[] = [
     id: 7,
     title: "Freelance Marketplace",
     url: "https://loqta.vercel.app/",
-    brief:
-      "Marketplace concept with category browse, profiles, and simple request flow.",
+    brief: "Marketplace concept with categories + profiles + request flow.",
     tags: ["React", "SEO", "Lead Forms"],
     year: "2025",
     emoji: "💼",
@@ -169,67 +266,90 @@ const PROJECTS: Project[] = [
   },
 ];
 
-const DEMO_CATEGORIES = ["All", "Web", "SEO", "AI"] as const;
+const CATEGORIES: Category[] = ["All", "Web", "SEO", "AI"];
 
+type Highlight = { label: string; value: string; icon: React.ReactNode; note: string };
+const HIGHLIGHTS: Highlight[] = [
+  { label: "Conversion", value: "+20–45%", icon: <TrendingUp className="h-4 w-4" />, note: "Better message-match + CTA clarity." },
+  { label: "Cost per lead", value: "-15–35%", icon: <Target className="h-4 w-4" />, note: "Creative iteration + tracking fixes." },
+  { label: "Tracking", value: "GA4 + pixels", icon: <BarChart3 className="h-4 w-4" />, note: "Events + funnel-ready reporting." },
+];
 
-const workflowExports = [
+type VisualAsset = { title: string; kind: "Ad Creative" | "Brand Identity" | "UI/Website"; src: string; tags: string[] };
+const VISUALS: VisualAsset[] = [
+  { title: "Ad creative set", kind: "Ad Creative", src: visualMock1, tags: ["Hooks", "Variants", "Meta Ads"] },
+  { title: "Brand identity kit", kind: "Brand Identity", src: visualMock2, tags: ["Logo", "Palette", "Typography"] },
+  { title: "Landing page UI", kind: "UI/Website", src: visualMock3, tags: ["Conversion", "Components", "Speed"] },
+];
+
+type CaseStudy = {
+  id: number;
+  title: string;
+  region: "Egypt" | "GCC" | "International";
+  industry: string;
+  services: Array<"Marketing" | "Brand" | "Software" | "Business">;
+  goal: string;
+  work: string[];
+  metrics: Array<{ label: string; value: string }>;
+  year: string;
+};
+
+const CASE_STUDIES: CaseStudy[] = [
   {
-    title: "Dashboards",
-    items: [
-      "Growth dashboards in Looker Studio",
-      "Revenue • CAC tracker",
-      "Experiment log & decisions board",
+    id: 1,
+    title: "SME lead funnel + ads system",
+    region: "Egypt",
+    industry: "Services",
+    services: ["Marketing", "Software"],
+    goal: "Turn paid traffic into qualified leads with clean tracking and weekly improvements.",
+    work: ["Offer + landing page rebuild", "Events (GA4 / Ads) setup", "Creative variants per cycle", "Weekly report + action list"],
+    metrics: [
+      { label: "Conv.", value: "+30% (example)" },
+      { label: "CPL", value: "-22% (example)" },
+      { label: "Launch", value: "10 days" },
     ],
+    year: "2025",
   },
   {
-    title: "Asset Libraries",
-    items: [
-      "Figma design system kits",
-      "Ad & email creative templates",
-      "Copy banks for lifecycle journeys",
+    id: 2,
+    title: "Brand refresh + content templates",
+    region: "GCC",
+    industry: "Agency / Media",
+    services: ["Brand", "Marketing"],
+    goal: "Unify visuals across social + ads + web to improve trust and consistency.",
+    work: ["Identity system", "Template pack", "Content calendar + hooks library"],
+    metrics: [
+      { label: "Output", value: "2× faster" },
+      { label: "Consistency", value: "Unified kit" },
+      { label: "Testing", value: "More variants" },
     ],
+    year: "2025",
   },
   {
-    title: "Automation",
-    items: [
-      "Analytics QA helpers",
-      "CRM workflows & scoring",
-      "AI copilots for support and ops",
+    id: 3,
+    title: "Website + SEO structure for scale",
+    region: "International",
+    industry: "Health / Tourism",
+    services: ["Software", "Marketing"],
+    goal: "Build an analytics-ready site structure that can scale SEO and conversions.",
+    work: ["Programmatic pages + schema", "Speed / UX tuning", "Conversion content blocks"],
+    metrics: [
+      { label: "Tracking", value: "Events ready" },
+      { label: "SEO", value: "Scalable structure" },
+      { label: "UX", value: "Performance-first" },
     ],
+    year: "2025",
   },
 ];
 
-const caseStudies = [
-  {
-    title: "Subscription DTC Reboot",
-    summary:
-      "Bundles, PDP tests, server-side tracking, and creative iteration. Revenue grew 58% in 90 days.",
-    href: "/case-studies/subscription-dtc.pdf",
-  },
-  {
-    title: "SEO at Scale (B2B SaaS)",
-    summary:
-      "Programmatic landers, schema, and internal linking. +3.1× signups from organic.",
-    href: "/case-studies/seo-b2b-saas.pdf",
-  },
-  {
-    title: "RAG Support Copilot",
-    summary:
-      "Hybrid search over docs with analytics. Ticket deflection up, CSAT improved.",
-    href: "/case-studies/rag-support.pdf",
-  },
-];
-
-/* ===================== Utilities ===================== */
+/* ===================== Hooks ===================== */
 
 function useAutoRotate(enabled: boolean, length: number, delay = 6000) {
   const [index, setIndex] = useState(0);
   const timer = useRef<number | null>(null);
   useEffect(() => {
     if (!enabled || length <= 1) return;
-    timer.current = window.setInterval(() => {
-      setIndex((i) => (i + 1) % length);
-    }, delay);
+    timer.current = window.setInterval(() => setIndex((i) => (i + 1) % length), delay);
     return () => {
       if (timer.current) window.clearInterval(timer.current);
     };
@@ -243,91 +363,203 @@ function useIsInView<T extends HTMLElement>(threshold = 0.35) {
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
-    const io = new IntersectionObserver(
-      (entries) => {
-        setInView(entries[0]?.isIntersecting ?? false);
-      },
-      { threshold }
-    );
+    const io = new IntersectionObserver((entries) => setInView(entries[0]?.isIntersecting ?? false), { threshold });
     io.observe(el);
     return () => io.disconnect();
   }, [threshold]);
   return { ref, inView } as const;
 }
 
-/* ===================== Work Page ===================== */
+/* ===================== Toast ===================== */
+
+function Toast({ show, text }: { show: boolean; text: string }) {
+  return (
+    <AnimatePresence>
+      {show && (
+        <motion.div
+          initial={{ opacity: 0, y: 12, scale: 0.98 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          exit={{ opacity: 0, y: 10, scale: 0.98 }}
+          transition={{ duration: 0.22, ease: "easeOut" }}
+          className="fixed bottom-6 left-1/2 z-[999] -translate-x-1/2"
+          role="status"
+          aria-live="polite"
+        >
+          <div className="flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 shadow-[0_20px_60px_rgba(15,23,42,0.18)]">
+            <CheckCircle2 className="h-4 w-4 text-slate-900" />
+            <span className="text-sm font-semibold text-slate-900">{text}</span>
+          </div>
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
+}
+
+/* ===================== Small UI: Segmented control ===================== */
+
+function Segmented({
+  value,
+  onChange,
+  items,
+}: {
+  value: string;
+  onChange: (v: any) => void;
+  items: Array<{ label: string; icon: React.ReactNode }>;
+}) {
+  return (
+    <div className="inline-flex rounded-2xl border border-white/15 bg-white/5 p-1 backdrop-blur">
+      {items.map((it) => {
+        const active = value === it.label;
+        return (
+          <button
+            key={it.label}
+            onClick={() => onChange(it.label)}
+            className={cn(
+              "inline-flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold transition",
+              active ? "bg-white text-slate-900" : "text-white/80 hover:bg-white/10"
+            )}
+            aria-pressed={active}
+          >
+            <span className={cn("inline-flex h-6 w-6 items-center justify-center rounded-lg", active ? "bg-slate-900 text-white" : "bg-white/10 text-white")}>
+              {it.icon}
+            </span>
+            {it.label}
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
+/* ===================== Page ===================== */
 
 export default function WorkPage() {
-  // Filters + visible list
-  const [category, setCategory] =
-    useState<(typeof DEMO_CATEGORIES)[number]>("All");
-  const filtered = useMemo(
-    () => PROJECTS.filter((p) => (category === "All" ? true : p.category === category)),
-    [category]
-  );
+  const [view, setView] = useState<ViewMode>("Demos");
 
-  // Auto-rotate if the demos block is visible
+  const [category, setCategory] = useState<Category>("All");
+  const [query, setQuery] = useState("");
+  const [sort, setSort] = useState<SortMode>("Featured");
+
   const { ref: demosRef, inView } = useIsInView<HTMLDivElement>(0.4);
   const [autoPlay, setAutoPlay] = useState(true);
-  const [active, setActive] = useAutoRotate(
-    inView && autoPlay,
-    filtered.length,
-    5500
-  );
 
-  // keep active index valid when filtering
+  const filtered = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    let list = PROJECTS.filter((p) => (category === "All" ? true : p.category === category));
+
+    if (q) {
+      list = list.filter((p) => {
+        const hay = `${p.title} ${p.brief} ${p.category} ${p.tags.join(" ")}`.toLowerCase();
+        return hay.includes(q);
+      });
+    }
+
+    if (sort === "Newest") list = [...list].sort((a, b) => Number(b.year) - Number(a.year));
+    else if (sort === "A→Z") list = [...list].sort((a, b) => a.title.localeCompare(b.title));
+    else {
+      list = [...list].sort((a, b) => {
+        const fa = a.featured ? 1 : 0;
+        const fb = b.featured ? 1 : 0;
+        if (fb !== fa) return fb - fa;
+        const ya = Number(a.year);
+        const yb = Number(b.year);
+        if (yb !== ya) return yb - ya;
+        return a.title.localeCompare(b.title);
+      });
+    }
+
+    return list;
+  }, [category, query, sort]);
+
+  const [active, setActive] = useAutoRotate(inView && autoPlay, filtered.length, 5500);
+
   useEffect(() => {
     if (active >= filtered.length) setActive(0);
   }, [filtered.length, active, setActive]);
 
-  // keyboard shortcuts: arrows to switch, 1-9 to jump
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       const count = filtered.length;
       if (count < 2) return;
       if (e.key === "ArrowRight") setActive((i) => (i + 1) % count);
       else if (e.key === "ArrowLeft") setActive((i) => (i - 1 + count) % count);
-      else if (/^[1-9]$/.test(e.key)) {
-        const n = Number(e.key) - 1;
-        if (n < count) setActive(n);
-      }
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, [filtered.length, setActive]);
 
-  const current = filtered[active];
-  const currentOrigin = (() => {
+  const current = filtered[active] ?? filtered[0];
+
+  const currentOrigin = useMemo(() => {
     try {
-      return new URL(current.url).origin.replace(/^https?:\/\//, "");
+      return new URL(current?.url ?? "").origin.replace(/^https?:\/\//, "");
     } catch {
       return "";
     }
-  })();
+  }, [current?.url]);
 
-  /* ---------- Subcomponents ---------- */
+  // toast
+  const [toast, setToast] = useState<{ show: boolean; text: string }>({ show: false, text: "" });
+  const toastTimer = useRef<number | null>(null);
+  const flashToast = (text: string) => {
+    setToast({ show: true, text });
+    if (toastTimer.current) window.clearTimeout(toastTimer.current);
+    toastTimer.current = window.setTimeout(() => setToast({ show: false, text: "" }), 1200);
+  };
+
+  // device modes
+  type Device = "Desktop" | "Tablet" | "Mobile";
+  const [device, setDevice] = useState<Device>("Desktop");
+  const aspectClass = device === "Mobile" ? "aspect-[9/16]" : device === "Tablet" ? "aspect-[3/4]" : "aspect-[16/9]";
+
+  /* ===================== Demos UI ===================== */
 
   const Navigator = () => (
-    <aside className="sticky top-6 self-start">
-      {/* filter row */}
-      <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
-        <div className="flex items-center gap-2 flex-wrap">
-          <span className="inline-flex items-center gap-2 rounded-xl border border-white/15 bg-white/5 px-3 py-1.5 text-xs text-white/80">
-            <FilterIcon className="h-4 w-4" /> Filter by type
+    <aside className="lg:sticky lg:top-28 self-start">
+      <div className="rounded-[28px] border border-slate-200 bg-white p-4 shadow-[0_20px_70px_rgba(15,23,42,0.08)]">
+        <div className="flex items-center gap-2">
+          <span className="inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-slate-900 text-white">
+            <Search className="h-5 w-5" />
           </span>
-          {DEMO_CATEGORIES.map((c) => {
+          <div className="min-w-0">
+            <div className="text-sm font-black text-slate-900">Demos</div>
+            <div className="text-xs text-slate-500">Search + filter</div>
+          </div>
+        </div>
+
+        <div className="mt-4">
+          <label className="sr-only" htmlFor="work-search">
+            Search demos
+          </label>
+          <div className="flex items-center gap-2 rounded-2xl border border-slate-200 bg-slate-50 px-3 py-2">
+            <Search className="h-4 w-4 text-slate-500" />
+            <input
+              id="work-search"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="Search…"
+              className="w-full bg-transparent text-sm text-slate-900 placeholder:text-slate-500 focus:outline-none"
+            />
+          </div>
+        </div>
+
+        <div className="mt-4 flex flex-wrap gap-2">
+          <span className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-semibold text-slate-700">
+            <FilterIcon className="h-4 w-4" /> Category
+          </span>
+          {CATEGORIES.map((c) => {
             const isActive = category === c;
             return (
               <button
                 key={c}
-                onClick={() => setCategory(c)}
-                className={`rounded-full border px-3 py-1.5 text-xs transition ${
-                  isActive ? "text-white" : "text-white/75 hover:text-white"
-                }`}
-                style={{
-                  borderColor: withAlpha(COLORS.primary, isActive ? 0.5 : 0.25),
-                  backgroundColor: withAlpha(COLORS.primary, isActive ? 0.22 : 0.08),
+                onClick={() => {
+                  setCategory(c);
+                  setActive(0);
                 }}
+                className={cn(
+                  "rounded-full border px-3 py-1 text-xs font-semibold transition",
+                  isActive ? "border-slate-900 bg-slate-900 text-white" : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
+                )}
                 aria-pressed={isActive}
               >
                 {c}
@@ -335,89 +567,76 @@ export default function WorkPage() {
             );
           })}
         </div>
-        <span className="text-[11px] text-white/50">
-          {filtered.length} demo{filtered.length !== 1 ? "s" : ""}
-        </span>
+
+        <div className="mt-4 flex items-center justify-between gap-2">
+          <div className="inline-flex items-center gap-2 text-xs font-semibold text-slate-700">
+            <SlidersHorizontal className="h-4 w-4" />
+            Sort
+          </div>
+          <select
+            value={sort}
+            onChange={(e) => setSort(e.target.value as SortMode)}
+            className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-900 focus:outline-none"
+            aria-label="Sort demos"
+          >
+            <option>Featured</option>
+            <option>Newest</option>
+            <option>A→Z</option>
+          </select>
+        </div>
+
+        <div className="mt-4 flex items-center justify-between text-xs text-slate-500">
+          <span>{filtered.length} results</span>
+          <span>←/→</span>
+        </div>
       </div>
 
-      {/* vertical list */}
-      <ul
-        className="space-y-2"
-        role="tablist"
-        aria-label="Projects navigator"
-      >
+      <div className="mt-4 space-y-2">
         {filtered.map((p, i) => {
           const isActive = i === active;
           return (
-            <li key={p.id}>
-              <button
-                onClick={() => setActive(i)}
-                role="tab"
-                aria-selected={isActive}
-                aria-controls={`panel-${p.id}`}
-                id={`tab-${p.id}`}
-                className={`group w-full text-left rounded-2xl border px-4 py-3 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-[#4F46E5]/60 ${
-                  isActive
-                    ? "border-white/25"
-                    : "border-white/10 hover:border-white/20"
-                }`}
-                style={{
-                  background: isActive
-                    ? gradientPrimary(125)
-                    : withAlpha(COLORS.primary, 0.06),
-                }}
-              >
-                <div className="flex items-center gap-3">
-                  <span className="text-base leading-none">{p.emoji}</span>
-                  <div className="min-w-0">
-                    <div
-                      className={`font-semibold truncate ${
-                        isActive ? "text-white" : "text-white/90"
-                      }`}
-                    >
-                      {p.title}
-                    </div>
-                    <div className="text-[11px] text-white/60">
-                      {p.year} • {p.category}
-                    </div>
+            <button
+              key={p.id}
+              onClick={() => setActive(i)}
+              className={cn(
+                "group w-full text-left rounded-[22px] border px-4 py-3 transition",
+                isActive ? "border-slate-900 bg-white shadow-[0_20px_70px_rgba(15,23,42,0.08)]" : "border-slate-200 bg-white hover:bg-slate-50"
+              )}
+              aria-current={isActive ? "true" : "false"}
+            >
+              <div className="flex items-center gap-3">
+                <span className="text-base leading-none">{p.emoji}</span>
+                <div className="min-w-0">
+                  <div className="font-bold text-slate-900 truncate">{p.title}</div>
+                  <div className="mt-0.5 text-[11px] text-slate-500">
+                    {p.year} • {p.category}
                   </div>
-                  <ChevronRight
-                    className={`ml-auto h-4 w-4 shrink-0 transition-transform ${
-                      isActive ? "translate-x-0" : "group-hover:translate-x-0.5"
-                    }`}
-                  />
                 </div>
-              </button>
-            </li>
+                <ChevronRight className="ml-auto h-4 w-4 shrink-0 text-slate-400 transition-transform group-hover:translate-x-0.5" />
+              </div>
+            </button>
           );
         })}
-      </ul>
-
-      {/* helper note */}
-      <p className="mt-3 text-[11px] text-white/50">
-        Tip: use ←/→ or 1–9 to switch.
-      </p>
+      </div>
     </aside>
-  );
-
-  const ProgressBar = ({ value }: { value: number }) => (
-    <div className="h-1 w-full rounded bg-white/10 overflow-hidden">
-      <div
-        className="h-full w-full origin-left"
-        style={{
-          transform: `scaleX(${value})`,
-          background:
-            "linear-gradient(90deg, rgba(79,70,229,.85), rgba(168,85,247,.85))",
-          transition: "transform .22s linear",
-        }}
-      />
-    </div>
   );
 
   const IframePreview = () => {
     const [loaded, setLoaded] = useState(false);
-    // visual progress tied to autoplay interval
     const [tick, setTick] = useState(0);
+    const [showEmbedHint, setShowEmbedHint] = useState(false);
+
+    useEffect(() => {
+      setLoaded(false);
+      setTick(0);
+      setShowEmbedHint(false);
+      const t = window.setTimeout(() => {
+        if (!loaded) setShowEmbedHint(true);
+      }, 2200);
+      return () => window.clearTimeout(t);
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [current?.id]);
+
     useEffect(() => {
       if (!autoPlay || filtered.length <= 1 || !inView) return setTick(0);
       setTick(0);
@@ -429,412 +648,466 @@ export default function WorkPage() {
         if (t >= 1) window.clearInterval(id);
       }, 120);
       return () => window.clearInterval(id);
-    }, [active, autoPlay, filtered.length, inView]);
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [autoPlay, filtered.length, inView]);
+
+    const DeviceButton = ({ name, icon }: { name: Device; icon: React.ReactNode }) => {
+      const isActive = device === name;
+      return (
+        <button
+          onClick={() => setDevice(name)}
+          className={cn(
+            "inline-flex items-center gap-2 rounded-xl border px-3 py-2 text-xs font-semibold transition",
+            isActive ? "border-slate-900 bg-slate-900 text-white" : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
+          )}
+          aria-pressed={isActive}
+        >
+          {icon}
+          {name}
+        </button>
+      );
+    };
+
+    if (!current) return null;
 
     return (
-      <div
-        className="relative rounded-3xl p-[1px]"
-        style={{
-          background: gradientSoft(130, 0.14, 0.12, 0.8),
-        }}
-      >
-        <div
-          className="relative rounded-3xl p-4 sm:p-6"
-          style={{ backgroundColor: withAlpha(COLORS.background, 0.92) }}
-        >
-          {/* header */}
-          <div className="mb-4 flex items-center justify-between gap-3 min-w-0">
-            <div className="min-w-0">
-              <h3 className="text-white font-semibold truncate">
-                {current.title}
-              </h3>
-              <p className="text-xs text-[#A5ADCF] truncate">
+      <div className="rounded-[34px] border border-slate-200 bg-white p-5 shadow-[0_35px_110px_rgba(15,23,42,0.10)] sm:p-6">
+        {/* header */}
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+          <div className="min-w-0">
+            <div className="flex items-center gap-2">
+              <div className="text-sm font-black text-slate-900 truncate">{current.title}</div>
+              <span className="h-1 w-1 rounded-full bg-slate-300" />
+              <div className="text-xs font-semibold text-slate-500 truncate">
                 {currentOrigin} • {current.year}
-              </p>
+              </div>
             </div>
-            <div className="flex items-center gap-2 shrink-0">
-              <button
-                onClick={async () => {
-                  try {
-                    await navigator.clipboard.writeText(current.url);
-                  } catch {
-                    alert("Copy failed. Please copy manually.");
-                  }
-                }}
-                className="inline-flex items-center gap-1.5 px-2 py-1 text-xs rounded-lg border border-white/15 text-white/85 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#4F46E5]/60"
-                style={{ backgroundColor: withAlpha(COLORS.primary, 0.12) }}
-                aria-label="Copy link"
-              >
-                <Link2 className="h-3.5 w-3.5" /> Copy
-              </button>
-              <a
-                href={current.url}
-                target="_blank"
-                rel="noreferrer noopener"
-                className="inline-flex items-center gap-1.5 text-xs px-2 py-1 rounded-lg border border-white/15 text-white/85 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#4F46E5]/60"
-                style={{ backgroundColor: withAlpha(COLORS.primary, 0.12) }}
-                aria-label="Open site"
-              >
-                <ExternalLink className="h-3.5 w-3.5" /> Open
-              </a>
-              <button
-                onClick={() => setAutoPlay((s) => !s)}
-                className="inline-flex items-center gap-1.5 text-xs px-2 py-1 rounded-lg border border-white/15 text-white/85 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#4F46E5]/60"
-                style={{ backgroundColor: withAlpha(COLORS.primary, 0.12) }}
-                aria-label={autoPlay ? "Pause" : "Play"}
-              >
-                {autoPlay ? (
-                  <Pause className="h-3.5 w-3.5" />
-                ) : (
-                  <Play className="h-3.5 w-3.5" />
-                )}{" "}
-                {autoPlay ? "Pause" : "Play"}
-              </button>
+            <div className="mt-2 flex flex-wrap gap-2">
+              {current.tags.slice(0, 4).map((t) => (
+                <Chip key={t}>{t}</Chip>
+              ))}
             </div>
           </div>
 
-          <ProgressBar value={tick} />
+          <div className="flex flex-wrap items-center gap-2 sm:justify-end">
+            <button
+              onClick={async () => {
+                try {
+                  await navigator.clipboard.writeText(current.url);
+                  flashToast("Link copied");
+                } catch {
+                  flashToast("Copy failed");
+                }
+              }}
+              className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50 focus:outline-none"
+              aria-label="Copy link"
+            >
+              <Link2 className="h-4 w-4" />
+              Copy
+            </button>
 
-          {/* iframe */}
-          <div className="relative mt-4 rounded-2xl overflow-hidden border border-white/10 bg-black/90">
-            <div className="relative w-full aspect-[3/4] sm:aspect-[4/5] md:aspect-[16/10] lg:aspect-[16/9]">
-              <iframe
-                key={current.id}
-                src={current.url}
-                title={`${current.title} preview`}
-                className="absolute inset-0 w-full h-full block"
-                loading="eager"
-                sandbox="allow-scripts allow-forms allow-same-origin"
-                referrerPolicy="no-referrer"
-                onLoad={() => setLoaded(true)}
-                style={{
-                  border: 0,
-                  background: "black",
-                  display: "block",
-                  transform: "translateZ(0)",
-                }}
-              />
-              {!loaded && (
-                <div className="absolute inset-0 animate-pulse bg-[linear-gradient(120deg,rgba(255,255,255,.06),rgba(255,255,255,.02))]" />
+            <a
+              href={current.url}
+              target="_blank"
+              rel="noreferrer noopener"
+              className="inline-flex items-center gap-2 rounded-xl bg-slate-900 px-4 py-2 text-xs font-semibold text-white transition hover:opacity-95"
+              aria-label="Open demo in new tab"
+            >
+              Open <ExternalLink className="h-4 w-4" />
+            </a>
+
+            <button
+              onClick={() => setAutoPlay((s) => !s)}
+              className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50"
+              aria-label={autoPlay ? "Pause autoplay" : "Play autoplay"}
+            >
+              {autoPlay ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
+              {autoPlay ? "Pause" : "Play"}
+            </button>
+          </div>
+        </div>
+
+        {/* progress */}
+        <div className="mt-5 h-2 w-full rounded-full bg-slate-100 overflow-hidden">
+          <div
+            className="h-full w-full origin-left"
+            style={{
+              transform: `scaleX(${tick})`,
+              background: `linear-gradient(90deg, ${withAlpha(COLORS.primary, 0.95)}, ${withAlpha(
+                COLORS.accent,
+                0.85
+              )}, ${withAlpha(COLORS.sky, 0.75)})`,
+              transition: "transform .22s linear",
+            }}
+          />
+        </div>
+
+        {/* device toggles */}
+        <div className="mt-4 flex flex-wrap items-center gap-2">
+          <DeviceButton name="Desktop" icon={<Laptop className="h-4 w-4" />} />
+          <DeviceButton name="Tablet" icon={<Tablet className="h-4 w-4" />} />
+          <DeviceButton name="Mobile" icon={<Smartphone className="h-4 w-4" />} />
+          <span className="ml-auto inline-flex items-center gap-2 text-xs text-slate-500">
+            <Info className="h-4 w-4" />
+            If blank, embedding is blocked.
+          </span>
+        </div>
+
+        {/* preview */}
+        <div className="mt-4 rounded-3xl border border-slate-200 bg-black overflow-hidden">
+          <div className={cn("relative w-full", aspectClass)}>
+            <iframe
+              key={current.id}
+              src={current.url}
+              title={`${current.title} preview`}
+              className="absolute inset-0 w-full h-full block"
+              loading="eager"
+              sandbox="allow-scripts allow-forms allow-same-origin"
+              referrerPolicy="no-referrer"
+              onLoad={() => {
+                setLoaded(true);
+                setShowEmbedHint(false);
+              }}
+              style={{ border: 0, background: "black", display: "block", transform: "translateZ(0)" }}
+            />
+
+            {!loaded && <div className="absolute inset-0 animate-pulse bg-[linear-gradient(120deg,rgba(255,255,255,.10),rgba(255,255,255,.04))]" />}
+
+            <AnimatePresence>
+              {showEmbedHint && !loaded && (
+                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 grid place-items-center bg-black/60 p-6">
+                  <div className="max-w-md rounded-3xl border border-white/15 bg-white/10 p-6 text-center text-white backdrop-blur-xl">
+                    <div className="text-sm font-black">Preview not loading</div>
+                    <p className="mt-2 text-sm text-white/80">Some sites block iframes. Use Open to view.</p>
+                    <div className="mt-4 flex justify-center">
+                      <a href={current.url} target="_blank" rel="noreferrer noopener" className="inline-flex items-center gap-2 rounded-xl bg-white px-5 py-3 text-sm font-semibold text-black hover:opacity-95">
+                        Open demo <ExternalLink className="h-4 w-4" />
+                      </a>
+                    </div>
+                  </div>
+                </motion.div>
               )}
-              <div className="pointer-events-none absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-black/60 to-transparent" />
-            </div>
-            <div className="pointer-events-none absolute left-3 bottom-2 z-[3] text-[11px] text-[#A5ADCF] opacity-70">
-              If the preview is blank, that site blocks embedding. Use “Open”.
-            </div>
+            </AnimatePresence>
           </div>
+        </div>
+
+        {/* brief */}
+        <p className="mt-5 text-sm leading-relaxed text-slate-600">{current.brief}</p>
+
+        {/* single CTA row (minimal) */}
+        <div className="mt-5 flex flex-wrap gap-3">
+          <Link
+            to="/contact"
+            className="inline-flex items-center gap-2 rounded-xl bg-slate-900 px-6 py-3 text-sm font-semibold text-white transition hover:opacity-95"
+          >
+            Start a project <ArrowRight className="h-4 w-4" />
+          </Link>
+          <Link
+            to="/solutions"
+            className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-6 py-3 text-sm font-semibold text-slate-900 transition hover:bg-slate-50"
+          >
+            See solutions <ArrowRight className="h-4 w-4" />
+          </Link>
         </div>
       </div>
     );
   };
 
-  return (
-    <>
-      {/* HERO */}
-      <section className="relative py-16 sm:py-20 md:py-24 px-4 sm:px-6 md:px-8">
-        <div className="mx-auto w-full max-w-screen-2xl">
-          <SectionShell>
-            <div className="text-center mb-8 sm:mb-10">
-              <div className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-4 py-1.5 text-[11px] uppercase tracking-[0.22em] text-white/70">
-                <Eye className="h-3.5 w-3.5" />
-                Work & Results
+  /* ===================== Case studies (minimal accordion) ===================== */
+
+  const serviceIcon = (s: CaseStudy["services"][number]) => {
+    if (s === "Marketing") return <Megaphone className="h-3.5 w-3.5" />;
+    if (s === "Brand") return <Palette className="h-3.5 w-3.5" />;
+    if (s === "Software") return <Code2 className="h-3.5 w-3.5" />;
+    return <BarChart3 className="h-3.5 w-3.5" />;
+  };
+
+  function CaseStudyRow({ cs }: { cs: CaseStudy }) {
+    const [open, setOpen] = useState(false);
+    return (
+      <div className="rounded-[28px] border border-slate-200 bg-white shadow-[0_20px_70px_rgba(15,23,42,0.06)]">
+        <button
+          onClick={() => setOpen((s) => !s)}
+          className="w-full px-6 py-5 text-left"
+          aria-expanded={open}
+        >
+          <div className="flex items-start gap-4">
+            <div className="mt-0.5 inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-slate-900 text-white">
+              {open ? <Minus className="h-5 w-5" /> : <Plus className="h-5 w-5" />}
+            </div>
+
+            <div className="min-w-0 flex-1">
+              <div className="flex flex-wrap items-center gap-2">
+                <div className="text-sm font-black text-slate-900">{cs.title}</div>
+                <span className="h-1 w-1 rounded-full bg-slate-300" />
+                <div className="text-xs font-semibold text-slate-500">
+                  {cs.region} • {cs.industry} • {cs.year}
+                </div>
               </div>
-              <h1 className="mt-4 text-3xl sm:text-5xl md:text-6xl font-extrabold bg-gradient-to-r from-white via-gray-100 to-white bg-clip-text text-transparent break-words">
-                Live work you can click into.
-              </h1>
-              <p className="mt-4 text-[#A5ADCF] text-[15px] sm:text-[16px] max-w-[64ch] mx-auto px-2">
-                Real sites, not mockups. Explore live demos, impact snapshots, and what we
-                actually hand over at the end of an engagement.
-              </p>
-              <div className="mt-5 flex flex-wrap justify-center gap-2">
-                {["Live demos", "Impact metrics", "Case studies"].map((chip) => (
-                  <span
-                    key={chip}
-                    className="rounded-full border border-white/15 bg-white/5 px-3 py-1 text-[11px] uppercase tracking-[0.16em] text-white/65"
-                  >
-                    {chip}
+
+              <div className="mt-3 flex flex-wrap gap-2">
+                {cs.services.map((s) => (
+                  <span key={s} className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-semibold text-slate-700">
+                    <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-slate-900 text-white">
+                      {serviceIcon(s)}
+                    </span>
+                    {s}
+                  </span>
+                ))}
+              </div>
+
+              <div className="mt-3 flex flex-wrap gap-2">
+                {cs.metrics.map((m) => (
+                  <span key={m.label} className="rounded-full border border-slate-200 bg-white px-3 py-1 text-xs font-semibold text-slate-800">
+                    {m.label}: <span className="font-black">{m.value}</span>
                   </span>
                 ))}
               </div>
             </div>
-            <div className="h-px w-full bg-gradient-to-r from-transparent via-white/20 to-transparent" />
-          </SectionShell>
-        </div>
-      </section>
 
+            <ChevronRight className={cn("mt-3 h-5 w-5 text-slate-400 transition-transform", open && "rotate-90")} />
+          </div>
+        </button>
 
-      {/* LIVE DEMOS — sticky navigator + preview */}
-      <section
-        id="projects"
-        className="relative py-18 sm:py-24 md:py-28 px-4 sm:px-6 md:px-8"
-      >
-        <div className="mx-auto w-full max-w-screen-2xl">
-          <SectionShell>
-            <div className="text-center mb-10 sm:mb-12">
-              <h2 className="text-3xl sm:text-5xl md:text-6xl font-extrabold bg-gradient-to-r from-white via-gray-100 to-white bg-clip-text text-transparent break-words">
-                Live demos
-              </h2>
-              <p className="mt-3 max-w-[66ch] mx-auto text-[#A5ADCF] text-[15px] sm:text-[16px] px-2">
-                Filter by focus and preview instantly. Every example is live and clickable.
-              </p>
-            </div>
-
-            <div
-              ref={demosRef}
-              className="grid grid-cols-1 lg:grid-cols-[360px_1fr] gap-6 sm:gap-8"
+        <AnimatePresence initial={false}>
+          {open && (
+            <motion.div
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: "auto", opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              transition={{ duration: 0.22, ease: "easeOut" }}
+              className="overflow-hidden"
             >
-              <Navigator />
-              <div className="space-y-6">
-                <IframePreview />
+              <div className="px-6 pb-6">
+                <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                  <div className="text-xs font-black tracking-[0.18em] text-slate-500">GOAL</div>
+                  <p className="mt-2 text-sm text-slate-700">{cs.goal}</p>
+                </div>
 
-                {/* details */}
-                <div className="grid grid-cols-1 xl:grid-cols-[1fr_auto] gap-6 items-start">
-                  <div>
-                    <h3 className="text-2xl sm:text-3xl font-bold text-white mb-3 sm:mb-4">
-                      {current.title}
-                    </h3>
-                    <p className="text-[#A5ADCF] text-base sm:text-lg leading-relaxed mb-5 sm:mb-6 break-words">
-                      {current.brief}
-                    </p>
-                    <div className="flex flex-wrap gap-2.5 mb-6">
-                      {current.tags.map((t) => (
-                        <span
-                          key={t}
-                          className="px-3 py-1 text-xs rounded-full bg-white/10 text-[#A5ADCF] border border-white/20"
-                        >
-                          {t}
-                        </span>
-                      ))}
+                <div className="mt-4 grid gap-2">
+                  {cs.work.map((w) => (
+                    <div key={w} className="flex items-start gap-3 rounded-2xl border border-slate-200 bg-white px-4 py-3">
+                      <span className="mt-1.5 h-2 w-2 rounded-full bg-slate-900" />
+                      <div className="text-sm text-slate-700">{w}</div>
                     </div>
-                    <div className="flex flex-wrap gap-3">
-                      <a
-                        href={current.url}
-                        className="group inline-flex items-center gap-2 px-5 sm:px-6 py-3 rounded-xl text-white font-semibold hover:scale-[1.02] transition-all shadow-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-[#4F46E5]/60"
-                        style={{
-                          backgroundColor: withAlpha(COLORS.primary, 0.26),
-                          border: "1px solid rgba(255,255,255,0.14)",
-                          backdropFilter: "blur(16px)",
-                        }}
-                        target="_blank"
-                        rel="noreferrer noopener"
-                      >
-                        <Eye className="h-5 w-5" /> Visit demo
-                        <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-                      </a>
-                    </div>
-                  </div>
-                  <div
-                    className="grid grid-cols-3 gap-3 min-w-[260px]"
-                    aria-label="Demo details"
-                  >
-                    <div
-                      className="text-center p-3 rounded-xl border border-white/10"
-                      style={{ backgroundColor: withAlpha(COLORS.primary, 0.12) }}
-                    >
-                      <div className="text-sm text-[#A5ADCF]">Year</div>
-                      <div className="text-lg font-semibold text-white">
-                        {current.year}
-                      </div>
-                    </div>
-                    <div
-                      className="text-center p-3 rounded-xl border border-white/10"
-                      style={{ backgroundColor: withAlpha(COLORS.primary, 0.12) }}
-                    >
-                      <div className="text-sm text-[#A5ADCF]">Category</div>
-                      <div className="text-lg font-semibold text-white">
-                        {current.category}
-                      </div>
-                    </div>
-                    <div
-                      className="text-center p-3 rounded-xl border border-white/10"
-                      style={{ backgroundColor: withAlpha(COLORS.primary, 0.12) }}
-                    >
-                      <div className="text-sm text-[#A5ADCF]">Preview</div>
-                      <div className="text-lg font-semibold text-white">
-                        Embedded
-                      </div>
-                    </div>
+                  ))}
+                </div>
+
+                <div className="mt-5 flex flex-wrap gap-3">
+                  <Link to="/contact" className="inline-flex items-center gap-2 rounded-xl bg-slate-900 px-6 py-3 text-sm font-semibold text-white transition hover:opacity-95">
+                    Get a similar plan <ArrowRight className="h-4 w-4" />
+                  </Link>
+                  <div className="text-[11px] text-slate-500 self-center">
+                    Replace “example” metrics with real anonymized values.
                   </div>
                 </div>
               </div>
-            </div>
-          </SectionShell>
-        </div>
-      </section>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+    );
+  }
 
-      {/* WHAT WE HAND OFF */}
-      <section className="relative py-16 sm:py-20 md:py-24 px-4 sm:px-6 md:px-8">
-        <div className="mx-auto w-full max-w-screen-2xl">
-          <SectionShell>
-            <div className="text-center mb-8 sm:mb-10">
-              <h2 className="text-2xl sm:text-4xl font-bold text-white">
-                What we hand off
-              </h2>
-              <p className="mt-3 text-[#A5ADCF] text-[15px] sm:text-[16px] max-w-[66ch] mx-auto px-2">
-                You don’t just get performance. You keep the dashboards, templates, and
-                automation we build together.
-              </p>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
-              {workflowExports.map(({ title, items }) => (
-                <div
-                  key={title}
-                  className="rounded-2xl border border-white/12 p-5 sm:p-6"
-                  style={{ backgroundColor: withAlpha(COLORS.primary, 0.08) }}
-                >
-                  <h3 className="text-lg font-semibold text-white mb-3">
-                    {title}
-                  </h3>
-                  <ul className="space-y-2 text-sm text-white/70">
-                    {items.map((item) => (
-                      <li key={item} className="flex items-start gap-2">
-                        <span className="h-2 w-2 rounded-full bg-[#4F46E5] mt-1 shrink-0" />
-                        <span className="break-words">{item}</span>
-                      </li>
-                    ))}
-                  </ul>
+  /* ===================== Page ===================== */
+
+  return (
+    <div className="w-full">
+      <Toast show={toast.show} text={toast.text} />
+
+      {/* HERO */}
+      <section className="relative w-full overflow-hidden text-white" style={{ backgroundColor: COLORS.bg }}>
+        <UseCaseBackground />
+        <SoftGridNoise />
+
+        <SectionShell className="relative z-30 pt-24 pb-14 sm:pt-28 sm:pb-16 md:pt-32 md:pb-20">
+          <motion.div variants={stagger} initial="hidden" animate="show" className="mx-auto max-w-4xl text-center">
+            <motion.div variants={fadeUp}>
+              <DarkKicker>
+                <Eye className="h-4 w-4" /> Our work
+              </DarkKicker>
+            </motion.div>
+
+            <motion.h1 variants={fadeUp} className="mt-5 text-balance text-4xl sm:text-5xl md:text-6xl font-black tracking-tight">
+              Real work. Clear outcomes.
+            </motion.h1>
+
+            <motion.p variants={fadeUp} className="mt-4 text-balance text-sm leading-relaxed text-slate-200/90 sm:text-base md:text-lg">
+              We help SMEs and startups in Egypt and outside Egypt launch premium visuals, conversion-ready pages, and measurable growth workflows.
+            </motion.p>
+
+            {/* minimal highlights strip */}
+            <motion.div variants={fadeUp} className="mt-8 grid gap-3 sm:grid-cols-3">
+              {HIGHLIGHTS.map((h) => (
+                <div key={h.label} className="rounded-2xl border border-white/10 bg-white/5 px-5 py-4 backdrop-blur">
+                  <div className="flex items-center gap-2 text-[11px] uppercase tracking-[0.22em] text-white/60">
+                    <span className="inline-flex h-7 w-7 items-center justify-center rounded-xl bg-white/10">{h.icon}</span>
+                    {h.label}
+                  </div>
+                  <div className="mt-3 text-lg font-semibold text-white">{h.value}</div>
+                  <div className="mt-1 text-xs text-white/60">{h.note}</div>
                 </div>
               ))}
-            </div>
-          </SectionShell>
-        </div>
+            </motion.div>
+
+            {/* view switch */}
+            <motion.div variants={fadeUp} className="mt-10 flex justify-center">
+              <Segmented
+                value={view}
+                onChange={(v: ViewMode) => setView(v)}
+                items={[
+                  { label: "Demos", icon: <Laptop className="h-4 w-4" /> },
+                  { label: "Case Studies", icon: <BarChart3 className="h-4 w-4" /> },
+                  { label: "Visuals", icon: <Palette className="h-4 w-4" /> },
+                ]}
+              />
+            </motion.div>
+
+            <motion.div variants={fadeUp} className="mt-10 h-px w-full bg-gradient-to-r from-transparent via-white/20 to-transparent" />
+          </motion.div>
+        </SectionShell>
       </section>
 
-      {/* CASE STUDIES */}
-      <section className="relative py-16 sm:py-20 md:py-24 px-4 sm:px-6 md:px-8">
-        <div className="mx-auto w-full max-w-screen-2xl">
-          <SectionShell>
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4 mb-6 sm:mb-8">
-              <h2 className="text-2xl sm:text-4xl font-bold text-white">
-                Case studies
-              </h2>
-              <span className="inline-flex items-center gap-2 text-white/80 text-sm">
-                <Trophy className="h-4 w-4" /> Outcomes, not concept decks
-              </span>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
-              {caseStudies.map((cs) => (
-                <a
-                  key={cs.title}
-                  href={cs.href}
-                  className="group rounded-2xl border border-white/12 p-5 sm:p-6 transition hover:border-white/25"
-                  style={{ backgroundColor: withAlpha(COLORS.primary, 0.08) }}
-                >
-                  <div className="flex items-center justify-between gap-3 min-w-0">
-                    <h3 className="text-lg font-semibold text-white truncate">
-                      {cs.title}
-                    </h3>
-                    <ExternalLink className="h-4 w-4 text-white/70 shrink-0 group-hover:text-white" />
-                  </div>
-                  <p className="mt-2 text-sm text-white/70">{cs.summary}</p>
-                </a>
-              ))}
-            </div>
-          </SectionShell>
-        </div>
-      </section>
-
-      {/* TESTIMONIALS */}
-      <section
-        id="testimonials"
-        className="relative py-20 sm:py-28 md:py-32 px-4 sm:px-6 md:px-8"
-      >
-        <div className="mx-auto w-full max-w-screen-2xl">
-          <SectionShell>
-            <div className="text-center mb-10 sm:mb-12 md:mb-14">
-              <h2 className="text-3xl sm:text-5xl md:text-6xl font-extrabold bg-gradient-to-r from-white via-gray-100 to-white bg-clip-text text-transparent mb-3 sm:mb-4 break-words">
-                Partners in the work
-              </h2>
-              <p className="max-w-[66ch] mx-auto text-[#A5ADCF] text-[15px] sm:text-[16px] px-2">
-                Strategic teams lean on us to ship launches, not just slide decks. These
-                quotes are from recent collaborations.
-              </p>
-              <div className="mt-5 sm:mt-6 h-1 w-24 sm:w-32 bg-gradient-to-r from-[#4F46E5] via-[#A855F7] to-[#1B1F3B] mx-auto rounded-full" />
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5">
-              {[
-                {
-                  name: "Mariam B.",
-                  role: "Head of Growth, Retail",
-                  quote:
-                    "They launched new funnels in weeks, not months. We now run weekly creative tests with clean revenue attribution.",
-                  result: "+162% ROAS",
-                },
-                {
-                  name: "Omar S.",
-                  role: "Founder, DTC",
-                  quote:
-                    "They rebuilt our stack, tightened email flows, and returning customer rate spiked in the first month.",
-                  result: "+38% LTV",
-                },
-                {
-                  name: "J. Park",
-                  role: "VP Product, SaaS",
-                  quote:
-                    "The product pod shipped an MVP with analytics and docs. We onboarded our first customers the same week.",
-                  result: "6-week MVP",
-                },
-                {
-                  name: "Noor K.",
-                  role: "Marketing Lead, Fintech",
-                  quote:
-                    "SEO workflows, social playbooks, and media pacing live in one system. Reporting is finally simple for the exec team.",
-                  result: "+4× organic",
-                },
-              ].map((t, idx) => (
-                <div
-                  key={idx}
-                  className="relative h-full rounded-3xl border border-white/12 p-5 sm:p-7"
-                  style={{ backgroundColor: withAlpha(COLORS.primary, 0.1) }}
-                >
-                  <Quote className="h-6 w-6 text-white/70" />
-                  <p className="mt-4 text-white/85 text-base leading-relaxed">
-                    “{t.quote}”
-                  </p>
-                  <div className="mt-6 flex items-center justify-between gap-3 min-w-0">
-                    <div className="min-w-0">
-                      <p className="text-sm font-semibold text-white truncate">
-                        {t.name}
-                      </p>
-                      <p className="text-xs uppercase tracking-[0.18em] text-white/50 truncate">
-                        {t.role}
-                      </p>
-                    </div>
-                    <span className="inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-white/10 px-3 py-1 text-xs text-white/80">
-                      <Sparkles className="h-3.5 w-3.5" /> {t.result}
-                    </span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </SectionShell>
-        </div>
-      </section>
-
-      {/* CTA */}
-      <section className="relative py-14 sm:py-18 md:py-22 px-4 sm:px-6 md:px-8">
-        <div className="mx-auto w-full max-w-screen-2xl">
-          <SectionShell>
-            <div className="flex flex-col items-center text-center gap-4">
-              <h3 className="text-2xl sm:text-3xl font-bold text-white">
-                Ready to collaborate?
-              </h3>
-              <p className="text-[#A5ADCF] max-w-[62ch] px-2">
-                Share your goals and constraints. We’ll respond with a short plan,
-                timeline, and recommended starting package.
-              </p>
-              <a
-                href="/contact"
-                className="inline-flex items-center gap-2 rounded-xl border border-white/20 px-5 sm:px-6 py-3 text-sm font-semibold text-white hover:translate-x-1 transition"
-                style={{
-                  backgroundColor: withAlpha(COLORS.primary, 0.22),
-                  backdropFilter: "blur(12px)",
-                }}
+      {/* CONTENT */}
+      <section className="w-full bg-white text-slate-900">
+        <div className="mx-auto max-w-6xl px-4 py-14 sm:px-6 md:py-16">
+          <AnimatePresence mode="wait" initial={false}>
+            {view === "Demos" ? (
+              <motion.div
+                key="demos"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 10 }}
+                transition={{ duration: 0.22, ease: "easeOut" }}
               >
-                Talk to the team <ArrowRight className="h-4 w-4" />
-              </a>
+                <div className="mb-8 text-center">
+                  <LightKicker>DEMOS</LightKicker>
+                  <h2 className="mt-4 text-balance text-3xl font-black tracking-tight sm:text-4xl">Browse & preview</h2>
+                  <p className="mt-3 text-slate-600">Filter by category, then preview in desktop/tablet/mobile.</p>
+                </div>
+
+                <div ref={demosRef} className="grid grid-cols-1 gap-6 lg:grid-cols-[360px_1fr] sm:gap-8">
+                  <Navigator />
+                  <IframePreview />
+                </div>
+              </motion.div>
+            ) : null}
+
+            {view === "Case Studies" ? (
+              <motion.div
+                key="case"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 10 }}
+                transition={{ duration: 0.22, ease: "easeOut" }}
+              >
+                <div className="mb-10 text-center">
+                  <LightKicker>CASE STUDIES</LightKicker>
+                  <h2 className="mt-4 text-balance text-3xl font-black tracking-tight sm:text-4xl">Scannable. Measurable. Clear.</h2>
+                  <p className="mt-3 text-slate-600">Goal → what we did → key metrics. Expand to see details.</p>
+                </div>
+
+                <div className="space-y-4">
+                  {CASE_STUDIES.map((cs) => (
+                    <CaseStudyRow key={cs.id} cs={cs} />
+                  ))}
+                </div>
+              </motion.div>
+            ) : null}
+
+            {view === "Visuals" ? (
+              <motion.div
+                key="visuals"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 10 }}
+                transition={{ duration: 0.22, ease: "easeOut" }}
+              >
+                <div className="mb-10 text-center">
+                  <LightKicker>VISUALS</LightKicker>
+                  <h2 className="mt-4 text-balance text-3xl font-black tracking-tight sm:text-4xl">Design output that looks premium</h2>
+                  <p className="mt-3 text-slate-600">Ads, branding, and landing visuals. Replace mocks with your real assets.</p>
+                </div>
+
+                <div className="flex gap-5 overflow-x-auto pb-2 [-webkit-overflow-scrolling:touch]">
+                  {VISUALS.map((v) => (
+                    <motion.div
+                      key={v.title}
+                      whileHover={{ y: -3 }}
+                      className="min-w-[280px] max-w-[280px] sm:min-w-[340px] sm:max-w-[340px] overflow-hidden rounded-[34px] border border-slate-200 bg-white shadow-[0_20px_70px_rgba(15,23,42,0.08)] transition hover:shadow-[0_35px_110px_rgba(15,23,42,0.12)]"
+                    >
+                      <div className="relative">
+                        <img src={v.src} alt={v.title} className="h-52 w-full object-cover" />
+                        <div
+                          aria-hidden
+                          className="pointer-events-none absolute inset-0 opacity-60"
+                          style={{
+                            background:
+                              "radial-gradient(circle at 30% 10%, rgba(79,70,229,0.14) 0%, rgba(56,189,248,0.08) 30%, transparent 60%)",
+                          }}
+                        />
+                      </div>
+
+                      <div className="p-6">
+                        <div className="flex items-center justify-between gap-3">
+                          <div className="text-sm font-black text-slate-900">{v.title}</div>
+                          <span className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-[11px] font-semibold text-slate-700">
+                            {v.kind}
+                          </span>
+                        </div>
+
+                        <div className="mt-3 flex flex-wrap gap-2">
+                          {v.tags.map((t) => (
+                            <Chip key={t}>{t}</Chip>
+                          ))}
+                        </div>
+                      </div>
+                    </motion.div>
+                  ))}
+                </div>
+              </motion.div>
+            ) : null}
+          </AnimatePresence>
+
+          {/* Single bottom CTA (minimal) */}
+          <div className="mt-14 rounded-[40px] border border-slate-200 bg-gradient-to-b from-white to-slate-50 p-8 text-center shadow-[0_30px_90px_rgba(15,23,42,0.10)] sm:p-10">
+            <div className="mx-auto max-w-2xl">
+              <LightKicker>
+                <Sparkles className="h-4 w-4 mr-2 inline-block" /> NEXT
+              </LightKicker>
+
+              <h3 className="mt-4 text-balance text-2xl font-black tracking-tight text-slate-900 sm:text-3xl">
+                Want a clean plan for your next 30–60 days?
+              </h3>
+
+              <p className="mt-3 text-sm leading-relaxed text-slate-600 sm:text-base">
+                Tell us your goal (leads / bookings / sales). We’ll recommend a scope and rollout.
+              </p>
+
+              <div className="mt-7 flex flex-wrap justify-center gap-3">
+                <Link
+                  to="/contact"
+                  className="inline-flex items-center gap-2 rounded-xl bg-slate-900 px-6 py-3 text-sm font-semibold text-white transition hover:opacity-95"
+                >
+                  Contact <ArrowRight className="h-4 w-4" />
+                </Link>
+                <Link
+                  to="/solutions"
+                  className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-6 py-3 text-sm font-semibold text-slate-900 transition hover:bg-slate-50"
+                >
+                  See solutions <ArrowRight className="h-4 w-4" />
+                </Link>
+              </div>
+
+              <div className="mt-6 flex flex-wrap justify-center gap-2 text-xs text-slate-500">
+                {["Fast launch", "Weekly iteration", "EN + AR"].map((t) => (
+                  <span key={t} className="rounded-full border border-slate-200 bg-white px-3 py-1 font-semibold">
+                    {t}
+                  </span>
+                ))}
+              </div>
             </div>
-          </SectionShell>
+          </div>
         </div>
       </section>
 
@@ -845,18 +1118,26 @@ export default function WorkPage() {
           __html: JSON.stringify({
             "@context": "https://schema.org",
             "@type": "CollectionPage",
-            name: "Anonvic — Our Work",
-            about:
-              "Live demos, case studies, and impact metrics from Anonvic engagements.",
-            hasPart: PROJECTS.slice(0, 3).map((p) => ({
-              "@type": "CreativeWork",
-              name: p.title,
-              url: p.url,
-              applicationCategory: "BusinessApplication",
-            })),
+            name: "Our Work",
+            about: "Demos, visuals, and case studies from marketing, branding, and software engagements.",
+            areaServed: ["Egypt", "GCC", "International"],
+            hasPart: [
+              ...PROJECTS.slice(0, 6).map((p) => ({
+                "@type": "CreativeWork",
+                name: p.title,
+                url: p.url,
+                applicationCategory: "BusinessApplication",
+              })),
+              ...CASE_STUDIES.map((cs) => ({
+                "@type": "CaseStudy",
+                name: cs.title,
+                about: cs.industry,
+                datePublished: cs.year,
+              })),
+            ],
           }),
         }}
       />
-    </>
+    </div>
   );
 }

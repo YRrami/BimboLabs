@@ -1,961 +1,763 @@
-﻿/* eslint-disable @typescript-eslint/no-explicit-any */
-// src/App.tsx — Lean, readable, and TSX-safe
+﻿// Hero.tsx (content refresh)
+// Changes (content-only; structure preserved):
+// - Clear positioning: software + marketing + brand management (3 major services)
+// - Emphasis: cost efficient, fast pace, flexible, AI + human expertise, fewer errors
+// - Stronger CTA copy + tighter benefits + better section headings and packages text
+//
+// NOTE: This keeps your existing layout/animations and only replaces copy + labels.
+// You can tweak brand name "Anonvic" if needed.
 
-import { useEffect, useRef, useState } from "react";
-import { Link } from "react-router-dom";
-import { motion } from "framer-motion";
+import React, { useMemo, useState } from "react";
+import { motion, useScroll, useSpring } from "framer-motion";
 import {
   ArrowRight,
   Check,
-  Compass,
-  GaugeCircle,
-  Lightbulb,
-  Mail,
   Sparkles,
+  ShieldCheck,
   Zap,
-  Instagram,
-  Linkedin,
-  Twitter,
-  Facebook,
-  Github,
-  Target,
-  Rocket,
-  Code,
-  CalendarCheck,
+  Layers,
+  Wand2,
+  Search,
+  Users,
+  Code2,
+  Palette,
+  Briefcase,
 } from "lucide-react";
-import type { LucideIcon } from "lucide-react";
 
-/* ===================== Local tokens & helpers ===================== */
-const COLORS = {
-  background: "#05061D",
-  primary: "#4F46E5",
-  accent: "#A855F7",
-  text: "#F7F9FF",
-  muted: "#A5ADCF",
-} as const;
+import mainMock from "./assets/companies/cover.png";
+import chartMock from "./assets/companies/asu-logo.png";
 
-const SITE = {
-  name: "Anonvic",
-  domain: "https://www.anonvic.com",
-  socials: {
-    linkedin: "https://www.linkedin.com/",
-    instagram: "https://www.instagram.com/",
-    twitter: "https://twitter.com/",
-    facebook: "https://www.facebook.com/",
-    github: "https://github.com/",
-  },
-  contacts: { emailLabel: "business@anonvic.com" },
-  description:
-    "Anonvic is a two-market studio (Egypt & US) helping SMEs with software and marketing — websites, apps, brand foundations, market analysis, ads, and content in English and Arabic.",
-  keywords: [
-    "SME software",
-    "SME marketing Egypt US",
-    "web and app development",
-    "branding EN AR",
-    "market analysis and strategy",
-    "Meta Google ads setup",
-    "content creation",
-  ],
-  locales: ["en", "ar"],
-  regions: ["Egypt", "United States"],
-} as const;
+import svcEngineering from "./assets/companies/2.png";
+import svcBrand from "./assets/companies/1.png";
+import svcMarketing from "./assets/companies/cover.png";
+import hubMock from "./assets/companies/cover.png";
 
-function hexToRgb(hex: string) {
-  const h = hex.replace("#", "");
-  const v = parseInt(h, 16);
-  return { r: (v >> 16) & 255, g: (v >> 8) & 255, b: v & 255 };
+function cn(...classes: Array<string | false | null | undefined>) {
+  return classes.filter(Boolean).join(" ");
 }
 
-function withAlpha(hex: string, a: number) {
-  const { r, g, b } = hexToRgb(hex);
-  return `rgba(${r},${g},${b},${a})`;
-}
-
-const gradientPrimary = (angle = 140) =>
-  `linear-gradient(${angle}deg, ${withAlpha(COLORS.primary, 0.18)}, ${withAlpha(
-    COLORS.accent,
-    0.14
-  )}, ${withAlpha(COLORS.background, 0.92)})`;
-
-const gradientSoft = (angle = 135, p = 0.16, a = 0.12, b = 0.9) =>
-  `linear-gradient(${angle}deg, ${withAlpha(COLORS.primary, p)}, ${withAlpha(
-    COLORS.accent,
-    a
-  )}, ${withAlpha(COLORS.background, b)})`;
-
-/* ===================== Generic containers ===================== */
-function SectionShell({
-  children,
-  className,
-  as: Tag = "section",
-  id,
-  ariaLabel,
-}: {
-  children: React.ReactNode;
-  className?: string;
-  as?: any;
-  id?: string;
-  ariaLabel?: string;
-}) {
+function ScrollProgress() {
+  const { scrollYProgress } = useScroll();
+  const scaleX = useSpring(scrollYProgress, { stiffness: 120, damping: 20, mass: 0.2 });
   return (
-    <Tag
-      id={id}
-      aria-label={ariaLabel}
-      className={`relative py-20 sm:py-24 md:py-28 px-4 sm:px-6 lg:px-10 ${
-        className ?? ""
-      }`}
-    >
-      <div className="mx-auto max-w-[90rem]">
-        <div
-          className="rounded-[2rem] border border-white/10 backdrop-blur-2xl px-6 sm:px-10 md:px-12 lg:px-14 py-10 sm:py-14 md:py-16"
-          style={{
-            background: gradientSoft(),
-            boxShadow: "0 36px 90px -48px rgba(0,0,0,0.9)",
-          }}
-        >
-          {children}
-        </div>
-      </div>
-    </Tag>
-  );
-}
-
-/* ===================== small hooks ===================== */
-function useIsMobile(breakpoint = 640) {
-  const [isMobile, setIsMobile] = useState(
-    typeof window !== "undefined" ? window.innerWidth < breakpoint : false
-  );
-  useEffect(() => {
-    const onResize = () => setIsMobile(window.innerWidth < breakpoint);
-    window.addEventListener("resize", onResize);
-    return () => window.removeEventListener("resize", onResize);
-  }, [breakpoint]);
-  return isMobile;
-}
-
-function usePrefersReducedMotion() {
-  const [reduced, setReduced] = useState(false);
-  useEffect(() => {
-    const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
-    const handler = (e: MediaQueryList | MediaQueryListEvent) =>
-      setReduced("matches" in e ? e.matches : mq.matches);
-    setReduced(mq.matches);
-    if ("addEventListener" in mq) {
-      mq.addEventListener("change", handler as any);
-      return () => mq.removeEventListener("change", handler as any);
-    } else {
-      (mq as any).addListener(handler);
-      return () => (mq as any).removeListener(handler);
-    }
-  }, []);
-  return reduced;
-}
-
-/* ===================== Hero floating social icons ===================== */
-function HeroEdgeIcons({
-  scrollY,
-  isMobile,
-  reducedMotion,
-}: {
-  scrollY: number;
-  isMobile: boolean;
-  reducedMotion: boolean;
-}) {
-  const strength = 0.05;
-
-  // Pushed to the outer frame so they don't crowd the hero text
-  const desktop = {
-    ig: { left: 6, top: 18 },
-    in: { left: 8, top: 78 },
-    tw: { left: 94, top: 22 },
-    fb: { left: 92, top: 76 },
-    gh: { left: 50, top: 94 },
-  } as const;
-
-  const mobile = {
-    ig: { left: 10, top: 16 },
-    in: { left: 12, top: 86 },
-    tw: { left: 90, top: 18 },
-    fb: { left: 88, top: 90 },
-    gh: { left: 50, top: 96 },
-  } as const;
-
-  const items: Array<{
-    key: keyof typeof desktop;
-    Icon: LucideIcon;
-    href: string;
-    title: string;
-    glow: string;
-  }> = [
-    {
-      key: "ig",
-      Icon: Instagram,
-      href: SITE.socials.instagram,
-      title: "Instagram",
-      glow: "from-[#4F46E5] via-[#A855F7] to-transparent",
-    },
-    {
-      key: "in",
-      Icon: Linkedin,
-      href: SITE.socials.linkedin,
-      title: "LinkedIn",
-      glow: "from-[#4F46E5] via-[#A855F7] to-transparent",
-    },
-    {
-      key: "tw",
-      Icon: Twitter,
-      href: SITE.socials.twitter,
-      title: "Twitter",
-      glow: "from-[#4F46E5] via-[#A855F7] to-transparent",
-    },
-    {
-      key: "fb",
-      Icon: Facebook,
-      href: SITE.socials.facebook,
-      title: "Facebook",
-      glow: "from-[#4F46E5] via-[#A855F7] to-transparent",
-    },
-    {
-      key: "gh",
-      Icon: Github,
-      href: SITE.socials.github,
-      title: "GitHub",
-      glow: "from-[#4F46E5] via-[#A855F7] to-transparent",
-    },
-  ];
-
-  const sizeClass = isMobile ? "h-11 w-11" : "h-14 w-14 md:h-16 md:w-16";
-  const clamp = (v: number, min: number, max: number) =>
-    Math.max(min, Math.min(max, v));
-
-  return (
-    <div
-      className="pointer-events-none absolute inset-0 overflow-visible z-[11]"
+    <motion.div
       aria-hidden
-    >
-      {items.map(({ key, Icon, href, title, glow }, i) => {
-        const base = isMobile ? mobile[key] : desktop[key];
-        const left = clamp(base.left, isMobile ? 4 : 2, isMobile ? 96 : 98);
-        const top = clamp(base.top, isMobile ? 8 : 6, isMobile ? 96 : 98);
-        const translateY = reducedMotion ? 0 : scrollY * strength;
+      className="fixed left-0 right-0 top-0 z-[60] h-[3px] origin-left bg-gradient-to-r from-indigo-400 via-sky-300 to-lime-300"
+      style={{ scaleX }}
+    />
+  );
+}
 
-        const IconComp = Icon;
+function BackgroundEffects() {
+  return (
+    <div className="pointer-events-none absolute inset-0 z-0">
+      <div className="absolute inset-0 bg-[#050013]" />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_#3b27b5_0%,_#050013_45%,_#020007_80%)]" />
+      <div className="absolute inset-x-[-25%] top-[16%] h-[520px] bg-[radial-gradient(circle_at_center,_rgba(129,140,248,0.95)_0%,_rgba(129,140,248,0.4)_40%,_rgba(15,23,42,0)_75%)] blur-3xl" />
 
-        return (
-          <a
-            key={key}
-            href={href}
-            target="_blank"
-            rel="me noopener noreferrer"
-            aria-label={title}
-            className="absolute pointer-events-auto group focus:outline-none focus-visible:ring-2 focus-visible:ring-[#4F46E5]/60 rounded-2xl"
-            style={{
-              left: `${left}%`,
-              top: `${top}%`,
-              transform: `translate(-50%, -50%) translateY(${translateY}px)`,
-              animation: reducedMotion
-                ? undefined
-                : `edgeFloat ${6 + (i % 3)}s ease-in-out ${(i * 0.2).toFixed(
-                    2
-                  )}s infinite`,
-              willChange: "transform",
-            }}
-          >
-            <span
-              className={`absolute -inset-5 rounded-2xl blur-xl opacity-45 group-hover:opacity-80 transition bg-gradient-to-br ${glow}`}
-            />
-            <span
-              className={`relative grid place-items-center ${sizeClass} rounded-2xl bg-[rgba(57,80,180,0.18)] border border-white/15 shadow-[0_22px_38px_-18px_rgba(106,13,173,0.4)] transition group-hover:scale-110 group-hover:-rotate-3`}
-            >
-              <IconComp className="h-6 w-6 sm:h-7 sm:w-7 text-white" aria-hidden />
-            </span>
-          </a>
-        );
-      })}
+      <motion.div
+        aria-hidden
+        initial={{ opacity: 0.4, rotate: -8 }}
+        animate={{ opacity: [0.3, 0.6, 0.3], rotate: [-6, -10, -6] }}
+        transition={{ duration: 18, repeat: Infinity, ease: "easeInOut" }}
+        className="absolute left-[-10%] right-[-30%] top-[30%] h-64"
+        style={{
+          background:
+            "linear-gradient(120deg, rgba(56,189,248,0) 0%, rgba(56,189,248,0.26) 35%, rgba(190,242,100,0.16) 60%, rgba(190,242,100,0) 100%)",
+          filter: "blur(14px)",
+        }}
+      />
+      <motion.div
+        aria-hidden
+        initial={{ opacity: 0.25, rotate: 12 }}
+        animate={{ opacity: [0.2, 0.5, 0.2], rotate: [10, 16, 10] }}
+        transition={{ duration: 22, repeat: Infinity, ease: "easeInOut" }}
+        className="absolute left-[-20%] right-[-5%] top-[55%] h-56"
+        style={{
+          background:
+            "linear-gradient(120deg, rgba(129,140,248,0) 0%, rgba(129,140,248,0.3) 40%, rgba(56,189,248,0.28) 70%, rgba(56,189,248,0) 100%)",
+          filter: "blur(18px)",
+        }}
+      />
+
+      <motion.div
+        aria-hidden
+        animate={{ scale: [1, 1.18, 1], x: [0, 60, 0], y: [0, -40, 0] }}
+        transition={{ duration: 20, repeat: Infinity, ease: "easeInOut" }}
+        className="absolute -top-40 left-[18%] h-[420px] w-[420px] rounded-full"
+        style={{
+          background:
+            "radial-gradient(circle at center, rgba(129,140,248,0.55) 0%, rgba(56,189,248,0.2) 35%, transparent 70%)",
+          filter: "blur(40px)",
+        }}
+      />
+      <motion.div
+        aria-hidden
+        animate={{ scale: [1, 1.15, 1], x: [0, -70, 20], y: [0, 50, 0] }}
+        transition={{ duration: 24, repeat: Infinity, ease: "easeInOut" }}
+        className="absolute bottom-[-80px] right-[10%] h-[380px] w-[380px] rounded-full"
+        style={{
+          background:
+            "radial-gradient(circle at center, rgba(52,211,153,0.4) 0%, rgba(96,165,250,0.25) 35%, transparent 70%)",
+          filter: "blur(40px)",
+        }}
+      />
     </div>
   );
 }
 
-/* ===================== Home page local data ===================== */
-const overviewTiles = [
-  {
-    title: "Software",
-    blurb: "Modern websites and small apps built on clean, maintainable stacks.",
-    path: "/solutions#software",
-    tag: "Web & App",
-    accent: "from-[#4F46E5] via-[#A855F7] to-[#312E81]",
-  },
-  {
-    title: "Branding",
-    blurb: "Logo, colors, type, and tone so your brand feels consistent everywhere.",
-    path: "/solutions#branding",
-    tag: "Identity",
-    accent: "from-[#38BDF8] via-[#0EA5E9] to-[#1E3A8A]",
-  },
-  {
-    title: "Market Strategy",
-    blurb: "Audience, competition, and a simple plan your team can actually use.",
-    path: "/solutions#analysis",
-    tag: "Strategy",
-    accent: "from-[#F472B6] via-[#EC4899] to-[#9D174D]",
-  },
-  {
-    title: "Ads & Content",
-    blurb: "Meta/Google setup and clear content in EN/AR to support steady growth.",
-    path: "/solutions#ads-content",
-    tag: "Acquisition",
-    accent: "from-[#34D399] via-[#10B981] to-[#065F46]",
-  },
-];
-
-const highlightCards: Array<{
-  title: string;
-  copy: string;
-  icon: LucideIcon;
-}> = [
-  {
-    title: "Focused on SMEs",
-    copy: "We work with small and mid-size teams, not giant org charts.",
-    icon: Compass,
-  },
-  {
-    title: "Clear rhythm",
-    copy: "Weekly calls, summaries, and visible progress each sprint.",
-    icon: GaugeCircle,
-  },
-  {
-    title: "Data-aware",
-    copy: "Basic tracking from day one so you see what’s moving the needle.",
-    icon: Lightbulb,
-  },
-];
-
-/* ===================== Sections ===================== */
-function ProcessMini() {
-  const steps: Array<{ icon: LucideIcon; title: string; text: string }> = [
-    {
-      icon: Target,
-      title: "Discovery",
-      text: "Short call to align on goals, market, and constraints.",
-    },
-    {
-      icon: Rocket,
-      title: "Plan",
-      text: "Simple roadmap with a lean backlog and key milestones.",
-    },
-    {
-      icon: Code,
-      title: "Build",
-      text: "Ship in small pieces with frequent, low-friction reviews.",
-    },
-    {
-      icon: CalendarCheck,
-      title: "Iterate",
-      text: "Weekly feedback loops and tweaks instead of big handoffs.",
-    },
-  ];
+function SectionHeading({ kicker, title, subtitle }: { kicker?: string; title: string; subtitle?: string }) {
   return (
-    <SectionShell ariaLabel="Delivery process">
-      <div className="text-center mb-10 sm:mb-12">
-        <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white">
-          How we work
-        </h2>
-        <p className="mt-4 text-base sm:text-lg text-[#A5ADCF] max-w-[60ch] mx-auto leading-relaxed">
-          A simple, transparent flow from first call to live results — no heavy
-          documentation, just clear steps.
-        </p>
-      </div>
-      <ol
-        className="grid gap-5 sm:gap-6 sm:grid-cols-2 lg:grid-cols-4"
-        aria-label="Process steps"
-      >
-        {steps.map((s, i) => {
-          const IconComp = s.icon;
-          return (
-            <li
-              key={s.title}
-              className="rounded-2xl border border-white/12 p-6 sm:p-7 flex flex-col h-full"
-              style={{ backgroundColor: withAlpha(COLORS.primary, 0.08) }}
-            >
-              <div className="flex items-center gap-3">
-                <span
-                  className="grid h-11 w-11 place-items-center rounded-xl border border-white/15"
-                  style={{ backgroundColor: withAlpha(COLORS.primary, 0.22) }}
-                  aria-hidden
-                >
-                  <IconComp className="h-5 w-5 text-white" />
-                </span>
-                <div className="text-white font-semibold text-base sm:text-lg">
-                  {String(i + 1).padStart(2, "0")} — {s.title}
-                </div>
-              </div>
-              <p className="mt-4 text-sm sm:text-base text-white/75 leading-relaxed">
-                {s.text}
-              </p>
-            </li>
-          );
-        })}
-      </ol>
-    </SectionShell>
-  );
-}
-
-function FinalCTA() {
-  return (
-    <SectionShell ariaLabel="Final call to action">
-      <div className="text-center max-w-[52rem] mx-auto">
-        <h3 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white">
-          Ready to scope your project?
-        </h3>
-        <p className="mt-4 text-base sm:text-lg text-[#A5ADCF] leading-relaxed">
-          We’re currently working with SMEs in Egypt and the US. Send a short
-          note about what you need and we’ll follow up with next steps.
-        </p>
-        <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
-          <Link
-            to="/solutions"
-            className="group relative rounded-2xl px-7 sm:px-8 py-4 text-base md:text-lg font-semibold text-white transition-all duration-300 hover:-translate-y-1 hover:scale-[1.03]"
-            style={{
-              background: gradientPrimary(125),
-              boxShadow: "0 26px 60px -34px rgba(79,70,229,0.7)",
-              backdropFilter: "blur(20px)",
-            }}
-            aria-label="Explore services"
-          >
-            <span className="relative z-10 inline-flex items-center gap-2">
-              Explore Services
-              <ArrowRight
-                className="h-5 w-5 transition-transform duration-300 group-hover:translate-x-1"
-                aria-hidden
-              />
-            </span>
-          </Link>
-          <a
-            href={`mailto:${SITE.contacts.emailLabel}`}
-            className="group relative rounded-2xl border border-white/18 px-7 sm:px-8 py-4 text-base md:text-lg font-semibold text-white transition-all duration-300 hover:scale-[1.03]"
-            style={{
-              backgroundColor: withAlpha(COLORS.accent, 0.14),
-              borderColor: withAlpha(COLORS.primary, 0.28),
-              backdropFilter: "blur(18px)",
-            }}
-            aria-label="Email Anonvic"
-          >
-            <span className="relative z-10 inline-flex items-center gap-2">
-              Email {SITE.name}
-              <Mail className="h-5 w-5" aria-hidden />
-            </span>
-          </a>
+    <div className="mx-auto max-w-3xl text-center">
+      {kicker ? (
+        <div className="mb-3 inline-flex items-center rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-semibold tracking-[0.16em] text-slate-700">
+          {kicker}
         </div>
-      </div>
-    </SectionShell>
+      ) : null}
+      <h2 className="text-balance text-3xl font-black tracking-tight text-slate-900 sm:text-4xl md:text-5xl">{title}</h2>
+      {subtitle ? <p className="mt-4 text-balance text-base leading-relaxed text-slate-600 sm:text-lg">{subtitle}</p> : null}
+    </div>
   );
 }
 
-function HomeOverview() {
-  return (
-    <SectionShell ariaLabel="Overview tiles">
-      <div className="text-center mb-10 sm:mb-14">
-        <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold bg-gradient-to-r from-white via-gray-100 to-white bg-clip-text text-transparent">
-          What we can help with
-        </h2>
-        <p className="mt-4 text-base sm:text-lg text-[#A5ADCF] max-w-[60ch] mx-auto leading-relaxed">
-          Start with one piece or mix a few. We adapt to your pace, budget, and
-          team size.
-        </p>
-      </div>
+/* ------------------------------ carousel (unchanged visuals) ------------------------------ */
+type Logo = { alt: string; src: string };
 
-      <div className="grid gap-6 lg:gap-8 md:grid-cols-2 xl:grid-cols-4">
-        {overviewTiles.map((tile) => (
-          <Link
-            key={tile.title}
-            to={tile.path}
-            className="group relative overflow-hidden rounded-3xl border border-white/12 bg-white/[0.06] px-6 py-8 sm:px-7 sm:py-9 transition-all duration-300 hover:-translate-y-2 hover:border-white/20"
-            aria-label={`Open ${tile.title}`}
-          >
-            <span
-              className={`absolute -inset-2 opacity-0 transition-opacity duration-300 group-hover:opacity-60 blur-2xl bg-gradient-to-br ${tile.accent}`}
-            />
-            <div className="relative space-y-4">
-              <span className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1 text-[0.7rem] sm:text-xs uppercase tracking-[0.28em] text-white/70">
-                <Sparkles className="h-3.5 w-3.5" aria-hidden />
-                {tile.tag}
-              </span>
-              <h3 className="text-2xl sm:text-2xl font-semibold text-white">
-                {tile.title}
-              </h3>
-              <p className="text-sm sm:text-base text-white/75 leading-relaxed">
-                {tile.blurb}
-              </p>
-              <span className="inline-flex items-center gap-2 text-sm sm:text-base font-medium text-white/90">
-                Explore
-                <ArrowRight
-                  className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1"
-                  aria-hidden
-                />
-              </span>
-            </div>
-          </Link>
-        ))}
-      </div>
-    </SectionShell>
+function LogoCarouselPillPro() {
+  const logos: Logo[] = useMemo(
+    () => [
+      { alt: "Zapier", src: "https://cdn.simpleicons.org/zapier/000000" },
+      { alt: "Shopify", src: "https://cdn.simpleicons.org/shopify/000000" },
+      { alt: "SoundCloud", src: "https://cdn.simpleicons.org/soundcloud/000000" },
+      { alt: "Harvard Business Review", src: "https://logo.clearbit.com/hbr.org" },
+      { alt: "CHOMPS", src: "https://logo.clearbit.com/chomps.com" },
+      { alt: "eBay", src: "https://cdn.simpleicons.org/ebay/000000" },
+      { alt: "Vimeo", src: "https://cdn.simpleicons.org/vimeo/000000" },
+    ],
+    []
   );
-}
 
-function Highlights() {
+  const track = [...logos, ...logos];
+
   return (
-    <SectionShell ariaLabel="Why teams work with us">
-      <div className="grid lg:grid-cols-[1.1fr_1fr] gap-10 sm:gap-12 items-start">
-        <div className="space-y-6 sm:space-y-7">
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white">
-            Why SMEs pick {SITE.name}
-          </h2>
-          <p className="text-base sm:text-lg text-[#A5ADCF] leading-relaxed max-w-[60ch]">
-            You speak directly with the people doing the work. Fewer layers,
-            faster answers, and realistic timelines.
-          </p>
-          <ul className="space-y-3.5 text-sm sm:text-base text-[#A5ADCF]">
-            <li className="flex items-start gap-3">
-              <Check className="h-4 w-4 text-[#4F46E5] mt-1" aria-hidden />
-              Weekly online calls with clear next steps after each session.
-            </li>
-            <li className="flex items-start gap-3">
-              <Check className="h-4 w-4 text-[#4F46E5] mt-1" aria-hidden />
-              Bilingual delivery (EN/AR) tuned for Egypt and US markets.
-            </li>
-            <li className="flex items-start gap-3">
-              <Check className="h-4 w-4 text-[#4F46E5] mt-1" aria-hidden />
-              Case-by-case pacing that fits your internal capacity.
-            </li>
-          </ul>
-        </div>
+    <section className="w-full bg-white py-10 ">
+      <div className="mx-auto max-w-7xl px-4 sm:px-">
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.35 }}
+          transition={{ duration: 0.5, ease: "easeOut" }}
+          className="rounded-[44px] bg-[#F3F0FF] px-6 py-10 shadow-[0_30px_90px_rgba(15,23,42,0.10)] sm:px-10"
+        >
+          <div className="relative overflow-hidden rounded-[36px]">
+            <div aria-hidden className="lp-shine pointer-events-none absolute inset-0 z-10 opacity-35" />
+            <div aria-hidden className="pointer-events-none absolute inset-y-0 left-0 z-20 w-28 bg-gradient-to-r from-[#F3F0FF] to-transparent" />
+            <div aria-hidden className="pointer-events-none absolute inset-y-0 right-0 z-20 w-28 bg-gradient-to-l from-[#F3F0FF] to-transparent" />
 
-        <div className="grid gap-4">
-          {highlightCards.map(({ title, copy, icon: Icon }, idx) => {
-            const IconComp = Icon as LucideIcon;
-            return (
-              <div
-                key={title}
-                className="relative overflow-hidden rounded-2xl border border-white/12 bg-white/[0.06] p-6 sm:p-7"
-                style={{ boxShadow: "0 26px 70px -42px rgba(5,6,29,0.75)" }}
-              >
-                <span className="absolute -inset-1 opacity-0 blur-2xl transition-opacity duration-300 hover:opacity-60 bg-gradient-to-br from-[#4F46E5] via-[#A855F7] to-transparent" />
-                <div className="relative flex items-start gap-4">
-                  <span
-                    className="grid h-11 w-11 place-items-center rounded-xl border border-white/15"
-                    style={{ backgroundColor: withAlpha(COLORS.primary, 0.2) }}
-                    aria-hidden
-                  >
-                    <IconComp className="h-5 w-5 text-white" />
-                  </span>
-                  <div className="space-y-1.5">
-                    <h3 className="text-lg sm:text-xl font-semibold text-white">
-                      {title}
-                    </h3>
-                    <p className="text-sm sm:text-base text-white/75 leading-relaxed">
-                      {copy}
-                    </p>
+            <div className="lp-marquee">
+              <div className="lp-marquee-track">
+                {track.map((l, i) => (
+                  <div key={`${l.alt}-${i}`} className="lp-logo-item" aria-hidden={i >= logos.length}>
+                    <img src={l.src} alt={l.alt} className="lp-logo" draggable={false} loading="lazy" />
                   </div>
-                  <span
-                    className="ml-auto text-xs sm:text-sm text-white/40 font-mono"
-                    aria-hidden
-                  >
-                    0{idx + 1}
-                  </span>
-                </div>
+                ))}
               </div>
+            </div>
+          </div>
+
+          <style>{`
+            .lp-marquee { width: 100%; overflow: hidden; }
+            .lp-marquee-track {
+              display: flex; align-items: center; width: max-content;
+              will-change: transform; animation: lp-marquee 22s linear infinite;
+            }
+            .lp-logo-item { flex: 0 0 auto; padding: 0 44px; display: grid; place-items: center; }
+            .lp-logo { height: 42px; width: auto; object-fit: contain; opacity: 0.88; filter: grayscale(1);
+              transition: transform 220ms ease, opacity 220ms ease, filter 220ms ease;
+            }
+            .lp-logo-item:hover .lp-logo { opacity: 1; filter: grayscale(0); transform: translateY(-1px) scale(1.03); }
+
+            .lp-shine {
+              background: linear-gradient(120deg, transparent 0%, rgba(255,255,255,0.35) 12%, transparent 22%);
+              transform: translateX(-60%); animation: lp-shine 6.5s ease-in-out infinite;
+            }
+            @keyframes lp-shine { 0% { transform: translateX(-60%); } 55% { transform: translateX(60%); } 100% { transform: translateX(60%); } }
+            @keyframes lp-marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+
+            @media (max-width: 640px) { .lp-logo-item { padding: 0 26px; } .lp-logo { height: 34px; } }
+            @media (prefers-reduced-motion: reduce) { .lp-marquee-track { animation: none; } .lp-shine { animation: none; opacity: 0; } }
+          `}</style>
+        </motion.div>
+      </div>
+    </section>
+  );
+}
+
+/* ------------------------------ services (updated copy) ------------------------------ */
+type Feature = {
+  kicker: string;
+  title: string;
+  description: string;
+  bullets: string[];
+  imageSrc: string;
+  imageAlt: string;
+  ctaLabel: string;
+  icon: React.ReactNode;
+};
+
+function FeatureRow({ feature, reversed }: { feature: Feature; reversed?: boolean }) {
+  return (
+    <div className={cn("grid items-center gap-10 lg:grid-cols-12", reversed && "lg:[&>div:first-child]:order-2")}>
+      <motion.div
+        initial={{ opacity: 0, y: 14 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, amount: 0.25 }}
+        transition={{ duration: 0.55, ease: "easeOut" }}
+        className="lg:col-span-5"
+      >
+        <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-semibold tracking-[0.14em] text-slate-700">
+          <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-slate-900 text-white">
+            {feature.icon}
+          </span>
+          {feature.kicker.toUpperCase()}
+        </div>
+
+        <h3 className="text-balance text-3xl font-black tracking-tight text-slate-900 sm:text-4xl">{feature.title}</h3>
+        <p className="mt-4 text-base leading-relaxed text-slate-600 sm:text-lg">{feature.description}</p>
+
+        <ul className="mt-6 space-y-3">
+          {feature.bullets.map((b) => (
+            <li key={b} className="flex gap-3 text-sm text-slate-700 sm:text-base">
+              <span className="mt-0.5 inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-slate-900 text-white">
+                <Check className="h-4 w-4" />
+              </span>
+              <span className="leading-relaxed">{b}</span>
+            </li>
+          ))}
+        </ul>
+
+        <a href="/contact" className="mt-7 inline-flex items-center gap-3 text-sm font-semibold text-slate-900">
+          {feature.ctaLabel}
+          <span className="inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-[#c7f36b] text-black shadow-[0_12px_35px_rgba(190,242,100,0.35)] transition hover:translate-y-[1px]">
+            <ArrowRight className="h-4 w-4" />
+          </span>
+        </a>
+      </motion.div>
+
+      <motion.div
+        initial={{ opacity: 0, y: 14 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, amount: 0.25 }}
+        transition={{ duration: 0.55, ease: "easeOut", delay: 0.05 }}
+        className="lg:col-span-7"
+      >
+        <div className="group relative overflow-hidden rounded-[34px] border border-slate-200 bg-gradient-to-b from-white to-slate-50 shadow-[0_35px_110px_rgba(15,23,42,0.14)] transition hover:-translate-y-[2px] hover:shadow-[0_55px_140px_rgba(15,23,42,0.18)]">
+          <img src={feature.imageSrc} alt={feature.imageAlt} className="block w-full select-none object-cover" draggable={false} loading="lazy" />
+          <div
+            aria-hidden
+            className="pointer-events-none absolute inset-0 opacity-70"
+            style={{
+              background:
+                "radial-gradient(circle at 30% 10%, rgba(99,102,241,0.18) 0%, rgba(59,130,246,0.08) 30%, transparent 60%)",
+            }}
+          />
+        </div>
+      </motion.div>
+    </div>
+  );
+}
+
+function ServicesSolutionsSection() {
+  const features: Feature[] = useMemo(
+    () => [
+      {
+        kicker: "Software Engineering",
+        title: "Apps, systems, and websites — engineered to scale",
+        description:
+          "We build cross-platform apps, internal systems, and high-performance websites with clean architecture and a premium UI layer.",
+        bullets: [
+          "Cross-platform apps + web platforms",
+          "Systems, dashboards, and integrations",
+          "Fast delivery with QA + performance budgets",
+        ],
+        imageSrc: svcEngineering,
+        imageAlt: "Software engineering preview",
+        ctaLabel: "Talk to us about your build",
+        icon: <Code2 className="h-4 w-4" />,
+      },
+      {
+        kicker: "Marketing & Business",
+        title: "Strategies, studies, and analytics — from step one",
+        description:
+          "We take your business from zero to a clear plan: market research, positioning, funnels, and measurable growth execution.",
+        bullets: [
+          "Strategy + competitor research",
+          "Funnel design and conversion improvements",
+          "Tracking, reporting, and iteration cycles",
+        ],
+        imageSrc: svcMarketing,
+        imageAlt: "Marketing and business preview",
+        ctaLabel: "Get a growth plan",
+        icon: <Briefcase className="h-4 w-4" />,
+      },
+      {
+        kicker: "Brand Management",
+        title: "Your full visual identity — built and maintained",
+        description:
+          "We create a consistent brand system: logo direction, typography, colors, layouts, and templates across every touchpoint.",
+        bullets: [
+          "Brand identity + design direction",
+          "Design system tokens + templates",
+          "Consistency across web, product, and campaigns",
+        ],
+        imageSrc: svcBrand,
+        imageAlt: "Brand management preview",
+        ctaLabel: "Build your visual identity",
+        icon: <Palette className="h-4 w-4" />,
+      },
+    ],
+    []
+  );
+
+  return (
+    <section className="w-full bg-white text-slate-900">
+      <div className="mx-auto max-w-6xl px-4 pb-16 pt-6 sm:px-6 md:pb-20">
+        <SectionHeading
+          title="One team. Three core services."
+          subtitle="Cost-efficient delivery powered by advanced AI + human expertise — fewer errors, faster pace, and flexible execution."
+        />
+
+        <div className="mt-14 space-y-16 md:space-y-20">
+          {features.map((f, i) => (
+            <FeatureRow key={f.title} feature={f} reversed={i % 2 === 1} />
+          ))}
+        </div>
+
+        <div className="mt-16 h-px w-full bg-gradient-to-r from-transparent via-slate-200 to-transparent" />
+      </div>
+    </section>
+  );
+}
+
+/* ------------------------------ packages (updated content + renamed) ------------------------------ */
+type Plan = {
+  name: string;
+  badge?: string;
+  priceMonthly: number;
+  priceAnnual: number;
+  desc: string;
+  bullets: string[];
+  emphasized?: boolean;
+  cta: string;
+  footnote?: string;
+};
+
+function BillingToggle({ annual, setAnnual }: { annual: boolean; setAnnual: (v: boolean) => void }) {
+  return (
+    <div className="mt-8 flex items-center justify-center gap-3">
+      <span className={cn("text-sm font-semibold", !annual ? "text-slate-900" : "text-slate-500")}>Monthly</span>
+      <button
+        type="button"
+        onClick={() => setAnnual(!annual)}
+        className={cn(
+          "relative h-9 w-16 rounded-full border transition",
+          annual ? "border-slate-900 bg-slate-900" : "border-slate-200 bg-slate-100"
+        )}
+        aria-label="Toggle billing period"
+      >
+        <span className={cn("absolute top-1 h-7 w-7 rounded-full bg-white shadow transition", annual ? "left-8" : "left-1")} />
+      </button>
+      <span className={cn("text-sm font-semibold", annual ? "text-slate-900" : "text-slate-500")}>
+        Annual <span className="ml-2 rounded-full bg-[#c7f36b] px-2 py-1 text-xs font-black text-black">Save 20%</span>
+      </span>
+    </div>
+  );
+}
+
+function MinimalPackages() {
+  const [annual, setAnnual] = useState(true);
+
+  const plans: Plan[] = useMemo(
+    () => [
+      {
+        name: "Launch Strategy",
+        priceMonthly: 99,
+        priceAnnual: 79,
+        desc: "Business + marketing foundations that move you forward.",
+        bullets: ["Market/competitor analysis", "Positioning + funnel plan", "Tracking + weekly iterations"],
+        cta: "Start with strategy",
+        footnote: "Best for: new launches or stalled growth.",
+      },
+      {
+        name: "Build & Ship",
+        badge: "Most chosen",
+        priceMonthly: 149,
+        priceAnnual: 119,
+        desc: "Software engineering for apps, systems, and websites.",
+        bullets: ["Cross apps + websites", "APIs + integrations", "QA + performance pass"],
+        emphasized: true,
+        cta: "Start building",
+        footnote: "Best for: shipping a product or platform fast.",
+      },
+      {
+        name: "Brand System",
+        priceMonthly: 119,
+        priceAnnual: 95,
+        desc: "Full visual identity and consistency across assets.",
+        bullets: ["Visual identity direction", "Design system + templates", "Brand consistency rollout"],
+        cta: "Build the brand",
+        footnote: "Best for: rebrands, new brands, or scaling teams.",
+      },
+    ],
+    []
+  );
+
+  return (
+    <section id="packages" className="w-full bg-white text-slate-900">
+      <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6 md:py-20">
+        <SectionHeading
+          kicker="Packages"
+          title="Simple entry points. Flexible execution."
+          subtitle="Choose a starting point — we can scale scope up or down without slowing you down."
+        />
+        <BillingToggle annual={annual} setAnnual={setAnnual} />
+
+        <div className="mt-12 grid gap-6 md:grid-cols-3">
+          {plans.map((p) => {
+            const price = annual ? p.priceAnnual : p.priceMonthly;
+
+            return (
+              <motion.div
+                key={p.name}
+                initial={{ opacity: 0, y: 14 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0.25 }}
+                transition={{ duration: 0.55, ease: "easeOut" }}
+                className={cn(
+                  "relative flex h-full flex-col overflow-hidden rounded-[34px] border bg-white p-7",
+                  "shadow-[0_20px_70px_rgba(15,23,42,0.08)] transition hover:-translate-y-[2px] hover:shadow-[0_35px_110px_rgba(15,23,42,0.12)]",
+                  p.emphasized ? "border-slate-900" : "border-slate-200"
+                )}
+              >
+                {p.emphasized ? (
+                  <>
+                    <div
+                      aria-hidden
+                      className="pointer-events-none absolute inset-0 opacity-40"
+                      style={{
+                        background:
+                          "radial-gradient(circle at 20% 20%, rgba(190,242,100,0.12) 0%, transparent 55%), radial-gradient(circle at 80% 40%, rgba(56,189,248,0.10) 0%, transparent 55%)",
+                      }}
+                    />
+                    <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 h-[4px] bg-gradient-to-r from-indigo-400 via-sky-300 to-lime-300" />
+                  </>
+                ) : null}
+
+                {p.badge ? (
+                  <div className="absolute right-6 top-6 z-10 rounded-full bg-slate-900 px-3 py-1 text-xs font-black text-white">
+                    {p.badge}
+                  </div>
+                ) : null}
+
+                <div className="relative z-10">
+                  <div className="text-sm font-extrabold text-slate-900">{p.name}</div>
+                  <p className="mt-2 text-sm text-slate-600">{p.desc}</p>
+
+                  <div className="mt-5 flex items-end gap-2">
+                    <div className="text-5xl font-black tracking-tight">${price}</div>
+                    <div className="pb-1 text-sm font-semibold text-slate-500">/mo</div>
+                  </div>
+
+                  <div className="mt-4 rounded-2xl bg-slate-50 px-4 py-3 text-xs font-semibold text-slate-600">
+                    {p.footnote}
+                  </div>
+
+                  <div className="mt-6 h-px w-full bg-gradient-to-r from-transparent via-slate-200 to-transparent" />
+
+                  <ul className="mt-6 space-y-3">
+                    {p.bullets.map((b) => (
+                      <li key={b} className="flex gap-3 text-sm text-slate-700">
+                        <span className="mt-0.5 inline-flex h-5 w-5 items-center justify-center rounded-full bg-slate-900 text-white">
+                          <Check className="h-3.5 w-3.5" />
+                        </span>
+                        {b}
+                      </li>
+                    ))}
+                  </ul>
+
+                  <div className="mt-6 rounded-2xl bg-slate-50 px-4 py-3 text-xs font-semibold text-slate-600">
+                    Includes: roadmap + weekly delivery + documented handoff.
+                  </div>
+                </div>
+
+                <div className="relative z-10 mt-auto pt-7">
+                  <a
+                    href="/contact"
+                    className={cn(
+                      "inline-flex w-full items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold transition",
+                      p.emphasized ? "bg-slate-900 text-white hover:opacity-95" : "bg-slate-100 text-slate-900 hover:bg-slate-200"
+                    )}
+                  >
+                    {p.cta} <ArrowRight className="h-4 w-4" />
+                  </a>
+
+                  <div className="mt-4 flex items-center justify-center gap-2 text-xs text-slate-500">
+                    <Sparkles className="h-4 w-4" /> Flexible scope • Fast pace
+                  </div>
+                </div>
+              </motion.div>
             );
           })}
         </div>
+
+        <div id="contact" className="h-1 w-full bg-white" />
       </div>
-    </SectionShell>
+    </section>
   );
 }
 
-/* ===================== Page ===================== */
-export default function App() {
-  const isMobile = useIsMobile();
-  const reducedMotion = usePrefersReducedMotion();
-
-  // rAF-throttled scroll listener for smoother perf
-  const [scrollY, setScrollY] = useState(0);
-  const ticking = useRef(false);
-  useEffect(() => {
-    const onScroll = () => {
-      if (!ticking.current) {
-        window.requestAnimationFrame(() => {
-          setScrollY(window.scrollY);
-          ticking.current = false;
-        });
-        ticking.current = true;
-      }
-    };
-    window.addEventListener("scroll", onScroll, { passive: true });
-    onScroll();
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
-
-  const mainId = "main";
-
-  // SEO meta and JSON-LD
-  useEffect(() => {
-    const prevTitle = document.title;
-    document.title = `${SITE.name} — Software & Marketing for SMEs (EN/AR)`;
-
-    const ensureMeta = (attr: string, key: string, content: string) => {
-      const sel = `meta[${attr}="${key}"]`;
-      let el = document.head.querySelector(sel) as HTMLMetaElement | null;
-      if (!el) {
-        el = document.createElement("meta");
-        el.setAttribute(attr, key);
-        document.head.appendChild(el);
-        (el as any).dataset._injected = "1";
-      }
-      el.content = content;
-      return el;
-    };
-
-    ensureMeta("name", "description", SITE.description);
-    ensureMeta("name", "keywords", SITE.keywords.join(", "));
-    ensureMeta("name", "twitter:card", "summary_large_image");
-    ensureMeta("name", "twitter:title", `${SITE.name} — Software & Marketing for SMEs`);
-    ensureMeta("name", "twitter:description", SITE.description);
-    ensureMeta("property", "og:site_name", SITE.name);
-    ensureMeta("property", "og:type", "website");
-    ensureMeta("property", "og:title", `${SITE.name} — Software & Marketing for SMEs`);
-    ensureMeta("property", "og:description", SITE.description);
-    ensureMeta("property", "og:url", SITE.domain);
-
-    // canonical link
-    let canonical = document.head.querySelector(
-      'link[rel="canonical"]'
-    ) as HTMLLinkElement | null;
-    if (!canonical) {
-      canonical = document.createElement("link");
-      canonical.rel = "canonical";
-      canonical.href = SITE.domain;
-      canonical.dataset._injected = "1";
-      document.head.appendChild(canonical);
-    } else {
-      canonical.href = SITE.domain;
-    }
-
-    // JSON-LD scripts
-    const orgJsonLd = {
-      "@context": "https://schema.org",
-      "@type": "Organization",
-      name: SITE.name,
-      url: SITE.domain,
-      sameAs: Object.values(SITE.socials),
-      areaServed: SITE.regions,
-      contactPoint: [
-        {
-          "@type": "ContactPoint",
-          email: SITE.contacts.emailLabel,
-          contactType: "customer support",
-          availableLanguage: SITE.locales,
-        },
-      ],
-    } as const;
-
-    const siteJsonLd = {
-      "@context": "https://schema.org",
-      "@type": "WebSite",
-      name: SITE.name,
-      url: SITE.domain,
-      inLanguage: SITE.locales,
-      potentialAction: {
-        "@type": "SearchAction",
-        target: `${SITE.domain}/search?q={query}`,
-        "query-input": "required name=query",
-      },
-    } as const;
-
-    const s1 = document.createElement("script");
-    s1.type = "application/ld+json";
-    s1.textContent = JSON.stringify(orgJsonLd);
-    s1.dataset._injected = "1";
-    document.head.appendChild(s1);
-
-    const s2 = document.createElement("script");
-    s2.type = "application/ld+json";
-    s2.textContent = JSON.stringify(siteJsonLd);
-    s2.dataset._injected = "1";
-    document.head.appendChild(s2);
-
-    return () => {
-      document.title = prevTitle;
-      document.head
-        .querySelectorAll('[data-_injected="1"]')
-        .forEach((n) => n.remove());
-    };
-  }, []);
+/* ------------------------------ dark hub (updated copy) ------------------------------ */
+function DarkFeatureHub() {
+  const cards = [
+    { icon: <Wand2 className="h-5 w-5" />, title: "AI + human QA", desc: "Automation for speed, humans for correctness." },
+    { icon: <Search className="h-5 w-5" />, title: "Research-led decisions", desc: "Strategies and studies before execution." },
+    { icon: <Users className="h-5 w-5" />, title: "Flexible delivery", desc: "Adjust scope quickly without breaking timelines." },
+  ];
 
   return (
-    <>
-      {/* Skip Link */}
-      <a
-        href={`#${mainId}`}
-        className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:rounded-md focus:bg-white focus:text-black focus:px-3 focus:py-2"
-      >
-        Skip to content
-      </a>
+    <section className="w-full bg-[#050013] text-white">
+      <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6 md:py-20">
+        <div className="rounded-[44px] border border-white/10 bg-white/5 p-5 shadow-[0_40px_120px_rgba(0,0,0,0.45)] backdrop-blur-2xl sm:p-10">
+          <div className="relative overflow-hidden rounded-[36px] border border-white/10 bg-gradient-to-r from-white/5 via-white/6 to-white/5 p-7 sm:p-10">
+            <div aria-hidden className="pointer-events-none absolute -left-24 -top-24 h-80 w-80 rounded-full bg-[radial-gradient(circle_at_center,_rgba(190,242,100,0.30)_0%,transparent_65%)] blur-2xl" />
+            <div aria-hidden className="pointer-events-none absolute -right-24 -bottom-24 h-80 w-80 rounded-full bg-[radial-gradient(circle_at_center,_rgba(56,189,248,0.30)_0%,transparent_65%)] blur-2xl" />
 
-      <header className="relative" aria-label="Hero header">
-        <section className="relative min-h-[92vh] pt-28 sm:pt-32 md:pt-32 flex items-center justify-center px-4 sm:px-6 lg:px-10">
-          {/* base background */}
-          <div
-            aria-hidden
-            className="absolute inset-0 -z-20"
-            style={{
-              background:
-                "radial-gradient(circle at top, rgba(57,80,180,0.28), transparent 60%)",
-              backgroundColor: COLORS.background,
-            }}
-          />
+            <div className="relative grid gap-10 lg:grid-cols-12 lg:items-center">
+              <div className="lg:col-span-5">
+                <h3 className="text-balance text-4xl font-black tracking-tight sm:text-5xl">
+                  Advanced execution,
+                  <br />
+                  fewer surprises.
+                </h3>
+                <p className="mt-4 text-base leading-relaxed text-white/75 sm:text-lg">
+                  We combine advanced AI with experienced builders and strategists to reduce errors and ship fast.
+                </p>
 
-          {/* animated blobs to make the hero feel alive */}
-          <div
-            aria-hidden
-            className="pointer-events-none absolute inset-0 -z-10 overflow-hidden"
-          >
-            <div className="hero-blob hero-blob-1" />
-            <div className="hero-blob hero-blob-2" />
-            <div className="hero-blob hero-blob-3" />
-          </div>
-
-          <div className="relative z-10 mx-auto max-w-screen-xl w-full">
-            {/* keep content centered, icons float around on the edges */}
-            <div className="mx-auto max-w-3xl text-center">
-              <div className="space-y-8 sm:space-y-10 md:space-y-12">
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.6, ease: "easeOut" }}
-                  className="inline-flex items-center gap-2 rounded-full border border-white/15 px-4 sm:px-6 py-2.5 sm:py-3 backdrop-blur-xl shadow-[0_16px_40px_-28px_rgba(79,70,229,0.9)] bg-white/5"
-                  style={{ backgroundColor: withAlpha(COLORS.primary, 0.18) }}
-                >
-                  <Zap className="h-4 w-4 text-[#C4C6FF]" aria-hidden />
-                  <span className="text-sm sm:text-base font-medium text-white/85">
-                    Software & marketing for SMEs in Egypt and the US
+                <a href="#packages" className="mt-8 inline-flex items-center gap-3 text-sm font-semibold text-white">
+                  View packages
+                  <span className="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-[#c7f36b] text-black shadow-[0_12px_35px_rgba(190,242,100,0.35)] transition hover:translate-y-[1px]">
+                    <ArrowRight className="h-4 w-4" />
                   </span>
-                  <Sparkles className="h-3.5 w-3.5 text-[#F9A8FF]" aria-hidden />
-                </motion.div>
+                </a>
+              </div>
 
-                <motion.div
-                  initial={{ opacity: 0, y: 24 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.7, delay: 0.1, ease: "easeOut" }}
-                  className="space-y-4"
-                >
-                  <h1
-                    className="font-black tracking-tight leading-[1.05] text-balance"
-                    style={{ fontSize: "clamp(2.4rem, 6.4vw, 4.4rem)" }}
-                  >
-                    <span className="relative block bg-gradient-to-r from-white via-gray-100 to-white bg-clip-text text-transparent">
-                      Build the essentials. Grow steadily.
-                    </span>
-                    <span className="relative block -mt-1 bg-gradient-to-r from-[#4F46E5] via-[#A855F7] to-[#1B1F3B] bg-clip-text text-transparent">
-                      Web, brand, strategy, ads, and content in EN/AR.
-                    </span>
-                  </h1>
-                  <p className="mx-auto max-w-[60ch] px-1 text-base sm:text-lg md:text-xl leading-relaxed text-[#A5ADCF]">
-                    A compact studio for SMEs. Simple timelines, weekly online
-                    check-ins, and clear deliverables you can share with your team.
-                  </p>
-                </motion.div>
-
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.6, delay: 0.2, ease: "easeOut" }}
-                  className="flex flex-wrap items-center justify-center gap-3 sm:gap-4"
-                >
-                  <Link
-                    to="/solutions"
-                    className="group relative min-w-[170px] sm:min-w-[190px] rounded-2xl px-7 sm:px-8 py-4 text-base md:text-lg font-semibold text-white transition-all duration-300 hover:-translate-y-1 hover:scale-[1.03]"
+              <div className="lg:col-span-7">
+                <div className="relative overflow-hidden rounded-[34px] border border-white/10 bg-white/5 shadow-[0_30px_90px_rgba(0,0,0,0.45)]">
+                  <img src={hubMock} alt="Feature preview" className="block w-full select-none object-cover" draggable={false} />
+                  <div
+                    aria-hidden
+                    className="pointer-events-none absolute inset-0 opacity-70"
                     style={{
-                      background: gradientPrimary(125),
-                      boxShadow: "0 28px 60px -34px rgba(79,70,229,0.8)",
-                      backdropFilter: "blur(20px)",
+                      background:
+                        "radial-gradient(circle at 35% 15%, rgba(129,140,248,0.22) 0%, rgba(56,189,248,0.12) 35%, transparent 65%)",
                     }}
-                    aria-label="See services"
-                  >
-                    <span className="relative z-10 flex items-center justify-center gap-2">
-                      <ArrowRight
-                        className="h-5 w-5 transition-transform duration-300 group-hover:translate-x-1"
-                        aria-hidden
-                      />
-                      <span>See Services</span>
-                    </span>
-                  </Link>
-
-                  <a
-                    href={`mailto:${SITE.contacts.emailLabel}`}
-                    className="group relative min-w-[170px] sm:min-w-[190px] rounded-2xl border border-white/16 px-7 sm:px-8 py-4 text-base md:text-lg font-semibold text-white transition-all duration-300 hover:scale-[1.03]"
-                    style={{
-                      backgroundColor: withAlpha(COLORS.accent, 0.14),
-                      borderColor: withAlpha(COLORS.primary, 0.26),
-                      backdropFilter: "blur(18px)",
-                    }}
-                    aria-label="Email us"
-                  >
-                    <span className="relative z-10 flex items-center justify-center gap-2">
-                      <Mail className="h-5 w-5" aria-hidden />
-                      <span>Email Us</span>
-                    </span>
-                  </a>
-                </motion.div>
-
-                {/* Scroll indicator — subtle cue to explore more */}
-                <motion.div
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.7, delay: 0.35, ease: "easeOut" }}
-                  className="mt-8 sm:mt-10 flex justify-center"
-                >
-                  <div className="flex flex-col items-center gap-2 text-[0.7rem] sm:text-xs text-white/60 uppercase tracking-[0.24em]">
-                    <span>Scroll to explore</span>
-                    <span className="scroll-indicator-line" aria-hidden />
-                  </div>
-                </motion.div>
+                  />
+                </div>
               </div>
             </div>
-
-            {/* Edge icons float around the frame, away from the text block */}
-            <HeroEdgeIcons
-              scrollY={scrollY}
-              isMobile={isMobile}
-              reducedMotion={reducedMotion}
-            />
           </div>
-        </section>
+
+          <div className="mt-8 grid gap-6 md:grid-cols-3">
+            {cards.map((c) => (
+              <motion.div
+                key={c.title}
+                initial={{ opacity: 0, y: 12 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0.25 }}
+                transition={{ duration: 0.5, ease: "easeOut" }}
+                className="rounded-[28px] border border-white/10 bg-white/5 p-7 shadow-[0_30px_90px_rgba(0,0,0,0.35)] backdrop-blur-2xl"
+              >
+                <div className="inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-white/10 text-white">{c.icon}</div>
+                <div className="mt-5 text-lg font-extrabold tracking-tight">{c.title}</div>
+                <div className="mt-2 text-sm leading-relaxed text-white/70">{c.desc}</div>
+              </motion.div>
+            ))}
+          </div>
+
+          <div className="mt-10 grid gap-4 sm:grid-cols-3">
+            {[
+              { icon: <ShieldCheck className="h-4 w-4" />, text: "Less errors, more QA" },
+              { icon: <Zap className="h-4 w-4" />, text: "Fast pace delivery" },
+              { icon: <Layers className="h-4 w-4" />, text: "Flexible scope" },
+            ].map((x) => (
+              <div
+                key={x.text}
+                className="flex items-center gap-2 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white/80"
+              >
+                <span className="inline-flex h-8 w-8 items-center justify-center rounded-xl bg-white/10">{x.icon}</span>
+                <span className="font-semibold">{x.text}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ------------------------------ main (hero copy updated) ------------------------------ */
+export default function Hero() {
+  const [email, setEmail] = useState("");
+
+  return (
+    <main className="w-full">
+      <ScrollProgress />
+
+      <header className="relative w-full h-240 overflow-hidden bg-[#050013] text-white mt-5">
+        <BackgroundEffects />
+
+        <motion.div
+          aria-hidden
+          className="pointer-events-none absolute inset-0 z-10 opacity-[0.25]"
+          initial={{ backgroundPosition: "0px 0px" }}
+          animate={{ backgroundPosition: ["0px 0px", "36px 18px", "0px 0px"] }}
+          transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
+          style={{
+            backgroundImage:
+              "linear-gradient(rgba(148,163,184,0.16) 1px, transparent 1px), linear-gradient(90deg, rgba(148,163,184,0.16) 1px, transparent 1px)",
+            backgroundSize: "40px 40px",
+            maskImage: "radial-gradient(circle at center, black 0, black 55%, transparent 80%)",
+            WebkitMaskImage: "radial-gradient(circle at center, black 0, black 55%, transparent 80%)",
+          }}
+        />
+        <div className="pointer-events-none absolute inset-0 z-20 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.10]" />
+
+        <div className="relative z-30 mx-auto flex max-w-6xl flex-col items-center px-4 pb-20 pt-36 text-center sm:px-6 lg:pt-44">
+          <motion.h1
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.45 }}
+            className="text-balance text-4xl font-black leading-tight tracking-tight sm:text-5xl md:text-6xl lg:text-[4.1rem]"
+          >
+            Software, marketing,
+            <br />
+            <span className="relative inline-block">
+              <span className="bg-gradient-to-r from-slate-50 via-sky-100 to-lime-300 bg-clip-text text-transparent">
+                and brand — delivered fast.
+              </span>
+              <motion.span
+                className="absolute -bottom-3 left-1/3 right-1/3 h-[3px] rounded-full bg-gradient-to-r from-indigo-400 via-sky-300 to-lime-300 blur-[2px]"
+                initial={{ scaleX: 0 }}
+                animate={{ scaleX: 1 }}
+                transition={{ delay: 0.4, duration: 0.6, ease: "easeOut" }}
+              />
+            </span>
+          </motion.h1>
+
+          <motion.p
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.12, duration: 0.45 }}
+            className="mt-5 max-w-2xl text-balance text-sm leading-relaxed text-slate-200/90 sm:text-base md:text-lg"
+          >
+            We’re a cost-efficient software + marketing company. We use advanced AI and human expertise to reduce errors, move fast,
+            and stay flexible while you scale.
+          </motion.p>
+
+          <motion.form
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.22, duration: 0.45 }}
+            onSubmit={(e) => e.preventDefault()}
+            className="mt-8 flex w-full max-w-xl flex-col items-stretch gap-3 rounded-2xl border border-white/10 bg-black/40 p-2 shadow-[0_20px_70px_rgba(0,0,0,0.75)] backdrop-blur-2xl sm:flex-row sm:items-center"
+          >
+            <input
+              type="email"
+              required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="Work email"
+              className="w-full rounded-xl bg-black/40 px-4 py-3 text-sm text-white placeholder:text-slate-400 outline-none ring-0 focus:bg-black/60 focus:ring-2 focus:ring-indigo-400/70"
+            />
+            <button
+              type="submit"
+              className="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl bg-[#c7f36b] px-5 py-3 text-sm font-semibold text-black shadow-[0_12px_40px_rgba(190,242,100,0.5)] transition hover:translate-y-[1px] hover:bg-[#d4ff80]"
+            >
+              Get a proposal
+              <ArrowRight className="h-4 w-4" />
+            </button>
+          </motion.form>
+
+          {/* trust strip (content update) */}
+          <div className="mt-6 flex flex-wrap justify-center gap-2 text-xs text-white/70">
+            {[
+              "Cross-platform apps",
+              "Systems + websites",
+              "Strategy + analysis",
+              "Brand identity",
+              "AI + human QA",
+            ].map((x) => (
+              <span key={x} className="rounded-full border border-white/10 bg-white/5 px-3 py-1">
+                {x}
+              </span>
+            ))}
+          </div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 26, scale: 0.98 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            transition={{ delay: 0.45, duration: 0.55 }}
+            className="mt-14 w-full"
+          >
+            <div className="relative mx-auto w-full max-w-3xl md:max-w-4xl">
+              <div className="overflow-hidden rounded-[18px] border border-white/14 bg-gradient-to-b from-white to-slate-50 shadow-[0_40px_120px_rgba(15,23,42,0.9)]">
+                <img src={mainMock} alt="Work preview" className="block w-full select-none" draggable={false} />
+              </div>
+
+              <motion.div
+                initial={{ opacity: 0, y: 30, scale: 0.9 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                transition={{ delay: 0.6, duration: 0.5 }}
+                whileHover={{ y: -4, scale: 1.03 }}
+                className="
+                  absolute bottom-4 left-1/2 w-[72%] max-w-[280px]
+                  -translate-x-1/2 rounded-2xl border border-white/60
+                  bg-white/25 p-4 text-left text-[11px] text-slate-900
+                  shadow-[0_18px_45px_rgba(15,23,42,0.55)] backdrop-blur-2xl
+                  sm:left-auto sm:right-4 sm:bottom-5 sm:translate-x-0 sm:w-[250px]
+                  lg:right-[-24px] lg:bottom-6
+                "
+              >
+                <div className="mb-2 flex items-center justify-between">
+                  <span className="text-[10px] font-semibold tracking-[0.14em] text-slate-100/85">DELIVERY</span>
+                  <span className="inline-flex items-center gap-1 rounded-full bg-slate-900/10 px-2 py-[2px] text-[9px] font-semibold text-slate-800">
+                    QA pass <span className="h-1 w-1 rounded-full bg-emerald-400" />
+                  </span>
+                </div>
+
+                <div className="flex items-end justify-between gap-3">
+                  <div>
+                    <div className="text-2xl font-extrabold text-slate-900">Fast</div>
+                    <div className="text-[10px] font-medium text-emerald-600">pace + fewer issues</div>
+                  </div>
+                  <div className="h-12 w-[90px] overflow-hidden rounded-lg">
+                    <img src={chartMock} alt="Preview chart" className="h-full w-full object-cover" draggable={false} />
+                  </div>
+                </div>
+
+                <p className="mt-2 text-[10px] leading-snug text-slate-600">
+                  AI automation + human checks to keep releases clean.
+                </p>
+              </motion.div>
+            </div>
+          </motion.div>
+        </div>
       </header>
 
-      {/* Main content */}
-      <main id={mainId} role="main">
-        <HomeOverview />
-        <Highlights />
-        <ProcessMini />
-        <FinalCTA />
-      </main>
-
-      <footer className="px-4 sm:px-6 lg:px-10 py-10 sm:py-12 text-center text-white/65 border-t border-white/10 mt-8">
-        <p className="text-sm sm:text-base">
-          © {new Date().getFullYear()} {SITE.name}. All rights reserved.
-        </p>
-        <p className="text-xs sm:text-sm mt-2">
-          Contact:{" "}
-          <a href={`mailto:${SITE.contacts.emailLabel}`} className="underline">
-            {SITE.contacts.emailLabel}
-          </a>
-        </p>
-      </footer>
-
-      {/* local styles used by home (chips + floats + blobs + scroll indicator) */}
-      <style>{`
-        @keyframes edgeFloat {
-          0%, 100% { transform: translate3d(-50%, -50%, 0) translateY(0); }
-          50% { transform: translate3d(-50%, -50%, 0) translateY(-10px); }
-        }
-
-        .chip {
-          display:inline-flex; align-items:center; gap:.5rem;
-          border-radius:9999px; padding:.55rem .85rem;
-          border:1px solid ${withAlpha(COLORS.primary, 0.45)};
-          background:${withAlpha(COLORS.primary, 0.2)};
-          color:${COLORS.text}; backdrop-filter: blur(14px);
-          font-size:0.875rem;
-          transition: transform .2s ease, background-color .2s ease, border-color .2s ease;
-        }
-        .chip:hover {
-          background:${withAlpha(COLORS.primary, 0.28)};
-          border-color:${withAlpha(COLORS.primary, 0.65)};
-          transform: translateY(-1px);
-        }
-
-        section + section { scroll-margin-top: 88px; }
-
-        .sr-only {
-          position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
-          overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border-width: 0;
-        }
-        .focus\\:not-sr-only:focus {
-          position: static; width: auto; height: auto; margin: 0;
-          overflow: visible; clip: auto; white-space: normal;
-        }
-
-        /* Hero animated blobs */
-        .hero-blob {
-          position: absolute;
-          border-radius: 9999px;
-          filter: blur(50px);
-          opacity: 0.7;
-          mix-blend-mode: screen;
-        }
-        .hero-blob-1 {
-          width: 260px;
-          height: 260px;
-          left: -100px;
-          top: 10px;
-          background: radial-gradient(circle at 30% 30%, rgba(79,70,229,0.9), transparent 60%);
-          animation: blobFloat1 22s ease-in-out infinite;
-        }
-        .hero-blob-2 {
-          width: 280px;
-          height: 280px;
-          right: -80px;
-          top: 30%;
-          background: radial-gradient(circle at 70% 30%, rgba(168,85,247,0.9), transparent 60%);
-          animation: blobFloat2 26s ease-in-out infinite;
-        }
-        .hero-blob-3 {
-          width: 260px;
-          height: 260px;
-          left: 20%;
-          bottom: -120px;
-          background: radial-gradient(circle at 50% 50%, rgba(59,130,246,0.75), transparent 65%);
-          animation: blobFloat3 30s ease-in-out infinite;
-        }
-
-        @keyframes blobFloat1 {
-          0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
-          50% { transform: translate3d(12px, -18px, 0) scale(1.05); }
-        }
-        @keyframes blobFloat2 {
-          0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
-          50% { transform: translate3d(-18px, 16px, 0) scale(1.06); }
-        }
-        @keyframes blobFloat3 {
-          0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
-          50% { transform: translate3d(10px, -10px, 0) scale(1.04); }
-        }
-
-        /* Scroll indicator */
-        .scroll-indicator-line {
-          position: relative;
-          width: 1.5px;
-          height: 34px;
-          border-radius: 9999px;
-          background: linear-gradient(to bottom, rgba(255,255,255,0.8), rgba(255,255,255,0.12));
-          overflow: hidden;
-        }
-        .scroll-indicator-line::after {
-          content: "";
-          position: absolute;
-          left: 0;
-          right: 0;
-          top: -40%;
-          height: 40%;
-          background: rgba(255,255,255,0.95);
-          box-shadow: 0 0 10px rgba(255,255,255,0.7);
-          animation: scrollPulse 1.4s ease-in-out infinite;
-        }
-
-        @keyframes scrollPulse {
-          0% { transform: translateY(0); opacity: 1; }
-          100% { transform: translateY(150%); opacity: 0; }
-        }
-      `}</style>
-    </>
+      <LogoCarouselPillPro />
+      <ServicesSolutionsSection />
+      <DarkFeatureHub />
+      <MinimalPackages />
+    </main>
   );
 }

@@ -1,9 +1,17 @@
-import { lazy, Suspense, useEffect, type ComponentType } from "react";
+// src/AppRouter.tsx
+import {
+  lazy,
+  Suspense,
+  useEffect,
+  type ComponentType,
+  type ReactNode,
+} from "react";
 import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 import { SiteLayout } from "./components/layout/SiteLayout";
 import { motion, AnimatePresence } from "framer-motion";
 
 // ---- Lazy load pages (smaller first paint)
+// IMPORTANT: no extension in the import path
 const HomePage = lazy(() => import("./App"));
 const SolutionsPage = lazy(() => import("./pages/Solutions"));
 const AboutPage = lazy(() => import("./pages/About"));
@@ -11,7 +19,7 @@ const WorkPage = lazy(() => import("./pages/OurWork"));
 const ContactPage = lazy(() => import("./pages/Contact"));
 
 // ---- Page transition wrapper (fade + subtle slide)
-function Page({ children }: { children: React.ReactNode }) {
+function Page({ children }: { children: ReactNode }) {
   return (
     <motion.main
       initial={{ opacity: 0, y: 8 }}
@@ -55,7 +63,7 @@ function Fallback({ message = "Loading…" }: { message?: string }) {
           background:
             "radial-gradient(1200px 600px at 10% -10%, rgba(79,70,229,0.20) 0%, rgba(79,70,229,0.00) 60%)," +
             "radial-gradient(900px 500px at 110% 10%, rgba(168,85,247,0.18) 0%, rgba(168,85,247,0.00) 60%)," +
-            "linear-gradient(135deg, rgba(5,6,29,0.96), rgba(5,6,29,0.88))",
+            "linear-gradient(135deg, rgba(0,0,0,0.96), rgba(0,0,0,0.9))",
         }}
       />
 
@@ -86,8 +94,12 @@ function Fallback({ message = "Loading…" }: { message?: string }) {
           <div className="mb-4 flex items-center gap-3">
             <Spinner />
             <div>
-              <div className="text-sm uppercase tracking-wider text-white/60">Please wait</div>
-              <div className="text-base font-medium text-white">{message}</div>
+              <div className="text-sm uppercase tracking-wider text-white/60">
+                Please wait
+              </div>
+              <div className="text-base font-medium text-white">
+                {message}
+              </div>
             </div>
           </div>
 
@@ -97,7 +109,11 @@ function Fallback({ message = "Loading…" }: { message?: string }) {
               className="absolute inset-y-0 left-0 w-1/3 rounded-full bg-white/60"
               initial={{ x: "-120%" }}
               animate={{ x: ["-120%", "120%"] }}
-              transition={{ duration: 1.6, repeat: Infinity, ease: "easeInOut" }}
+              transition={{
+                duration: 1.6,
+                repeat: Infinity,
+                ease: "easeInOut",
+              }}
             />
           </div>
 
@@ -144,8 +160,7 @@ function Spinner() {
 function ScrollToTop() {
   const { pathname, hash } = useLocation();
   useEffect(() => {
-    if (hash) return; // let in-page anchors keep position
-    // smooth scroll only when supported
+    if (hash) return;
     try {
       window.scrollTo({ top: 0, behavior: "smooth" });
     } catch {
@@ -162,19 +177,27 @@ export default function AppRouter() {
     <>
       <ScrollToTop />
       <Suspense fallback={<Fallback message="Loading interface…" />}>
-        {/* AnimatePresence enables exit animations on route change */}
         <AnimatePresence mode="wait">
           <Routes location={location} key={location.pathname}>
             <Route element={<SiteLayout />}>
+              {/* index → "/" which maps to "#/" in HashRouter */}
               <Route index element={<Home />} />
+
+              {/* other pages → "#/solutions", "#/about", etc. */}
               <Route path="solutions" element={<Solutions />} />
               <Route path="about" element={<About />} />
               <Route path="our-work" element={<Work />} />
               <Route path="contact" element={<Contact />} />
 
-              {/* Friendly legacy redirects (optional) */}
-              <Route path="services" element={<Navigate to="/solutions" replace />} />
-              <Route path="work" element={<Navigate to="/our-work" replace />} />
+              {/* legacy redirects */}
+              <Route
+                path="services"
+                element={<Navigate to="/solutions" replace />}
+              />
+              <Route
+                path="work"
+                element={<Navigate to="/our-work" replace />}
+              />
             </Route>
 
             {/* Catch-all → home */}

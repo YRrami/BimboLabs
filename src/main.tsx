@@ -1,12 +1,14 @@
-// src/main.tsx (or src/index.tsx)
+// src/main.tsx
 import React from "react";
 import ReactDOM from "react-dom/client";
 import { HashRouter } from "react-router-dom";
-// HelmetProvider removed; head tags are managed manually in components
 import AppRouter from "./AppRouter";
 import "./index.css";
 
-/** Enforce https://www.anonvic.com outside local dev */
+/**
+ * Force production traffic onto https://www.anonvic.com
+ * - Skips localhost / 127.0.0.1 for local dev
+ */
 if (typeof window !== "undefined") {
   const { protocol, hostname, href } = window.location;
   const desiredHost = "www.anonvic.com";
@@ -20,10 +22,11 @@ if (typeof window !== "undefined") {
   }
 }
 
-ReactDOM.createRoot(document.getElementById("root")!).render(
+ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   <React.StrictMode>
-      <HashRouter basename="/">
-        <AppRouter />
-      </HashRouter>
+    {/* HashRouter so routes like http://localhost:5173/#/solutions work */}
+    <HashRouter>
+      <AppRouter />
+    </HashRouter>
   </React.StrictMode>
 );

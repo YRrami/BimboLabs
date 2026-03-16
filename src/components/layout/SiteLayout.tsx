@@ -1,44 +1,42 @@
 /* eslint-disable react-refresh/only-export-components */
-/* eslint-disable @typescript-eslint/no-explicit-any */
 
 import {
   createContext,
   useContext,
   useEffect,
-  useMemo,
-  useRef,
   useState,
-  type ElementType,
-  type ReactNode,
+  type HTMLAttributes,
 } from "react";
 import {
   Menu,
   X,
-  Github,
-  Linkedin,
-  Mail,
-  Instagram,
-  Twitter,
-  Facebook,
   ArrowRight,
   Sparkles,
-  Send,
+  Github,
+  Instagram,
+  Facebook,
+  Linkedin,
+  Twitter,
+  Mail,
+  Phone,
+  Zap,
+  ChevronDown,
 } from "lucide-react";
-import { Link, NavLink, Outlet, useLocation } from "react-router-dom";
+import { motion, AnimatePresence } from "framer-motion";
+import { Link, NavLink, Outlet } from "react-router-dom";
+
 import anonvicLogo from "../../logoss.png";
-import botPng from "../../pilot.png";
 
 /* ================================
    SITE CONFIG
 ================================ */
 export const SITE = {
-  name: "Anonvic",
+  name: "ANONVIC",
   logo: {
     src: anonvicLogo,
-    alt: "Anonvic - Digital Marketing & Software",
     width: 640,
     height: 96,
-    className: "h-6 w-auto sm:h-9 select-none",
+    className: "h-7 w-auto sm:h-9 select-none",
   },
   nav: [
     { label: "Home", path: "/" },
@@ -63,40 +61,12 @@ export const SITE = {
 } as const;
 
 export const COLORS = {
-  background: "#05061D",
-  primary: "#4F46E5",
-  accent: "#A855F7",
-  text: "#F7F9FF",
-  muted: "#A5ADCF",
-  surface: "rgba(255, 255, 255, 0.04)",
-  surfaceStrong: "rgba(79, 70, 229, 0.16)",
+  background: "#000000",
+  primary: "#6366F1",
+  accent: "#EC4899",
+  text: "#F9FAFB",
+  muted: "#9CA3AF",
 } as const;
-
-/* ================================
-   Helpers
-================================ */
-export function hexToRgb(hex: string) {
-  const normalized = hex.replace("#", "");
-  const bigint = parseInt(normalized, 16);
-  const r = (bigint >> 16) & 255;
-  const g = (bigint >> 8) & 255;
-  const b = bigint & 255;
-  return { r, g, b };
-}
-
-export function withAlpha(hex: string, alpha: number) {
-  const { r, g, b } = hexToRgb(hex);
-  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
-}
-
-export const gradientPrimary = (angle = 140) =>
-  `linear-gradient(${angle}deg, ${withAlpha(
-    COLORS.primary,
-    0.18
-  )}, ${withAlpha(COLORS.accent, 0.14)}, ${withAlpha(
-    COLORS.background,
-    0.92
-  )})`;
 
 /* ================================
    Context
@@ -105,10 +75,10 @@ export type SiteContextValue = {
   scrollY: number;
   scrollProgress: number;
   isMobile: boolean;
-  reducedMotion: boolean;
   copied: boolean;
   flashCopy: () => void;
 };
+
 const SiteContext = createContext<SiteContextValue | null>(null);
 
 export function useSite() {
@@ -117,10 +87,7 @@ export function useSite() {
   return ctx;
 }
 
-const clamp = (v: number, min: number, max: number) =>
-  Math.max(min, Math.min(max, v));
-
-export function useIsMobile(breakpoint = 640) {
+function useIsMobile(breakpoint = 768) {
   const [isMobile, setIsMobile] = useState(() =>
     typeof window !== "undefined" ? window.innerWidth < breakpoint : false
   );
@@ -132,651 +99,773 @@ export function useIsMobile(breakpoint = 640) {
   return isMobile;
 }
 
-export function usePrefersReducedMotion() {
-  const [reduced, setReduced] = useState(false);
-  useEffect(() => {
-    const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
-    const handler = (e: MediaQueryList | MediaQueryListEvent) =>
-      setReduced("matches" in e ? e.matches : mq.matches);
-    setReduced(mq.matches);
-    if ("addEventListener" in mq) {
-      mq.addEventListener("change", handler as any);
-      return () => mq.removeEventListener("change", handler as any);
-    } else {
-      (mq as any).addListener(handler);
-      return () => (mq as any).removeListener(handler);
-    }
-  }, []);
-  return reduced;
-}
-
 /* ================================
-   UI atoms
+   Global Background (beams / orbs)
 ================================ */
-export function SectionShell({
-  children,
-  className,
-}: {
-  children: ReactNode;
-  className?: string;
-}) {
+function GlobalBackground() {
   return (
-    <div
-      className={`rounded-3xl border border-white/10 backdrop-blur-xl px-6 sm:px-10 md:px-14 py-12 sm:py-16 ${
-        className ?? ""
-      }`}
-      style={{
-        background: `linear-gradient(135deg, ${withAlpha(
-          COLORS.primary,
-          0.14
-        )}, ${withAlpha(COLORS.accent, 0.1)}, ${withAlpha(
-          COLORS.background,
-          0.88
-        )})`,
-        boxShadow: "0 30px 80px -40px rgba(0,0,0,0.8)",
-      }}
-    >
-      {children}
-    </div>
-  );
-}
+    <div className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
+      {/* base dark radial */}
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_#3b27b5_0%,_#050013_45%,_#020007_80%)]" />
 
-export function Stat({
-  number,
-  label,
-  accent,
-}: {
-  number: string;
-  label: string;
-  accent: "fuchsia" | "sky" | "indigo";
-}) {
-  const color =
-    accent === "fuchsia"
-      ? "text-[#4F46E5]"
-      : accent === "sky"
-      ? "text-white"
-      : "text-[#A855F7]";
-  return (
-    <div
-      className="text-center p-4 sm:p-5 rounded-xl border border-white/10"
-      style={{ backgroundColor: COLORS.surface }}
-    >
-      <div
-        className={`text-2xl sm:text-3xl font-extrabold tabular-nums ${color}`}
-      >
-        {number}
-      </div>
-      <div className="text-[11px] sm:text-xs text-[#A5ADCF]">{label}</div>
+      {/* central hero glow */}
+      <div className="absolute inset-x-[-25%] top-[8%] h-[520px] bg-[radial-gradient(circle_at_center,_rgba(129,140,248,0.95)_0%,_rgba(129,140,248,0.4)_40%,_rgba(15,23,42,0)_75%)] blur-3xl" />
+
+      {/* animated beams */}
+      <motion.div
+        aria-hidden
+        initial={{ opacity: 0.4, rotate: -8 }}
+        animate={{ opacity: [0.3, 0.6, 0.3], rotate: [-6, -10, -6] }}
+        transition={{ duration: 18, repeat: Infinity, ease: "easeInOut" }}
+        className="absolute left-[-10%] right-[-30%] top-[26%] h-64"
+        style={{
+          background:
+            "linear-gradient(120deg, rgba(56,189,248,0) 0%, rgba(56,189,248,0.26) 35%, rgba(190,242,100,0.16) 60%, rgba(190,242,100,0) 100%)",
+          filter: "blur(14px)",
+        }}
+      />
+      <motion.div
+        aria-hidden
+        initial={{ opacity: 0.25, rotate: 12 }}
+        animate={{ opacity: [0.2, 0.5, 0.2], rotate: [10, 16, 10] }}
+        transition={{ duration: 22, repeat: Infinity, ease: "easeInOut" }}
+        className="absolute left-[-20%] right-[-5%] top-[52%] h-56"
+        style={{
+          background:
+            "linear-gradient(120deg, rgba(129,140,248,0) 0%, rgba(129,140,248,0.3) 40%, rgba(56,189,248,0.28) 70%, rgba(56,189,248,0) 100%)",
+          filter: "blur(18px)",
+        }}
+      />
+
+      {/* floating orbs */}
+      <motion.div
+        aria-hidden
+        animate={{
+          scale: [1, 1.18, 1],
+          x: [0, 60, 0],
+          y: [0, -40, 0],
+        }}
+        transition={{ duration: 20, repeat: Infinity, ease: "easeInOut" }}
+        className="absolute -top-40 left-1/5 h-[420px] w-[420px] rounded-full"
+        style={{
+          background:
+            "radial-gradient(circle at center, rgba(129,140,248,0.55) 0%, rgba(56,189,248,0.2) 35%, transparent 70%)",
+          filter: "blur(40px)",
+        }}
+      />
+      <motion.div
+        aria-hidden
+        animate={{
+          scale: [1, 1.15, 1],
+          x: [0, -70, 20],
+          y: [0, 50, 0],
+        }}
+        transition={{ duration: 24, repeat: Infinity, ease: "easeInOut" }}
+        className="absolute bottom-[-80px] right-[10%] h-[380px] w-[380px] rounded-full"
+        style={{
+          background:
+            "radial-gradient(circle at center, rgba(52,211,153,0.4) 0%, rgba(96,165,250,0.25) 35%, transparent 70%)",
+          filter: "blur(40px)",
+        }}
+      />
+
+      {/* soft grid + noise + vignette */}
+      <motion.div
+        aria-hidden
+        className="absolute inset-0 opacity-[0.25]"
+        initial={{ backgroundPosition: "0px 0px" }}
+        animate={{ backgroundPosition: ["0px 0px", "36px 18px", "0px 0px"] }}
+        transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
+        style={{
+          backgroundImage:
+            "linear-gradient(rgba(148,163,184,0.16) 1px, transparent 1px), linear-gradient(90deg, rgba(148,163,184,0.16) 1px, transparent 1px)",
+          backgroundSize: "40px 40px",
+          maskImage:
+            "radial-gradient(circle at center, black 0, black 55%, transparent 80%)",
+          WebkitMaskImage:
+            "radial-gradient(circle at center, black 0, black 55%, transparent 80%)",
+        }}
+      />
+      <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.10]" />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_transparent_0%,_transparent_55%,_rgba(0,0,0,0.78)_90%)]" />
     </div>
   );
 }
 
 /* ================================
-   Brand + Navbar
+   Brand Logo
 ================================ */
 function BrandLogo() {
-  const { logo, name } = SITE;
+  const [imgOk, setImgOk] = useState(true);
+  const { logo } = { logo: SITE.logo };
+
   return (
-    <Link to="/" className="group flex items-center min-w-0" aria-label={name}>
-      {!!logo?.src && (
-        <img
-          src={logo.src}
-          alt={logo.alt ?? name}
-          width={logo.width}
-          height={logo.height}
-          className={`${logo.className} m-0`}
-          onError={(e) => {
-            (e.currentTarget.style as any).display = "none";
-            const sibling = e.currentTarget
-              .nextElementSibling as HTMLElement | null;
-            if (sibling) sibling.style.display = "inline";
-          }}
+    <Link to="/" className="group flex items-center gap-3 min-w-0">
+      <div className="relative flex items-center justify-center">
+        {/* subtle glow behind logo */}
+        <motion.div
+          aria-hidden
+          className="absolute inset-[-4px] rounded-2xl bg-gradient-to-r from-indigo-500/30 via-purple-500/20 to-pink-500/30 opacity-0 blur-xl group-hover:opacity-100 transition-opacity"
         />
-      )}
-      <span
-        style={{ display: logo?.src ? "none" : "inline" }}
-        className="truncate bg-gradient-to-r from-white via-gray-100 to-white bg-clip-text text-xl sm:text-2xl font-bold tracking-tight text-transparent ml-1"
-      >
-        {name}
-      </span>
+        {logo?.src && imgOk ? (
+          <motion.img
+            src={logo.src}
+            width={logo.width}
+            height={logo.height}
+            className={`${logo.className} m-0 relative`}
+            onError={() => setImgOk(false)}
+            initial={{ opacity: 0, y: -8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4 }}
+            whileHover={{ scale: 1.03 }}
+          />
+        ) : (
+          <motion.div
+            whileHover={{ rotate: 360 }}
+            transition={{ duration: 0.6 }}
+            className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center font-black text-white text-lg shadow-lg shadow-indigo-500/30"
+          >
+            AV
+          </motion.div>
+        )}
+      </div>
     </Link>
   );
 }
 
+/* ================================
+   Navbar
+================================ */
 export function Navbar({ scrolled = false }: { scrolled?: boolean }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-
-  const navStyles = {
-    background: scrolled
-      ? `linear-gradient(120deg, ${withAlpha(
-          COLORS.background,
-          0.9
-        )}, ${withAlpha(COLORS.background, 0.84)})`
-      : `linear-gradient(120deg, ${withAlpha(
-          COLORS.background,
-          0.78
-        )}, ${withAlpha(COLORS.background, 0.68)})`,
-    borderColor: withAlpha(COLORS.text, scrolled ? 0.12 : 0.08),
-    boxShadow: scrolled
-      ? "0 22px 55px -30px rgba(8, 11, 35, 0.88)"
-      : "0 18px 48px -32px rgba(8, 11, 35, 0.66)",
-  } as const;
-
-  const desktopLink = (item: (typeof SITE.nav)[number]) => (
-    <NavLink
-      key={item.path}
-      to={item.path}
-      end={item.path === "/"}
-      className={({ isActive }) =>
-        `group relative px-3 lg:px-4 py-2 text-sm md:text-[15px] transition-all duration-300 rounded-md ${
-          isActive ? "text-white" : "text-[#A5ADCF] hover:text-white"
-        }`
-      }
-    >
-      {({ isActive }) => (
-        <>
-          <span className="relative z-10 flex items-center gap-2">
-            {isActive && (
-              <span className="h-1.5 w-1.5 rounded-full bg-[#4F46E5]" />
-            )}{" "}
-            {item.label}
-          </span>
-          <span
-            className={`absolute bottom-0 left-0 h-0.5 bg-gradient-to-r from-[#4F46E5] via-[#A855F7] to-[#1B1F3B] transition-all duration-300 ${
-              isActive ? "w-full" : "w-0 group-hover:w-full"
-            }`}
-          />
-        </>
-      )}
-    </NavLink>
-  );
-
-  const mobileLink = (item: (typeof SITE.nav)[number], idx: number) => (
-    <NavLink
-      key={item.path}
-      to={item.path}
-      end={item.path === "/"}
-      className={({ isActive }) =>
-        `block rounded-lg px-3 py-2 text-base transition-all duration-300 ${
-          isActive
-            ? "bg-[rgba(79,70,229,0.18)] text-white"
-            : "text-[#A5ADCF] hover:translate-x-1 hover:bg[rgba(79,70,229,0.12)] hover:text-white"
-        }`
-      }
-      style={{ transitionDelay: `${idx * 70}ms` }}
-      onClick={() => setIsMenuOpen(false)}
-    >
-      {item.label}
-    </NavLink>
-  );
+  const [isHoveringShell, setIsHoveringShell] = useState(false);
 
   return (
-    <nav
-      className="fixed top-0 z-50 w-full transition-all duration-500"
-      aria-label="Primary"
-    >
-      <div className="mx-auto max-w-[95rem] px-3 sm:px-6 lg:px-10 pt-3 sm:pt-4">
-        <div
-          className="rounded-2xl border backdrop-blur-2xl transition-all duration-500"
-          style={navStyles}
+    <>
+      {/* focus overlay that blurs/dims page when nav is focused */}
+      <AnimatePresence>
+        {(isHoveringShell || isMenuOpen) && (
+          <motion.div
+            key="nav-focus-overlay"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-40 pointer-events-none bg-black/55 backdrop-blur-2xl transition-opacity"
+          />
+        )}
+      </AnimatePresence>
+
+      <motion.nav
+        initial={{ y: -100 }}
+        animate={{ y: 0 }}
+        className="fixed top-0 z-50 w-full"
+        onHoverStart={() => setIsHoveringShell(true)}
+        onHoverEnd={() => setIsHoveringShell(false)}
+      >
+        {/* Top Announcement Bar */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 py-2 px-4"
         >
-          <div className="flex h-14 sm:h-16 md:h-[70px] items-center justify-between px-3 sm:px-5">
-            <BrandLogo />
-
-            <div className="hidden md:flex items-center gap-6">
-              <div className="flex items-center space-x-1">
-                {SITE.nav.map((item) => desktopLink(item))}
-              </div>
-              <Link
-                to="/contact"
-                className="hidden lg:inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-4 py-2 text-sm font-semibold text-white transition hover:border-white/25 hover:bg-white/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#4F46E5]/60"
-              >
-                <span>Let's Talk</span>
-                <ArrowRight className="h-4 w-4" />
-              </Link>
-            </div>
-
-            <button
-              className="md:hidden rounded-xl border border-white/15 bg-[rgba(8,12,32,0.72)] p-2.5 transition-all duration-300 hover:scale-[1.08] hover:bg-[rgba(79,70,229,0.32)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#4F46E5]/60"
-              onClick={() => setIsMenuOpen((v) => !v)}
-              aria-label="Toggle menu"
-              aria-expanded={isMenuOpen}
+          <div className="max-w-7xl mx-auto flex items-center justify-center gap-2 text-xs sm:text-sm font-semibold text-white">
+            <motion.span
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ duration: 0.4 }}
+              className="inline-flex items-center justify-center rounded-full bg-white/15 px-2 py-[2px]"
             >
-              {isMenuOpen ? (
-                <X className="h-6 w-6" />
-              ) : (
-                <Menu className="h-6 w-6" />
-              )}
-            </button>
+              <Sparkles className="w-4 h-4 mr-1" />
+              Live
+            </motion.span>
+            <span>Free strategy call for qualified leads</span>
+            <ArrowRight className="w-3 h-3" />
           </div>
+        </motion.div>
 
-          <div
-            className={`md:hidden overflow-hidden transition-all duration-500 ${
-              isMenuOpen ? "max-h-[420px] opacity-100" : "max-h-0 opacity-0"
-            }`}
+        {/* Main Navbar */}
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-3">
+          <motion.div
+            className="rounded-2xl border transition-all duration-300 bg-black/60 backdrop-blur-2xl"
+            style={{
+              backgroundColor: scrolled
+                ? "rgba(5, 5, 15, 0.90)"
+                : "rgba(5, 5, 15, 0.75)",
+              borderColor: scrolled
+                ? "rgba(255, 255, 255, 0.16)"
+                : "rgba(255, 255, 255, 0.10)",
+              boxShadow: scrolled
+                ? "0 20px 60px rgba(0, 0, 0, 0.8), 0 0 80px rgba(129, 140, 248, 0.35)"
+                : "0 10px 40px rgba(0, 0, 0, 0.6)",
+            }}
+            whileHover={{
+              scale: 1.01,
+              boxShadow:
+                "0 24px 80px rgba(0,0,0,0.9), 0 0 120px rgba(129,140,248,0.6)",
+              backgroundColor: "rgba(5, 5, 20, 0.92)",
+            }}
+            whileTap={{ scale: 0.995 }}
           >
-            <div
-              className="border-t border-white/10 backdrop-blur-2xl"
-              style={{
-                background: `linear-gradient(130deg, ${withAlpha(
-                  COLORS.background,
-                  0.94
-                )}, ${withAlpha(COLORS.background, 0.88)})`,
-              }}
-            >
-              <div className="space-y-2 px-4 py-4">
-                {SITE.nav.map((item, idx) => mobileLink(item, idx))}
-                <Link
-                  to="/contact"
-                  className="block rounded-lg px-3 py-2 text-base font-semibold text-white transition-all duration-300 bg-[rgba(79,70,229,0.16)] border border-white/10 hover:bg-[rgba(168,85,247,0.18)]"
-                  onClick={() => setIsMenuOpen(false)}
-                  style={{ transitionDelay: `${SITE.nav.length * 70}ms` }}
+            <div className="flex h-16 sm:h-20 items-center justify-between px-4 sm:px-6">
+              <BrandLogo />
+
+              {/* Desktop Navigation */}
+              <div className="hidden lg:flex items-center gap-8">
+                <div className="flex items-center gap-1">
+                  {SITE.nav.map((item) => (
+                    <NavLink
+                      key={item.path}
+                      to={item.path}
+                      end={item.path === "/"}
+                      className={({ isActive }) =>
+                        [
+                          "relative px-4 py-2 text-sm font-semibold transition-all rounded-xl group",
+                          "hover:bg-white/7",
+                          isActive
+                            ? "text-white bg-white/10"
+                            : "text-gray-300 hover:text-white",
+                        ].join(" ")
+                      }
+                    >
+                      {({ isActive }) => (
+                        <>
+                          <span className="relative z-10">{item.label}</span>
+
+                          {/* subtle glow on hover */}
+                          <span className="pointer-events-none absolute inset-0 rounded-xl bg-gradient-to-r from-white/6 via-white/3 to-transparent opacity-0 blur-md transition-opacity group-hover:opacity-100" />
+
+                          {/* active underline using layoutId for smooth slide */}
+                          {isActive && (
+                            <motion.span
+                              className="absolute -bottom-1 left-3 right-3 h-0.5 rounded-full bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400"
+                              layoutId="navbar-indicator"
+                            />
+                          )}
+                        </>
+                      )}
+                    </NavLink>
+                  ))}
+                </div>
+
+                <motion.div
+                  whileHover={{ scale: 1.05, y: -1 }}
+                  whileTap={{ scale: 0.97, y: 0 }}
                 >
-                  Let's Talk
-                </Link>
+                  <Link
+                    to="/contact"
+                    className="relative flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-bold text-sm shadow-lg shadow-indigo-500/30 overflow-hidden"
+                  >
+                    <span className="relative z-10 flex items-center gap-2">
+                      <Zap className="w-4 h-4" />
+                      Get Started
+                      <ArrowRight className="w-4 h-4" />
+                    </span>
+                    <motion.span
+                      aria-hidden
+                      initial={{ x: "-120%" }}
+                      whileHover={{ x: "120%" }}
+                      transition={{ duration: 0.8, ease: "easeOut" }}
+                      className="pointer-events-none absolute inset-y-0 w-2/3 bg-white/20 blur-xl"
+                    />
+                  </Link>
+                </motion.div>
               </div>
+
+              {/* Mobile Menu Button */}
+              <motion.button
+                whileTap={{ scale: 0.9 }}
+                className="lg:hidden p-2 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-all backdrop-blur-md"
+                onClick={() => setIsMenuOpen((v) => !v)}
+                aria-label="Toggle menu"
+              >
+                {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+              </motion.button>
             </div>
-          </div>
+
+            {/* Mobile Menu */}
+            <AnimatePresence>
+              {isMenuOpen && (
+                <motion.div
+                  initial={{ height: 0, opacity: 0 }}
+                  animate={{ height: "auto", opacity: 1 }}
+                  exit={{ height: 0, opacity: 0 }}
+                  transition={{ duration: 0.3 }}
+                  className="lg:hidden overflow-hidden border-t border-white/10"
+                >
+                  <div className="px-4 py-6 space-y-2 bg-black/90 backdrop-blur-2xl">
+                    {SITE.nav.map((item, idx) => (
+                      <NavLink
+                        key={item.path}
+                        to={item.path}
+                        end={item.path === "/"}
+                        onClick={() => setIsMenuOpen(false)}
+                      >
+                        {({ isActive }) => (
+                          <motion.div
+                            initial={{ x: -20, opacity: 0 }}
+                            animate={{ x: 0, opacity: 1 }}
+                            transition={{ delay: idx * 0.07 }}
+                            className={[
+                              "block px-4 py-3 rounded-xl text-sm font-semibold transition-all",
+                              isActive
+                                ? "text-white bg-white/10"
+                                : "text-gray-300 hover:text-white hover:bg-white/5",
+                            ].join(" ")}
+                          >
+                            {item.label}
+                          </motion.div>
+                        )}
+                      </NavLink>
+                    ))}
+
+                    <NavLink to="/contact" onClick={() => setIsMenuOpen(false)}>
+                      {({ isActive }) => (
+                        <motion.div
+                          initial={{ x: -20, opacity: 0 }}
+                          animate={{ x: 0, opacity: 1 }}
+                          transition={{ delay: SITE.nav.length * 0.07 }}
+                          className={[
+                            "block px-4 py-3 rounded-xl text-sm font-bold text-center transition-all",
+                            "bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500",
+                            isActive ? "opacity-100" : "",
+                          ].join(" ")}
+                        >
+                          Get Started
+                        </motion.div>
+                      )}
+                    </NavLink>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </motion.div>
         </div>
-      </div>
-    </nav>
+      </motion.nav>
+    </>
   );
 }
 
 /* ================================
-   Bot avatar + typing dots
+   SectionShell – used by pages
 ================================ */
-
-type BotAvatarProps = {
-  size?: number;
-  src?: string;
-  alt?: string;
+export type SectionShellProps = HTMLAttributes<HTMLElement> & {
+  containerClassName?: string;
 };
 
-export function BotAvatar({ size = 36, src, alt = "Copilot" }: BotAvatarProps) {
-  const [imgOk, setImgOk] = useState(true);
-  const s = Math.max(28, size);
-
+export function SectionShell({
+  children,
+  className = "",
+  containerClassName = "",
+  ...rest
+}: SectionShellProps) {
   return (
-    <span
-      className="relative inline-grid place-items-center"
-      style={{ width: s, height: s }}
-      aria-hidden={!alt}
-      role={alt ? "img" : undefined}
-      aria-label={alt}
-    >
-      <span className="absolute -inset-2 blur-xl rounded-[20px] bg-gradient-to-br from-[#A855F7]/35 via-[#4F46E5]/30 to-transparent" />
-      <span
-        className="relative grid place-items-center rounded-full border border-white/12 overflow-hidden"
-        style={{
-          width: s,
-          height: s,
-          background:
-            "linear-gradient(145deg, rgba(255,255,255,0.10), rgba(255,255,255,0.02))",
-        }}
-      >
-        {src && imgOk ? (
-          <img
-            src={src}
-            alt={alt}
-            className="block h-[72%] w-[72%] object-contain pointer-events-none select-none"
-            draggable={false}
-            loading="lazy"
-            onError={() => setImgOk(false)}
-          />
-        ) : (
-          <span className="flex items-center gap-1.5">
-            <span className="h-1.5 w-1.5 rounded-full bg-white/90" />
-            <span className="h-1.5 w-1.5 rounded-full bg-white/90" />
-          </span>
-        )}
-      </span>
-    </span>
-  );
-}
-
-function TypingDots() {
-  return (
-    <span className="inline-flex items-center gap-1.5 align-middle">
-      <span className="h-1.5 w-1.5 rounded-full bg-white/80 animate-bounce" />
-      <span className="h-1.5 w-1.5 rounded-full bg-white/80 animate-bounce" />
-      <span className="h-1.5 w-1.5 rounded-full bg-white/80 animate-bounce" />
-    </span>
-  );
-}
-
-/* ================================
-   Chat panel – rebuilt, no scroll state
-================================ */
-type ChatMessage = { role: "user" | "assistant"; text: string };
-
-function ChatPanel({
-  chatListRef,
-  typing,
-  messages,
-  value,
-  setValue,
-  onSend,
-  onReset,
-}: {
-  chatListRef: React.RefObject<HTMLDivElement | null>;
-  typing: boolean;
-  messages: ChatMessage[];
-  value: string;
-  setValue: (v: string) => void;
-  onSend: (override?: string) => void;
-  onReset: () => void;
-}) {
-  const hasUserMessage = useMemo(
-    () => messages.some((m) => m.role === "user"),
-    [messages]
-  );
-
-  const quickPrompts = [
-    "Give me a launch plan.",
-    "Review my current site.",
-    "Estimate timeline & budget.",
-  ];
-
-  const handleSend = (override?: string) => {
-    const toSend = (override ?? value).trim();
-    if (!toSend) return;
-    onSend(toSend);
-    setValue("");
-  };
-
-  const Bubble = ({
-    role,
-    children,
-  }: {
-    role: "user" | "assistant";
-    children: React.ReactNode;
-  }) => (
-    <div
-      className={`flex ${
-        role === "assistant" ? "justify-start" : "justify-end"
-      }`}
-    >
-      {role === "assistant" && (
-        <span className="mr-3 mt-0.5">
-          <BotAvatar size={30} src={botPng} alt="Anonvic Copilot" />
-        </span>
-      )}
+    <section className={`relative w-full ${className}`} {...rest}>
       <div
-        className={[
-          "max-w-[86%] rounded-2xl px-4 py-2.5 text-[15px] leading-relaxed border shadow-[0_16px_38px_-28px_rgba(0,0,0,0.9)]",
-          role === "assistant"
-            ? "bg-[#14193A] border-white/10 text-white"
-            : "bg-[#6D28D9]/35 border-[#6D28D9]/55 text-[#F7F9FF]",
-        ].join(" ")}
+        className={`max-w-7xl mx-auto px-6 py-16 md:py-24 ${containerClassName}`}
       >
         {children}
-      </div>
-    </div>
-  );
-
-  return (
-    <section
-      className="fixed z-[70] bottom-[calc(4rem+max(1rem,env(safe-area-inset-bottom)))] right-[max(1rem,env(safe-area-inset-right))] w-[min(94vw,520px)] overflow-hidden rounded-[24px] border border-white/10"
-      style={{
-        background:
-          "linear-gradient(155deg, #15163B 0%, #05061D 55%, #18123F 100%)",
-        boxShadow: "0 30px 80px -32px rgba(10,15,40,0.9)",
-      }}
-      role="dialog"
-      aria-modal="true"
-      aria-label="Anonvic Copilot Chat"
-    >
-      {/* Header */}
-      <div className="px-5 py-3.5 border-b border-white/10 bg-[#15163B]/80">
-        <div className="flex items-center justify-between gap-3">
-          <div className="flex items-center gap-3">
-            <BotAvatar size={34} src={botPng} alt="Anonvic Copilot" />
-            <div className="leading-tight">
-              <p className="text-sm font-semibold text-white">
-                Anonvic Copilot
-              </p>
-              <p className="flex items-center gap-1 text-[11px] text-emerald-300/80">
-                <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                Online · Scoped to this site
-              </p>
-            </div>
-          </div>
-          <div className="flex items-center gap-2">
-            <button
-              type="button"
-              onClick={onReset}
-              className="rounded-full border border-white/12 bg-white/5 px-2.5 py-1 text-[11px] text-white/70 hover:bg-white/10 hover:text-white transition"
-            >
-              Reset
-            </button>
-            <span className="rounded-full bg-[#4F46E5]/30 border border-white/10 px-2 py-1 text-[10px] uppercase tracking-[0.18em] text-white/70">
-              Beta
-            </span>
-          </div>
-        </div>
-
-        {!hasUserMessage && (
-          <div className="mt-3 flex flex-wrap gap-1.5">
-            {quickPrompts.map((p) => (
-              <button
-                key={p}
-                type="button"
-                onClick={() => handleSend(p)}
-                className="text-[11px] sm:text-xs rounded-full border border-white/12 bg-white/5 px-2.5 py-1 text-white/80 hover:bg-white/10 hover:border-white/20 hover:text-white transition"
-              >
-                {p}
-              </button>
-            ))}
-          </div>
-        )}
-      </div>
-
-      {/* Messages (pure native scroll, no React state) */}
-      <div className="bg-[#05061D]/85">
-        <div
-          ref={chatListRef}
-          className="max-h-[56vh] overflow-y-auto px-5 py-4 space-y-3.5"
-          aria-live="polite"
-        >
-          {messages.map((m, i) => (
-            <Bubble key={i} role={m.role}>
-              {m.text}
-            </Bubble>
-          ))}
-          {typing && (
-            <div className="flex items-center gap-2 text-white/85">
-              <span className="mr-3 mt-0.5">
-                <BotAvatar size={30} src={botPng} alt="Anonvic Copilot" />
-              </span>
-              <div className="px-4 py-2.5 rounded-2xl border border-white/12 bg-[#14193A]">
-                <TypingDots />
-              </div>
-            </div>
-          )}
-        </div>
-      </div>
-
-      {/* Composer */}
-      <div className="px-4 py-3 border-t border-white/10 bg-[#11153A]/95">
-        <div className="flex items-end gap-2.5">
-          <div className="relative flex-1">
-            <textarea
-              value={value}
-              onChange={(e) => setValue(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter" && !e.shiftKey) {
-                  e.preventDefault();
-                  handleSend();
-                }
-              }}
-              rows={1}
-              className="peer w-full max-h-[40vh] rounded-2xl bg-[#050822] border border-white/12 px-3.5 py-2.5 text-[15px] text-white placeholder-white/45 outline-none focus:border-[#7C3AED] resize-none"
-              placeholder="Ask about plans, timelines, or stacks…"
-              aria-label="Type your message"
-            />
-            <span className="pointer-events-none absolute -inset-0.5 rounded-[20px] bg-gradient-to-r from-[#4F46E5]/20 via-[#A855F7]/16 to-transparent blur-md opacity-0 peer-focus:opacity-100" />
-          </div>
-
-          <button
-            onClick={() => handleSend()}
-            disabled={!value.trim()}
-            className="shrink-0 inline-flex items-center gap-2 rounded-2xl px-4 py-2.5 bg-gradient-to-r from-[#4F46E5] via-[#A855F7] to-[#4F46E5] text-white text-[15px] font-semibold border border-white/15 hover:scale-[1.04] active:scale-100 transition disabled:opacity-40 disabled:cursor-not-allowed focus:outline-none focus-visible:ring-2 focus-visible:ring-[#A855F7]/60"
-            aria-label="Send message"
-          >
-            <Send className="h-4 w-4" />
-            Send
-          </button>
-        </div>
       </div>
     </section>
   );
 }
 
 /* ================================
-   Hero floating edge icons
+   Premium Footer
 ================================ */
-type Tone = "fuchsia" | "sky" | "indigo" | "cyan" | "violet" | "rose";
-function toneToText(t: Tone) {
-  switch (t) {
-    case "fuchsia":
-    case "indigo":
-    case "violet":
-      return "text-[#BBBFF9]";
-    case "sky":
-    case "cyan":
-      return "text-white";
-    case "rose":
-      return "text-[#A5ADCF]";
-  }
-}
+function Footer() {
+  const footerLinks = {
+    company: [
+      { label: "About Us", href: "/about" },
+      { label: "Our Work", href: "/our-work" },
+      { label: "Case Studies", href: "/case-studies" },
+      { label: "Careers", href: "/careers" },
+    ],
+    services: [
+      { label: "Web Development", href: "/solutions" },
+      { label: "Mobile Apps", href: "/solutions" },
+      { label: "Digital Marketing", href: "/solutions" },
+      { label: "Brand Strategy", href: "/solutions" },
+    ],
+    resources: [
+      { label: "Blog", href: "/blog" },
+      { label: "Newsletter", href: "/newsletter" },
+      { label: "Support", href: "/support" },
+      { label: "FAQ", href: "/faq" },
+    ],
+  };
 
-export function HeroEdgeIcons({
-  scrollY,
-  isMobile,
-  reducedMotion,
-}: {
-  scrollY: number;
-  isMobile: boolean;
-  reducedMotion: boolean;
-}) {
-  const desktop = {
-    ig: { left: 10, top: 20 },
-    in: { left: 26, top: 60 },
-    tw: { left: 12, top: 84 },
-    fb: { left: 90, top: 52 },
-    gh: { left: 86, top: 86 },
-  } as const;
-
-  const mobile = {
-    ig: { left: 12, top: 18 },
-    in: { left: 28, top: 68 },
-    tw: { left: 14, top: 88 },
-    fb: { left: 88, top: 54 },
-    gh: { left: 84, top: 86 },
-  } as const;
-
-  const items: Array<{
-    key: keyof typeof desktop;
-    Icon: ElementType;
-    href: string;
-    title: string;
-    glow: string;
-  }> = [
-    {
-      key: "ig",
-      Icon: Instagram,
-      href: SITE.socials.instagram,
-      title: "Instagram",
-      glow: "from-[#4F46E5] via-[#A855F7] to-transparent",
-    },
-    {
-      key: "in",
-      Icon: Linkedin,
-      href: SITE.socials.linkedin,
-      title: "LinkedIn",
-      glow: "from-[#4F46E5] via-[#A855F7] to-transparent",
-    },
-    {
-      key: "tw",
-      Icon: Twitter,
-      href: SITE.socials.twitter,
-      title: "Twitter",
-      glow: "from-[#4F46E5] via-[#A855F7] to-transparent",
-    },
-    {
-      key: "fb",
-      Icon: Facebook,
-      href: SITE.socials.facebook,
-      title: "Facebook",
-      glow: "from-[#4F46E5] via-[#A855F7] to-transparent",
-    },
-    {
-      key: "gh",
-      Icon: Github,
-      href: SITE.socials.github,
-      title: "GitHub",
-      glow: "from-[#4F46E5] via-[#A855F7] to-transparent",
-    },
+  const socialIcons = [
+    { icon: Github, href: SITE.socials.github, label: "GitHub" },
+    { icon: Instagram, href: SITE.socials.instagram, label: "Instagram" },
+    { icon: Facebook, href: SITE.socials.facebook, label: "Facebook" },
+    { icon: Linkedin, href: SITE.socials.linkedin, label: "LinkedIn" },
+    { icon: Twitter, href: SITE.socials.twitter, label: "Twitter" },
   ];
 
-  const sizeClass = isMobile ? "h-11 w-11" : "h-14 w-14 md:h-16 md:w-16";
-
   return (
-    <div className="pointer-events-none absolute inset-0 overflow-visible z-[11]">
-      {items.map(({ key, Icon, href, title, glow }, i) => {
-        const base = isMobile ? mobile[key] : desktop[key];
-        const left = clamp(base.left, isMobile ? 6 : 0, isMobile ? 94 : 100);
-        const top = clamp(base.top, isMobile ? 9 : 0, isMobile ? 91 : 100);
-        const translateY = reducedMotion ? 0 : scrollY * 0.05;
-        return (
-          <a
-            key={key}
-            href={href}
-            target="_blank"
-            rel="noreferrer noopener"
-            aria-label={title}
-            className="absolute pointer-events-auto group focus:outline-none focus-visible:ring-2 focus-visible:ring-[#4F46E5]/60 rounded-2xl"
-            style={{
-              left: `${left}%`,
-              top: `${top}%`,
-              transform: `translate(-50%, -50%) translateY(${translateY}px)`,
-              animation: reducedMotion
-                ? undefined
-                : `edgeFloat ${6 + (i % 3)}s ease-in-out ${(i * 0.2).toFixed(
-                    2
-                  )}s infinite`,
-              willChange: "transform",
-            }}
-          >
-            <span
-              className={`absolute -inset-5 rounded-2xl blur-xl opacity-45 group-hover:opacity-80 transition bg-gradient-to-br ${glow}`}
-            />
-            <span
-              className={`relative grid place-items-center ${sizeClass} rounded-2xl bg-[rgba(57,80,180,0.15)] border border-white/15 shadow-[0_22px_38px_-18px_rgba(106,13,173,0.35)] transition group-hover:scale-110 group-hover:-rotate-3`}
-            >
-              <Icon className="h-6 w-6 sm:h-7 sm:w-7 text-white" />
-            </span>
-          </a>
-        );
-      })}
-    </div>
+    <footer className="relative mt-32 border-t border-white/10 bg-black overflow-hidden">
+      {/* Background Effects */}
+      <div className="absolute inset-0 pointer-events-none">
+        <motion.div
+          animate={{
+            scale: [1, 1.2, 1],
+            opacity: [0.3, 0.5, 0.3],
+          }}
+          transition={{ duration: 8, repeat: Infinity }}
+          className="absolute top-0 left-1/4 w-96 h-96 bg-indigo-500/20 rounded-full blur-3xl"
+        />
+        <motion.div
+          animate={{
+            scale: [1, 1.3, 1],
+            opacity: [0.2, 0.4, 0.2],
+          }}
+          transition={{ duration: 10, repeat: Infinity }}
+          className="absolute bottom-0 right-1/4 w-96 h-96 bg-purple-500/20 rounded-full blur-3xl"
+        />
+      </div>
+
+      <div className="relative z-10 max-w-7xl mx-auto px-6 py-16">
+        {/* Top Section */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-16">
+          {/* Brand Section */}
+          <div className="space-y-6">
+            <BrandLogo />
+            <p className="text-gray-400 max-w-md leading-relaxed">
+              We build premium digital products and orchestrate bilingual growth
+              campaigns for ambitious businesses targeting US and Egyptian markets.
+            </p>
+
+            {/* Contact Info */}
+            <div className="space-y-3">
+              <a
+                href={SITE.socials.email}
+                className="flex items-center gap-3 text-gray-400 hover:text-white transition-colors group"
+              >
+                <div className="w-10 h-10 rounded-lg bg-white/5 flex items-center justify-center group-hover:bg-indigo-500/20 transition-colors">
+                  <Mail className="w-5 h-5" />
+                </div>
+                <span className="font-semibold">{SITE.contacts.emailLabel}</span>
+              </a>
+              <a
+                href={SITE.socials.phone}
+                className="flex items-center gap-3 text-gray-400 hover:text-white transition-colors group"
+              >
+                <div className="w-10 h-10 rounded-lg bg-white/5 flex items-center justify-center group-hover:bg-purple-500/20 transition-colors">
+                  <Phone className="w-5 h-5" />
+                </div>
+                <span className="font-semibold">{SITE.contacts.phoneLabel}</span>
+              </a>
+            </div>
+
+            {/* Social Links */}
+            <div className="flex items-center gap-3 pt-4">
+              {socialIcons.map((social, i) => (
+                <motion.a
+                  key={i}
+                  href={social.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  whileHover={{ scale: 1.1, y: -2 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="w-10 h-10 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-gray-400 hover:text-white hover:bg-indigo-500/20 hover:border-indigo-500/30 transition-all"
+                  aria-label={social.label}
+                >
+                  <social.icon className="w-5 h-5" />
+                </motion.a>
+              ))}
+            </div>
+          </div>
+
+          {/* Links Grid */}
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-8">
+            <div>
+              <h3 className="text-white font-bold mb-4 text-sm uppercase tracking-wider">
+                Company
+              </h3>
+              <ul className="space-y-3">
+                {footerLinks.company.map((link, i) => (
+                  <li key={i}>
+                    <Link
+                      to={link.href}
+                      className="text-gray-400 hover:text-white transition-colors text-sm"
+                    >
+                      {link.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <div>
+              <h3 className="text-white font-bold mb-4 text-sm uppercase tracking-wider">
+                Services
+              </h3>
+              <ul className="space-y-3">
+                {footerLinks.services.map((link, i) => (
+                  <li key={i}>
+                    <Link
+                      to={link.href}
+                      className="text-gray-400 hover:text-white transition-colors text-sm"
+                    >
+                      {link.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <div>
+              <h3 className="text-white font-bold mb-4 text-sm uppercase tracking-wider">
+                Resources
+              </h3>
+              <ul className="space-y-3">
+                {footerLinks.resources.map((link, i) => (
+                  <li key={i}>
+                    <Link
+                      to={link.href}
+                      className="text-gray-400 hover:text-white transition-colors text-sm"
+                    >
+                      {link.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        {/* Newsletter Section */}
+        <div className="mb-16">
+          <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-indigo-600/20 via-purple-600/20 to-pink-600/20 border border-white/10 p-8 md:p-12">
+            <div className="relative z-10 max-w-2xl">
+              <h3 className="text-2xl md:text-3xl font-bold text-white mb-3">
+                Stay ahead of the curve
+              </h3>
+              <p className="text-gray-400 mb-6">
+                Get insights, strategies, and market updates delivered to your inbox.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-3">
+                <input
+                  type="email"
+                  placeholder="Enter your email"
+                  className="flex-1 px-5 py-3 rounded-xl bg-black/50 border border-white/10 text-white placeholder-gray-500 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all"
+                />
+                <motion.button
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  className="px-8 py-3 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-bold hover:from-indigo-500 hover:to-purple-500 transition-all shadow-lg shadow-indigo-500/30"
+                >
+                  Subscribe
+                </motion.button>
+              </div>
+            </div>
+
+            {/* Decorative Element */}
+            <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-indigo-500/30 to-purple-500/30 rounded-full blur-3xl" />
+          </div>
+        </div>
+
+        {/* Bottom Bar */}
+        <div className="pt-8 border-t border-white/10">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+            <p className="text-sm text-gray-500">
+              © {new Date().getFullYear()} {SITE.name}. All rights reserved.
+            </p>
+            <div className="flex items-center gap-6 text-sm text-gray-500">
+              <Link to="/privacy" className="hover:text-white transition-colors">
+                Privacy Policy
+              </Link>
+              <Link to="/terms" className="hover:text-white transition-colors">
+                Terms of Service
+              </Link>
+              <Link to="/cookies" className="hover:text-white transition-colors">
+                Cookie Policy
+              </Link>
+            </div>
+          </div>
+        </div>
+      </div>
+    </footer>
   );
 }
 
 /* ================================
-   Layout wrapper
+   Loading Overlay (single, enhanced)
+================================ */
+function LoadingOverlay({ show, booting }: { show: boolean; booting: boolean }) {
+  if (!show) return null; // single overlay guard
+
+  return (
+    <AnimatePresence>
+      {booting && (
+        <motion.div
+          key="boot-overlay"
+          initial={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.6, ease: "easeInOut" }}
+          className="fixed inset-0 z-[100] flex items-center justify-center bg-black"
+        >
+          {/* background beams / glow (but still one overlay) */}
+          <div className="pointer-events-none absolute inset-0 overflow-hidden">
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_#3b27b5_0%,_#050013_45%,_#020007_90%)]" />
+            <motion.div
+              aria-hidden
+              initial={{ opacity: 0.4, rotate: -8 }}
+              animate={{ opacity: [0.3, 0.6, 0.3], rotate: [-6, -12, -6] }}
+              transition={{ duration: 16, repeat: Infinity, ease: "easeInOut" }}
+              className="absolute left-[-10%] right-[-30%] top-[30%] h-64"
+              style={{
+                background:
+                  "linear-gradient(120deg, rgba(56,189,248,0) 0%, rgba(56,189,248,0.26) 35%, rgba(190,242,100,0.16) 60%, rgba(190,242,100,0) 100%)",
+                filter: "blur(18px)",
+              }}
+            />
+            <motion.div
+              aria-hidden
+              animate={{
+                scale: [1, 1.1, 1],
+                x: [0, 40, -20],
+                y: [0, -20, 10],
+                opacity: [0.25, 0.55, 0.25],
+              }}
+              transition={{ duration: 18, repeat: Infinity, ease: "easeInOut" }}
+              className="absolute -top-32 left-1/3 h-[360px] w-[360px] rounded-full"
+              style={{
+                background:
+                  "radial-gradient(circle at center, rgba(129,140,248,0.6) 0%, rgba(56,189,248,0.25) 35%, transparent 70%)",
+                filter: "blur(32px)",
+              }}
+            />
+            <motion.div
+              aria-hidden
+              className="absolute inset-0 opacity-[0.25]"
+              initial={{ backgroundPosition: "0px 0px" }}
+              animate={{ backgroundPosition: ["0px 0px", "36px 18px", "0px 0px"] }}
+              transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
+              style={{
+                backgroundImage:
+                  "linear-gradient(rgba(148,163,184,0.16) 1px, transparent 1px), linear-gradient(90deg, rgba(148,163,184,0.16) 1px, transparent 1px)",
+                backgroundSize: "40px 40px",
+              }}
+            />
+            <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.16]" />
+          </div>
+
+          {/* main loader content */}
+          <div className="relative flex flex-col items-center gap-8 px-6">
+            {/* AV logo with orbit */}
+            <motion.div
+              initial={{ scale: 0.85, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ duration: 0.5 }}
+              className="relative"
+            >
+              {/* orbiting glow ring */}
+              <motion.div
+                aria-hidden
+                animate={{ rotate: 360 }}
+                transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
+                className="absolute inset-[-18px] rounded-3xl border border-white/8 bg-gradient-to-tr from-indigo-500/25 via-purple-500/15 to-sky-400/30 blur-md"
+              />
+              {/* orbiting dots */}
+              <motion.div
+                aria-hidden
+                animate={{ rotate: 360 }}
+                transition={{ duration: 5.5, repeat: Infinity, ease: "linear" }}
+                className="pointer-events-none absolute inset-[-26px] rounded-full"
+              >
+                <div className="absolute -top-1/2 left-1/2 h-2 w-2 -translate-x-1/2 rounded-full bg-sky-300 shadow-[0_0_18px_rgba(56,189,248,0.9)]" />
+                <div className="absolute top-1/2 -left-1 h-2 w-2 -translate-y-1/2 rounded-full bg-lime-300 shadow-[0_0_18px_rgba(190,242,100,0.9)]" />
+                <div className="absolute bottom-0 right-0 h-2 w-2 translate-x-1/2 translate-y-1/2 rounded-full bg-fuchsia-300 shadow-[0_0_18px_rgba(244,114,182,0.9)]" />
+              </motion.div>
+
+              {/* rotating AV block */}
+              <motion.div
+                animate={{ rotate: 360 }}
+                transition={{
+                  duration: 2.4,
+                  repeat: Infinity,
+                  ease: "linear",
+                }}
+                className="w-20 h-20 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center font-black text-white text-3xl shadow-2xl shadow-indigo-500/50"
+              >
+                AV
+              </motion.div>
+            </motion.div>
+
+            {/* text */}
+            <div className="text-center space-y-3">
+              <motion.h2
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.2 }}
+                className="text-2xl md:text-3xl font-bold text-white"
+              >
+                Preparing your experience
+              </motion.h2>
+              <motion.p
+                initial={{ opacity: 0, y: 6 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.35 }}
+                className="text-gray-300 text-sm md:text-base"
+              >
+                Loading ANONVIC workspace and syncing integrations.
+              </motion.p>
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.6 }}
+                className="flex items-center justify-center gap-2 text-xs text-gray-400"
+              >
+                <span className="inline-flex h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                <span>Optimizing for US & Egyptian markets</span>
+              </motion.div>
+            </div>
+
+            {/* progress bar + dots */}
+            <div className="w-64 md:w-80 space-y-3">
+              <div className="h-1.5 rounded-full bg-white/10 overflow-hidden">
+                <motion.div
+                  initial={{ x: "-100%" }}
+                  animate={{ x: "100%" }}
+                  transition={{
+                    duration: 1.6,
+                    repeat: Infinity,
+                    ease: "easeInOut",
+                  }}
+                  className="h-full w-1/2 bg-gradient-to-r from-indigo-400 via-sky-300 to-lime-300"
+                />
+              </div>
+              <div className="flex items-center justify-center gap-1.5">
+                {[0, 1, 2].map((i) => (
+                  <motion.span
+                    key={i}
+                    className="h-1.5 w-1.5 rounded-full bg-white/70"
+                    animate={{ y: [0, -5, 0], opacity: [0.5, 1, 0.5] }}
+                    transition={{
+                      duration: 0.8,
+                      delay: i * 0.12,
+                      repeat: Infinity,
+                      ease: "easeInOut",
+                    }}
+                  />
+                ))}
+              </div>
+            </div>
+          </div>
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
+}
+
+/* ================================
+   Main Layout (for routes)
 ================================ */
 export function SiteLayout() {
   const isMobile = useIsMobile();
-  const reducedMotion = usePrefersReducedMotion();
-
   const [scrollY, setScrollY] = useState(0);
   const [scrollProgress, setScrollProgress] = useState(0);
-
-  const glowRef = useRef<HTMLDivElement | null>(null);
-  const targetRef = useRef({ x: 50, y: 50 });
-  const currentRef = useRef({ x: 50, y: 50 });
 
   useEffect(() => {
     const onScroll = () => {
@@ -785,149 +874,10 @@ export function SiteLayout() {
       const max = doc.scrollHeight - doc.clientHeight;
       setScrollProgress(max > 0 ? window.scrollY / max : 0);
     };
-    const onMove = (e: MouseEvent) => {
-      const x = (e.clientX / window.innerWidth) * 100;
-      const y = (e.clientY / window.innerHeight) * 100;
-      targetRef.current = { x, y };
-    };
     window.addEventListener("scroll", onScroll, { passive: true });
-    window.addEventListener("mousemove", onMove, { passive: true });
     onScroll();
-    return () => {
-      window.removeEventListener("scroll", onScroll);
-      window.removeEventListener("mousemove", onMove);
-    };
+    return () => window.removeEventListener("scroll", onScroll);
   }, []);
-
-  useEffect(() => {
-    if (reducedMotion) return;
-    let raf = 0;
-    const tick = () => {
-      const ease = 0.12;
-      currentRef.current.x +=
-        (targetRef.current.x - currentRef.current.x) * ease;
-      currentRef.current.y +=
-        (targetRef.current.y - currentRef.current.y) * ease;
-      if (glowRef.current) {
-        glowRef.current.style.left = `${currentRef.current.x - 25}%`;
-        glowRef.current.style.top = `${currentRef.current.y - 25}%`;
-      }
-      raf = requestAnimationFrame(tick);
-    };
-    raf = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(raf);
-  }, [reducedMotion]);
-
-  // background particles
-  type Particle = {
-    left: number;
-    top: number;
-    size: number;
-    layer: 1 | 2;
-    hue: Tone;
-  };
-  const P_SYMBOLS = useMemo(
-    () =>
-      [
-        "<",
-        ">",
-        "{}",
-        "[]",
-        "()",
-        ";",
-        ":",
-        "=>",
-        "&&",
-        "||",
-        "!",
-        "?",
-        "#",
-        "$",
-        "*",
-        "+",
-        "=",
-      ] as const,
-    []
-  );
-  const HUES = useMemo(
-    () => ["fuchsia", "indigo", "sky", "cyan", "violet"] as const,
-    []
-  );
-  const particles = useMemo<Particle[]>(
-    () => {
-      const base = isMobile ? 36 : 80;
-      const count = reducedMotion ? Math.ceil(base * 0.4) : base;
-      return Array.from({ length: count }, () => ({
-        left: Math.random() * 100,
-        top: Math.random() * 100,
-        size:
-          (isMobile ? 7 : 9) +
-          Math.floor(Math.random() * (isMobile ? 6 : 10)),
-        layer: Math.random() > 0.45 ? 2 : 1,
-        hue: HUES[Math.floor(Math.random() * HUES.length)] as Tone,
-      }));
-    },
-    [isMobile, reducedMotion, HUES]
-  );
-
-  // Chat state
-  const [chatOpen, setChatOpen] = useState(false);
-  const [typing, setTyping] = useState(false);
-  const [chatInput, setChatInput] = useState("");
-  const [chatMessages, setChatMessages] = useState<ChatMessage[]>([
-    {
-      role: "assistant",
-      text: "Hi! I'm the Anonvic Copilot. Ask about plans, timelines, or what stack we'll use.",
-    },
-  ]);
-  const chatListRef = useRef<HTMLDivElement | null>(null);
-
-  useEffect(() => {
-    if (chatOpen) {
-      chatListRef.current?.scrollTo({
-        top: chatListRef.current.scrollHeight,
-        behavior: "smooth",
-      });
-    }
-  }, [chatMessages, typing, chatOpen]);
-
-  const sendChat = (txt?: string) => {
-    const msg = (txt ?? chatInput).trim();
-    if (!msg) return;
-    setChatInput("");
-    setChatMessages((m) => [...m, { role: "user", text: msg }]);
-    setTyping(true);
-    setTimeout(() => {
-      const t = msg.toLowerCase();
-      let reply =
-        "We can draft a quick roadmap for you. Do you prefer Launch, Scale, or Pro — and when's your target date?";
-      if (t.includes("plan"))
-        reply =
-          "Launch = fast start; Scale = growth ops; Pro = custom build + SLAs.";
-      else if (t.includes("ecommerce") || t.includes("store"))
-        reply =
-          "Yes. Next.js + Stripe/Shopify, optimized PDPs, bundles, subscriptions, and server-side tracking.";
-      else if (t.includes("seo"))
-        reply =
-          "We deliver CWV > 90, schema, internal linking, and an editorial pipeline with briefs.";
-      else if (t.includes("ai"))
-        reply =
-          "RAG, agents, automation. We'll evaluate latency/cost tradeoffs and add guardrails + evals.";
-      setChatMessages((m) => [...m, { role: "assistant", text: reply }]);
-      setTyping(false);
-    }, 650);
-  };
-
-  const resetChat = () => {
-    setChatInput("");
-    setTyping(false);
-    setChatMessages([
-      {
-        role: "assistant",
-        text: "Hi! I'm the Anonvic Copilot. Ask about plans, timelines, or what stack we'll use.",
-      },
-    ]);
-  };
 
   const [copied, setCopied] = useState(false);
   const flashCopy = () => {
@@ -935,210 +885,68 @@ export function SiteLayout() {
     setTimeout(() => setCopied(false), 900);
   };
 
-  const location = useLocation();
+  const [booting, setBooting] = useState(true);
+  const [showBootOverlay, setShowBootOverlay] = useState(true);
+
   useEffect(() => {
-    chatListRef.current?.scrollTo({
-      top: chatListRef.current.scrollHeight,
-    });
-    setChatOpen(false);
-  }, [location.pathname]);
+    const t1 = setTimeout(() => setBooting(false), 1200);
+    const t2 = setTimeout(() => setShowBootOverlay(false), 1500);
+    return () => {
+      clearTimeout(t1);
+      clearTimeout(t2);
+    };
+  }, []);
 
   const contextValue: SiteContextValue = {
     scrollY,
     scrollProgress,
     isMobile,
-    reducedMotion,
     copied,
     flashCopy,
   };
 
   return (
     <SiteContext.Provider value={contextValue}>
-      <div
-        className="min-h-screen text-white overflow-x-hidden"
-        style={{ backgroundColor: COLORS.background }}
-        id="app-root"
-      >
-        {/* Scroll progress */}
-        <div
-          className="fixed top-0 left-0 right-0 z-[65] h-[3px] bg-transparent"
-          aria-hidden
-        >
-          <div
-            className="h-full bg-gradient-to-r from-[#4F46E5] via-[#A855F7] to-[#1B1F3B] transition-[width] duration-150"
-            style={{ width: `${scrollProgress * 100}%` }}
-          />
-        </div>
+      <div className="min-h-screen bg-black text-white overflow-x-hidden">
+        <GlobalBackground />
 
-        {/* Background */}
-        <div
-          className="fixed inset-0 z-0 pointer-events-none select-none"
-          aria-hidden
-        >
-          <div
-            ref={glowRef}
-            className="absolute h-[520px] sm:h-[680px] w-[520px] sm:w-[680px] rounded-full bg-gradient-to-br from-[#4F46E5]/22 via-[#A855F7]/15 to-[#1B1F3B]/18 blur-3xl"
-            style={{
-              left: "25%",
-              top: "25%",
-              transform: `translateY(${scrollY * 0.04}px)`,
-            }}
-          />
-          <div
-            className="absolute inset-0"
-            style={{
-              background:
-                "radial-gradient(circle at top, rgba(57,80,180,0.25), transparent 60%)",
-              backgroundColor: COLORS.background,
-            }}
-          />
-          <div
-            className="absolute inset-0"
-            style={{
-              backgroundImage:
-                "linear-gradient(rgba(255,255,255,0.36) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.36) 1px, transparent 1px)",
-              backgroundSize: isMobile ? "24px 24px" : "32px 32px",
-              opacity: 0.45,
-              mixBlendMode: "soft-light",
-              transform: `translateY(${scrollY * 0.08}px)`,
-            }}
-          />
-          <div
-            className="absolute inset-0"
-            style={{
-              backgroundImage:
-                "linear-gradient(rgba(255,255,255,0.10) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.10) 1px, transparent 1px)",
-              backgroundSize: isMobile ? "12px 12px" : "16px 16px",
-              opacity: 0.22,
-              mixBlendMode: "soft-light",
-              transform: `translateY(${scrollY * 0.05}px)`,
-            }}
-          />
-          <div className="absolute inset-0 overflow-visible">
-            {particles.map((p, i) => (
-              <div
-                key={i}
-                className={`absolute font-mono font-bold ${toneToText(
-                  p.hue
-                )} ${p.layer === 1 ? "opacity-40" : "opacity-30"}`}
-                style={{
-                  left: `${p.left}%`,
-                  top: `${p.top}%`,
-                  fontSize: `${p.size}px`,
-                  transform: `translateY(${
-                    scrollY * (p.layer === 1 ? 0.018 : 0.03)
-                  }px)`,
-                }}
-              >
-                {P_SYMBOLS[i % P_SYMBOLS.length]}
-              </div>
-            ))}
-          </div>
-        </div>
+        {/* Scroll Progress Bar */}
+        <motion.div
+          className="fixed top-0 left-0 right-0 z-[60] h-1 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 origin-left"
+          style={{ scaleX: scrollProgress }}
+        />
 
         <Navbar scrolled={scrollY > 40} />
 
+        {/* Page content (your Hero + others keep their own animations) */}
         <main id="main">
           <Outlet />
         </main>
 
-        <footer className="relative py-16 px-4 sm:px-6 md:px-10 lg:px-14 border-t border-white/10">
-          <div className="mx-auto max-w-[95rem]">
-            <div className="flex flex-col items-center justify-between gap-8 sm:flex-row">
-              <div className="flex items-center gap-3 min-w-0">
-                <img
-                  src={SITE.logo.src}
-                  alt={SITE.logo.alt ?? SITE.name}
-                  className="h-6 w-auto select-none"
-                  onError={(e) =>
-                    ((e.currentTarget.style as any).display = "none")
-                  }
-                />
-                <span className="sr-only">{SITE.name}</span>
-              </div>
+        <Footer />
 
-              <div className="flex items-center gap-6">
-                <a
-                  href={SITE.socials.github}
-                  target="_blank"
-                  rel="noreferrer noopener"
-                  className="text-[#A5ADCF] hover:text-white transition-colors duration-300"
-                  aria-label="GitHub"
-                >
-                  <Github className="h-6 w-6" />
-                </a>
-                <a
-                  href={SITE.socials.instagram}
-                  target="_blank"
-                  rel="noreferrer noopener"
-                  className="text-[#A5ADCF] hover:text-white transition-colors duration-300"
-                  aria-label="Instagram"
-                >
-                  <Instagram className="h-6 w-6" />
-                </a>
-                <a
-                  href={SITE.socials.facebook}
-                  target="_blank"
-                  rel="noreferrer noopener"
-                  className="text-[#A5ADCF] hover:text-white transition-colors duration-300"
-                  aria-label="Facebook"
-                >
-                  <Facebook className="h-6 w-6" />
-                </a>
-                <a
-                  href={SITE.socials.email}
-                  className="text-[#A5ADCF] hover:text-white transition-colors duration-300"
-                  aria-label="Email"
-                >
-                  <Mail className="h-6 w-6" />
-                </a>
-              </div>
-            </div>
+        {/* Single global loading page */}
+        <LoadingOverlay show={showBootOverlay} booting={booting} />
 
-            <div className="mt-8 pt-8 border-t border-white/10 text-center text-sm text-[#A5ADCF]">
-              © {new Date().getFullYear()} {SITE.name}. Built for growth.
-            </div>
-          </div>
-        </footer>
-
-        {/* Chat toggle (compact FAB) */}
-        <button
-          onClick={() => setChatOpen((v) => !v)}
-          className="fixed z-[75] bottom-[max(1rem,env(safe-area-inset-bottom))] right-[max(1rem,env(safe-area-inset-right))] h-14 w-14 rounded-2xl border border-white/15 shadow-[0_22px_45px_-24px_rgba(79,70,229,0.75)] hover:-translate-y-1 transition-transform focus:outline-none focus-visible:ring-2 focus-visible:ring-[#A855F7]/60"
-          style={{
-            background:
-              "radial-gradient(120px 120px at 30% 20%, rgba(168,85,247,0.45), rgba(79,70,229,0.55) 40%, rgba(255,255,255,0.06) 60%, rgba(8,12,32,0.6) 70%)",
-          }}
-          aria-label={chatOpen ? "Close chat" : "Open chat"}
-          aria-expanded={chatOpen}
-        >
-          <span className="grid h-full w-full place-items-center">
-            {chatOpen ? (
-              <X className="h-5 w-5 text-white" />
-            ) : (
-              <Sparkles className="h-5 w-5 text-white" />
-            )}
-          </span>
-        </button>
-
-        {chatOpen && (
-          <ChatPanel
-            chatListRef={chatListRef}
-            typing={typing}
-            messages={chatMessages}
-            value={chatInput}
-            setValue={setChatInput}
-            onSend={sendChat}
-            onReset={resetChat}
-          />
-        )}
-
-        <style>{`
-          @keyframes edgeFloat {
-            0%, 100% { transform: translate3d(-50%, -50%, 0) translateY(0); }
-            50% { transform: translate3d(-50%, -50%, 0) translateY(-10px); }
-          }
-        `}</style>
+        {/* Scroll to Top Button */}
+        <AnimatePresence>
+          {scrollY > 400 && (
+            <motion.button
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.8 }}
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
+              onClick={() =>
+                window.scrollTo({ top: 0, behavior: "smooth" })
+              }
+              className="fixed bottom-8 right-8 z-50 w-12 h-12 rounded-full bg-gradient-to-r from-indigo-600 to-purple-600 text-white flex items-center justify-center shadow-2xl shadow-indigo-500/50 hover:shadow-indigo-500/70 transition-all"
+              aria-label="Scroll to top"
+            >
+              <ChevronDown className="w-6 h-6 rotate-180" />
+            </motion.button>
+          )}
+        </AnimatePresence>
       </div>
     </SiteContext.Provider>
   );

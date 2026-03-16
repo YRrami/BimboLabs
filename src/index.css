@@ -1,5 +1,5 @@
 
-@import url("https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&display=swap");
+
 @import "tailwindcss";
 /* Brand palette: enable `bg-magenta-500` etc. */
 @theme {
@@ -44,5 +44,7 @@
 /* Apply JetBrains Mono as the default font */
 body {
   @apply font-sans;
-  font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
+  font-family: "nunito", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
 }
