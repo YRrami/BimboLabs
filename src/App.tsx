@@ -29,8 +29,8 @@ import chartMock from "./assets/companies/asu-logo.png";
 
 import svcEngineering from "./assets/companies/2.png";
 import svcBrand from "./assets/companies/1.png";
-import svcMarketing from "./assets/companies/cover.png";
-import hubMock from "./assets/companies/cover.png";
+import svcMarketing from "./assets/companies/5.jpg";
+import hubMock from "./assets/companies/66.jpg";
 
 function cn(...classes: Array<string | false | null | undefined>) {
   return classes.filter(Boolean).join(" ");
@@ -59,7 +59,7 @@ function BackgroundEffects() {
         aria-hidden
         initial={{ opacity: 0.4, rotate: -8 }}
         animate={{ opacity: [0.3, 0.6, 0.3], rotate: [-6, -10, -6] }}
-        transition={{ duration: 18, repeat: Infinity, ease: "easeInOut" }}
+        transition={{ duration: 18, repeat: Infinity }}
         className="absolute left-[-10%] right-[-30%] top-[30%] h-64"
         style={{
           background:
@@ -71,7 +71,7 @@ function BackgroundEffects() {
         aria-hidden
         initial={{ opacity: 0.25, rotate: 12 }}
         animate={{ opacity: [0.2, 0.5, 0.2], rotate: [10, 16, 10] }}
-        transition={{ duration: 22, repeat: Infinity, ease: "easeInOut" }}
+        transition={{ duration: 22, repeat: Infinity }}
         className="absolute left-[-20%] right-[-5%] top-[55%] h-56"
         style={{
           background:
@@ -83,7 +83,7 @@ function BackgroundEffects() {
       <motion.div
         aria-hidden
         animate={{ scale: [1, 1.18, 1], x: [0, 60, 0], y: [0, -40, 0] }}
-        transition={{ duration: 20, repeat: Infinity, ease: "easeInOut" }}
+        transition={{ duration: 20, repeat: Infinity }}
         className="absolute -top-40 left-[18%] h-[420px] w-[420px] rounded-full"
         style={{
           background:
@@ -94,7 +94,7 @@ function BackgroundEffects() {
       <motion.div
         aria-hidden
         animate={{ scale: [1, 1.15, 1], x: [0, -70, 20], y: [0, 50, 0] }}
-        transition={{ duration: 24, repeat: Infinity, ease: "easeInOut" }}
+        transition={{ duration: 24, repeat: Infinity }}
         className="absolute bottom-[-80px] right-[10%] h-[380px] w-[380px] rounded-full"
         style={{
           background:

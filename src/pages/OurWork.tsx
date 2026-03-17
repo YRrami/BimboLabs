@@ -90,7 +90,7 @@ function SoftGridNoise() {
         className="pointer-events-none absolute inset-0 z-10 opacity-[0.22]"
         initial={{ backgroundPosition: "0px 0px" }}
         animate={{ backgroundPosition: ["0px 0px", "36px 18px", "0px 0px"] }}
-        transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
+        transition={{ duration: 12, repeat: Infinity }}
         style={{
           backgroundImage:
             "linear-gradient(rgba(148,163,184,0.14) 1px, transparent 1px), linear-gradient(90deg, rgba(148,163,184,0.14) 1px, transparent 1px)",
@@ -123,7 +123,7 @@ function UseCaseBackground() {
         aria-hidden
         initial={{ opacity: 0.16, rotate: -10 }}
         animate={{ opacity: [0.12, 0.26, 0.12], rotate: [-8, -12, -8] }}
-        transition={{ duration: 18, repeat: Infinity, ease: "easeInOut" }}
+        transition={{ duration: 18, repeat: Infinity }}
         className="absolute left-[-12%] right-[-28%] top-[36%] h-64"
         style={{
           background:
@@ -135,7 +135,7 @@ function UseCaseBackground() {
         aria-hidden
         initial={{ opacity: 0.14, rotate: 12 }}
         animate={{ opacity: [0.10, 0.22, 0.10], rotate: [10, 16, 10] }}
-        transition={{ duration: 22, repeat: Infinity, ease: "easeInOut" }}
+        transition={{ duration: 22, repeat: Infinity }}
         className="absolute left-[-20%] right-[-5%] top-[58%] h-56"
         style={{
           background:
@@ -380,7 +380,7 @@ function Toast({ show, text }: { show: boolean; text: string }) {
           initial={{ opacity: 0, y: 12, scale: 0.98 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
           exit={{ opacity: 0, y: 10, scale: 0.98 }}
-          transition={{ duration: 0.22, ease: "easeOut" }}
+          transition={{ duration: 0.22 }}
           className="fixed bottom-6 left-1/2 z-[999] -translate-x-1/2"
           role="status"
           aria-live="polite"
@@ -875,7 +875,7 @@ export default function WorkPage() {
               initial={{ height: 0, opacity: 0 }}
               animate={{ height: "auto", opacity: 1 }}
               exit={{ height: 0, opacity: 0 }}
-              transition={{ duration: 0.22, ease: "easeOut" }}
+              transition={{ duration: 0.22 }}
               className="overflow-hidden"
             >
               <div className="px-6 pb-6">
@@ -978,7 +978,7 @@ export default function WorkPage() {
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: 10 }}
-                transition={{ duration: 0.22, ease: "easeOut" }}
+                transition={{ duration: 0.22 }}
               >
                 <div className="mb-8 text-center">
                   <LightKicker>DEMOS</LightKicker>
@@ -999,7 +999,7 @@ export default function WorkPage() {
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: 10 }}
-                transition={{ duration: 0.22, ease: "easeOut" }}
+                transition={{ duration: 0.22 }}
               >
                 <div className="mb-10 text-center">
                   <LightKicker>CASE STUDIES</LightKicker>
@@ -1021,7 +1021,7 @@ export default function WorkPage() {
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: 10 }}
-                transition={{ duration: 0.22, ease: "easeOut" }}
+                transition={{ duration: 0.22 }}
               >
                 <div className="mb-10 text-center">
                   <LightKicker>VISUALS</LightKicker>

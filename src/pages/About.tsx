@@ -174,7 +174,7 @@ function UseCaseBackground() {
         aria-hidden
         initial={{ opacity: 0.16, rotate: -10 }}
         animate={{ opacity: [0.12, 0.26, 0.12], rotate: [-8, -12, -8] }}
-        transition={{ duration: 18, repeat: Infinity, ease: "easeInOut" }}
+        transition={{ duration: 18, repeat: Infinity }}
         className="absolute left-[-12%] right-[-28%] top-[36%] h-64"
         style={{
           background:
@@ -186,7 +186,7 @@ function UseCaseBackground() {
         aria-hidden
         initial={{ opacity: 0.14, rotate: 12 }}
         animate={{ opacity: [0.10, 0.22, 0.10], rotate: [10, 16, 10] }}
-        transition={{ duration: 22, repeat: Infinity, ease: "easeInOut" }}
+        transition={{ duration: 22, repeat: Infinity }}
         className="absolute left-[-20%] right-[-5%] top-[58%] h-56"
         style={{
           background:
@@ -206,7 +206,7 @@ function SoftGridNoise() {
         className="pointer-events-none absolute inset-0 z-10 opacity-[0.22]"
         initial={{ backgroundPosition: "0px 0px" }}
         animate={{ backgroundPosition: ["0px 0px", "36px 18px", "0px 0px"] }}
-        transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
+        transition={{ duration: 12, repeat: Infinity }}
         style={{
           backgroundImage:
             "linear-gradient(rgba(148,163,184,0.14) 1px, transparent 1px), linear-gradient(90deg, rgba(148,163,184,0.14) 1px, transparent 1px)",
@@ -675,7 +675,7 @@ function TestimonialsCarousel({
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
-            transition={{ duration: 0.25, ease: "easeOut" }}
+            transition={{ duration: 0.25 }}
             className="rounded-[40px] border border-slate-200 bg-gradient-to-b from-white to-slate-50 p-8 shadow-[0_30px_90px_rgba(15,23,42,0.10)] sm:p-10"
           >
             <div className="flex items-start justify-between gap-4">
@@ -756,7 +756,7 @@ function FAQ({ items }: { items: { q: string; a: string }[] }) {
                   initial={{ height: 0, opacity: 0 }}
                   animate={{ height: "auto", opacity: 1 }}
                   exit={{ height: 0, opacity: 0 }}
-                  transition={{ duration: 0.22, ease: "easeOut" }}
+                  transition={{ duration: 0.22 }}
                   className="overflow-hidden"
                 >
                   <p className="mt-3 text-sm leading-relaxed text-slate-600">
@@ -944,7 +944,7 @@ export default function AboutPage() {
                 initial={{ opacity: 0, y: 14 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, amount: 0.25 }}
-                transition={{ duration: 0.55, ease: "easeOut" }}
+                transition={{ duration: 0.55 }}
                 whileHover={{ y: -3 }}
                 className="rounded-[34px] border border-slate-200 bg-white p-7 shadow-[0_20px_70px_rgba(15,23,42,0.08)] transition hover:shadow-[0_35px_110px_rgba(15,23,42,0.12)]"
               >
@@ -1086,7 +1086,7 @@ export default function AboutPage() {
                       initial={{ opacity: 0, y: 14 }}
                       whileInView={{ opacity: 1, y: 0 }}
                       viewport={{ once: true, amount: 0.25 }}
-                      transition={{ duration: 0.55, ease: "easeOut", delay: idx * 0.05 }}
+                      transition={{ duration: 0.55, delay: idx * 0.05 }}
                       className="relative pl-12"
                     >
                       <div
@@ -1143,7 +1143,7 @@ export default function AboutPage() {
                 initial={{ opacity: 0, y: 14 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, amount: 0.25 }}
-                transition={{ duration: 0.55, ease: "easeOut", delay: idx * 0.05 }}
+                transition={{ duration: 0.55, delay: idx * 0.05 }}
                 whileHover={{ y: -3 }}
                 className="rounded-[34px] border border-slate-200 bg-gradient-to-b from-white to-slate-50 p-7 shadow-[0_20px_70px_rgba(15,23,42,0.08)] transition hover:shadow-[0_35px_110px_rgba(15,23,42,0.12)]"
               >

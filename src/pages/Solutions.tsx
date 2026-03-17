@@ -65,7 +65,7 @@ function SoftGridNoise() {
         className="pointer-events-none absolute inset-0 z-10 opacity-[0.22]"
         initial={{ backgroundPosition: "0px 0px" }}
         animate={{ backgroundPosition: ["0px 0px", "36px 18px", "0px 0px"] }}
-        transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
+        transition={{ duration: 12, repeat: Infinity }}
         style={{
           backgroundImage:
             "linear-gradient(rgba(148,163,184,0.14) 1px, transparent 1px), linear-gradient(90deg, rgba(148,163,184,0.14) 1px, transparent 1px)",
@@ -106,7 +106,7 @@ function UseCaseBackground() {
         aria-hidden
         initial={{ opacity: 0.16, rotate: -10 }}
         animate={{ opacity: [0.12, 0.26, 0.12], rotate: [-8, -12, -8] }}
-        transition={{ duration: 18, repeat: Infinity, ease: "easeInOut" }}
+        transition={{ duration: 18, repeat: Infinity }}
         className="absolute left-[-12%] right-[-28%] top-[36%] h-64"
         style={{
           background:
@@ -118,7 +118,7 @@ function UseCaseBackground() {
         aria-hidden
         initial={{ opacity: 0.14, rotate: 12 }}
         animate={{ opacity: [0.10, 0.22, 0.10], rotate: [10, 16, 10] }}
-        transition={{ duration: 22, repeat: Infinity, ease: "easeInOut" }}
+        transition={{ duration: 22, repeat: Infinity }}
         className="absolute left-[-20%] right-[-5%] top-[58%] h-56"
         style={{
           background:
@@ -568,7 +568,7 @@ export default function SolutionsPage() {
             <motion.div
               initial={{ opacity: 0, y: 14 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, ease: "easeOut", delay: 0.08 }}
+              transition={{ duration: 0.6, delay: 0.08 }}
               className="lg:col-span-6"
             >
               <div className="relative">
@@ -640,7 +640,7 @@ export default function SolutionsPage() {
                             aria-hidden
                             initial={{ x: "-60%" }}
                             animate={{ x: ["-60%", "0%", "-60%"] }}
-                            transition={{ duration: 6 + i * 0.9, repeat: Infinity, ease: "easeInOut" }}
+                            transition={{ duration: 6 + i * 0.9, repeat: Infinity }}
                             className="h-full w-[55%] rounded-full"
                             style={{
                               background:
@@ -672,7 +672,7 @@ export default function SolutionsPage() {
                 <motion.div
                   aria-hidden
                   animate={{ y: [0, -8, 0] }}
-                  transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
+                  transition={{ duration: 6, repeat: Infinity }}
                   className="hidden sm:block absolute -left-6 top-10 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 backdrop-blur"
                 >
                   <div className="text-[11px] uppercase tracking-[0.22em] text-white/60">Business</div>
@@ -681,7 +681,7 @@ export default function SolutionsPage() {
                 <motion.div
                   aria-hidden
                   animate={{ y: [0, 8, 0] }}
-                  transition={{ duration: 7, repeat: Infinity, ease: "easeInOut" }}
+                  transition={{ duration: 7, repeat: Infinity }}
                   className="hidden sm:block absolute -right-5 bottom-10 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 backdrop-blur"
                 >
                   <div className="text-[11px] uppercase tracking-[0.22em] text-white/60">Marketing</div>
@@ -822,7 +822,7 @@ export default function SolutionsPage() {
                 initial={{ opacity: 0, y: 14 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, amount: 0.25 }}
-                transition={{ duration: 0.55, ease: "easeOut" }}
+                transition={{ duration: 0.55 }}
                 whileHover={{ y: -3 }}
                 className={cn(
                   "relative flex h-full flex-col overflow-hidden rounded-[34px] border bg-white p-7",
