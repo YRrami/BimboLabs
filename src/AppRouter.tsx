@@ -25,7 +25,7 @@ function Page({ children }: { children: ReactNode }) {
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -8 }}
-      transition={{ duration: 0.28, ease: "easeOut" }}
+      transition={{ duration: 0.28 }}
       className="min-h-dvh"
     >
       {children}
@@ -73,7 +73,7 @@ function Fallback({ message = "Loading…" }: { message?: string }) {
         className="pointer-events-none absolute inset-0 -z-10 opacity-20 [mask-image:radial-gradient(circle_at_center,black,transparent_70%)]"
         initial={{ backgroundPosition: "0px 0px" }}
         animate={{ backgroundPosition: ["0px 0px", "40px 20px", "0px 0px"] }}
-        transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+        transition={{ duration: 8, repeat: Infinity }}
         style={{
           backgroundImage:
             "linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px)",
@@ -87,7 +87,7 @@ function Fallback({ message = "Loading…" }: { message?: string }) {
           className="w-full max-w-md rounded-2xl border border-white/10 bg-white/5 p-6 shadow-2xl backdrop-blur-xl"
           initial={{ y: 12, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
-          transition={{ duration: 0.35, ease: "easeOut" }}
+          transition={{ duration: 0.35 }}
           role="status"
           aria-live="polite"
         >
@@ -112,7 +112,6 @@ function Fallback({ message = "Loading…" }: { message?: string }) {
               transition={{
                 duration: 1.6,
                 repeat: Infinity,
-                ease: "easeInOut",
               }}
             />
           </div>
@@ -149,7 +148,7 @@ function Spinner() {
         strokeDashoffset="0"
         initial={{ pathLength: 0.2, rotate: 0 }}
         animate={{ pathLength: [0.2, 1, 0.2], rotate: 360 }}
-        transition={{ duration: 1.2, repeat: Infinity, ease: "easeInOut" }}
+        transition={{ duration: 1.2, repeat: Infinity }}
         style={{ originX: 0.5, originY: 0.5 }}
       />
     </motion.svg>

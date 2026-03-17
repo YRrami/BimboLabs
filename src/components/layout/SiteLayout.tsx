@@ -116,7 +116,7 @@ function GlobalBackground() {
         aria-hidden
         initial={{ opacity: 0.4, rotate: -8 }}
         animate={{ opacity: [0.3, 0.6, 0.3], rotate: [-6, -10, -6] }}
-        transition={{ duration: 18, repeat: Infinity, ease: "easeInOut" }}
+        transition={{ duration: 18, repeat: Infinity }}
         className="absolute left-[-10%] right-[-30%] top-[26%] h-64"
         style={{
           background:
@@ -128,7 +128,7 @@ function GlobalBackground() {
         aria-hidden
         initial={{ opacity: 0.25, rotate: 12 }}
         animate={{ opacity: [0.2, 0.5, 0.2], rotate: [10, 16, 10] }}
-        transition={{ duration: 22, repeat: Infinity, ease: "easeInOut" }}
+        transition={{ duration: 22, repeat: Infinity }}
         className="absolute left-[-20%] right-[-5%] top-[52%] h-56"
         style={{
           background:
@@ -145,7 +145,7 @@ function GlobalBackground() {
           x: [0, 60, 0],
           y: [0, -40, 0],
         }}
-        transition={{ duration: 20, repeat: Infinity, ease: "easeInOut" }}
+        transition={{ duration: 20, repeat: Infinity }}
         className="absolute -top-40 left-1/5 h-[420px] w-[420px] rounded-full"
         style={{
           background:
@@ -160,7 +160,7 @@ function GlobalBackground() {
           x: [0, -70, 20],
           y: [0, 50, 0],
         }}
-        transition={{ duration: 24, repeat: Infinity, ease: "easeInOut" }}
+        transition={{ duration: 24, repeat: Infinity }}
         className="absolute bottom-[-80px] right-[10%] h-[380px] w-[380px] rounded-full"
         style={{
           background:
@@ -175,7 +175,7 @@ function GlobalBackground() {
         className="absolute inset-0 opacity-[0.25]"
         initial={{ backgroundPosition: "0px 0px" }}
         animate={{ backgroundPosition: ["0px 0px", "36px 18px", "0px 0px"] }}
-        transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
+        transition={{ duration: 12, repeat: Infinity }}
         style={{
           backgroundImage:
             "linear-gradient(rgba(148,163,184,0.16) 1px, transparent 1px), linear-gradient(90deg, rgba(148,163,184,0.16) 1px, transparent 1px)",
@@ -364,7 +364,7 @@ export function Navbar({ scrolled = false }: { scrolled?: boolean }) {
                       aria-hidden
                       initial={{ x: "-120%" }}
                       whileHover={{ x: "120%" }}
-                      transition={{ duration: 0.8, ease: "easeOut" }}
+                      transition={{ duration: 0.8 }}
                       className="pointer-events-none absolute inset-y-0 w-2/3 bg-white/20 blur-xl"
                     />
                   </Link>
@@ -702,7 +702,7 @@ function LoadingOverlay({ show, booting }: { show: boolean; booting: boolean }) 
           key="boot-overlay"
           initial={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          transition={{ duration: 0.6, ease: "easeInOut" }}
+          transition={{ duration: 0.6 }}
           className="fixed inset-0 z-[100] flex items-center justify-center bg-black"
         >
           {/* background beams / glow (but still one overlay) */}
@@ -712,7 +712,7 @@ function LoadingOverlay({ show, booting }: { show: boolean; booting: boolean }) 
               aria-hidden
               initial={{ opacity: 0.4, rotate: -8 }}
               animate={{ opacity: [0.3, 0.6, 0.3], rotate: [-6, -12, -6] }}
-              transition={{ duration: 16, repeat: Infinity, ease: "easeInOut" }}
+              transition={{ duration: 16, repeat: Infinity }}
               className="absolute left-[-10%] right-[-30%] top-[30%] h-64"
               style={{
                 background:
@@ -728,7 +728,7 @@ function LoadingOverlay({ show, booting }: { show: boolean; booting: boolean }) 
                 y: [0, -20, 10],
                 opacity: [0.25, 0.55, 0.25],
               }}
-              transition={{ duration: 18, repeat: Infinity, ease: "easeInOut" }}
+              transition={{ duration: 18, repeat: Infinity }}
               className="absolute -top-32 left-1/3 h-[360px] w-[360px] rounded-full"
               style={{
                 background:
@@ -741,7 +741,7 @@ function LoadingOverlay({ show, booting }: { show: boolean; booting: boolean }) 
               className="absolute inset-0 opacity-[0.25]"
               initial={{ backgroundPosition: "0px 0px" }}
               animate={{ backgroundPosition: ["0px 0px", "36px 18px", "0px 0px"] }}
-              transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
+              transition={{ duration: 12, repeat: Infinity }}
               style={{
                 backgroundImage:
                   "linear-gradient(rgba(148,163,184,0.16) 1px, transparent 1px), linear-gradient(90deg, rgba(148,163,184,0.16) 1px, transparent 1px)",
@@ -831,7 +831,6 @@ function LoadingOverlay({ show, booting }: { show: boolean; booting: boolean }) 
                   transition={{
                     duration: 1.6,
                     repeat: Infinity,
-                    ease: "easeInOut",
                   }}
                   className="h-full w-1/2 bg-gradient-to-r from-indigo-400 via-sky-300 to-lime-300"
                 />
@@ -846,7 +845,6 @@ function LoadingOverlay({ show, booting }: { show: boolean; booting: boolean }) 
                       duration: 0.8,
                       delay: i * 0.12,
                       repeat: Infinity,
-                      ease: "easeInOut",
                     }}
                   />
                 ))}
