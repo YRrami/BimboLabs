@@ -159,7 +159,7 @@ function LogoCarouselPillPro() {
           initial={{ opacity: 0, y: 10 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, amount: 0.35 }}
-          transition={{ duration: 0.5, ease: "easeOut" }}
+          transition={{ duration: 0.5 }}
           className="rounded-[44px] bg-[#F3F0FF] px-6 py-10 shadow-[0_30px_90px_rgba(15,23,42,0.10)] sm:px-10"
         >
           <div className="relative overflow-hidden rounded-[36px]">
@@ -225,7 +225,7 @@ function FeatureRow({ feature, reversed }: { feature: Feature; reversed?: boolea
         initial={{ opacity: 0, y: 14 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, amount: 0.25 }}
-        transition={{ duration: 0.55, ease: "easeOut" }}
+        transition={{ duration: 0.55 }}
         className="lg:col-span-5"
       >
         <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-semibold tracking-[0.14em] text-slate-700">
@@ -261,7 +261,7 @@ function FeatureRow({ feature, reversed }: { feature: Feature; reversed?: boolea
         initial={{ opacity: 0, y: 14 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, amount: 0.25 }}
-        transition={{ duration: 0.55, ease: "easeOut", delay: 0.05 }}
+        transition={{ duration: 0.55, delay: 0.05 }}
         className="lg:col-span-7"
       >
         <div className="group relative overflow-hidden rounded-[34px] border border-slate-200 bg-gradient-to-b from-white to-slate-50 shadow-[0_35px_110px_rgba(15,23,42,0.14)] transition hover:-translate-y-[2px] hover:shadow-[0_55px_140px_rgba(15,23,42,0.18)]">
@@ -445,7 +445,7 @@ function MinimalPackages() {
                 initial={{ opacity: 0, y: 14 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, amount: 0.25 }}
-                transition={{ duration: 0.55, ease: "easeOut" }}
+                transition={{ duration: 0.55 }}
                 className={cn(
                   "relative flex h-full flex-col overflow-hidden rounded-[34px] border bg-white p-7",
                   "shadow-[0_20px_70px_rgba(15,23,42,0.08)] transition hover:-translate-y-[2px] hover:shadow-[0_35px_110px_rgba(15,23,42,0.12)]",
@@ -587,7 +587,7 @@ function DarkFeatureHub() {
                 initial={{ opacity: 0, y: 12 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, amount: 0.25 }}
-                transition={{ duration: 0.5, ease: "easeOut" }}
+                transition={{ duration: 0.5 }}
                 className="rounded-[28px] border border-white/10 bg-white/5 p-7 shadow-[0_30px_90px_rgba(0,0,0,0.35)] backdrop-blur-2xl"
               >
                 <div className="inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-white/10 text-white">{c.icon}</div>
@@ -634,7 +634,7 @@ export default function Hero() {
           className="pointer-events-none absolute inset-0 z-10 opacity-[0.25]"
           initial={{ backgroundPosition: "0px 0px" }}
           animate={{ backgroundPosition: ["0px 0px", "36px 18px", "0px 0px"] }}
-          transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
+          transition={{ duration: 12, repeat: Infinity }}
           style={{
             backgroundImage:
               "linear-gradient(rgba(148,163,184,0.16) 1px, transparent 1px), linear-gradient(90deg, rgba(148,163,184,0.16) 1px, transparent 1px)",
@@ -662,7 +662,7 @@ export default function Hero() {
                 className="absolute -bottom-3 left-1/3 right-1/3 h-[3px] rounded-full bg-gradient-to-r from-indigo-400 via-sky-300 to-lime-300 blur-[2px]"
                 initial={{ scaleX: 0 }}
                 animate={{ scaleX: 1 }}
-                transition={{ delay: 0.4, duration: 0.6, ease: "easeOut" }}
+                transition={{ delay: 0.4, duration: 0.6 }}
               />
             </span>
           </motion.h1>
