@@ -28,6 +28,43 @@
     to   { opacity: 1; transform: translateY(0); }
   }
   .animate-fade-in { animation: fade-in 0.9s ease-out both; }
+
+  /* GPU-accelerated beam animations */
+  @keyframes beam-pulse-1 {
+    0%, 100% { opacity: 0.3; transform: rotate(-8deg); }
+    50% { opacity: 0.6; transform: rotate(-10deg); }
+  }
+  .animate-beam-1 { animation: beam-pulse-1 18s linear infinite; }
+
+  @keyframes beam-pulse-2 {
+    0%, 100% { opacity: 0.2; transform: rotate(12deg); }
+    50% { opacity: 0.5; transform: rotate(16deg); }
+  }
+  .animate-beam-2 { animation: beam-pulse-2 22s linear infinite; }
+
+  @keyframes grid-shift {
+    0%, 100% { background-position: 0px 0px; }
+    50% { background-position: 36px 18px; }
+  }
+  .animate-grid { animation: grid-shift 12s linear infinite; }
+
+  @keyframes float-orb-1 {
+    0%, 100% { transform: scale(1) translate(0, 0); opacity: 0.3; }
+    50% { transform: scale(1.18) translate(60px, -40px); opacity: 0.6; }
+  }
+  .animate-orb-1 { animation: float-orb-1 20s ease-in-out infinite; }
+
+  @keyframes float-orb-2 {
+    0%, 100% { transform: scale(1) translate(0, 0); opacity: 0.25; }
+    50% { transform: scale(1.15) translate(-70px, 50px); opacity: 0.55; }
+  }
+  .animate-orb-2 { animation: float-orb-2 24s ease-in-out infinite; }
+
+  @keyframes progress-bar {
+    0% { x: -120%; }
+    100% { x: 120%; }
+  }
+  .animate-progress { animation: progress-bar 1.6s ease-in-out infinite; }
 }
 
 /* Respect reduced motion */
@@ -37,7 +74,13 @@
   .animate-float-delayed,
   .animate-fade-in,
   .animate-bounce,
-  .animate-pulse {
+  .animate-pulse,
+  .animate-beam-1,
+  .animate-beam-2,
+  .animate-grid,
+  .animate-orb-1,
+  .animate-orb-2,
+  .animate-progress {
     animation: none !important;
   }
 }

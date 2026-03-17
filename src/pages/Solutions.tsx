@@ -71,12 +71,9 @@ function useIsMobile() {
 function SoftGridNoise() {
   return (
     <>
-      <motion.div
+      <div
         aria-hidden
-        className="pointer-events-none absolute inset-0 z-10 opacity-[0.22]"
-        initial={{ backgroundPosition: "0px 0px" }}
-        animate={{ backgroundPosition: ["0px 0px", "36px 18px", "0px 0px"] }}
-        transition={{ duration: 12, repeat: Infinity }}
+        className="animate-grid pointer-events-none absolute inset-0 z-10 opacity-[0.22]"
         style={{
           backgroundImage:
             "linear-gradient(rgba(148,163,184,0.14) 1px, transparent 1px), linear-gradient(90deg, rgba(148,163,184,0.14) 1px, transparent 1px)",
@@ -117,24 +114,18 @@ function UseCaseBackground() {
 
       {!isMobile && (
         <>
-          <motion.div
+          <div
             aria-hidden
-            initial={{ opacity: 0.16, rotate: -10 }}
-            animate={{ opacity: [0.12, 0.26, 0.12], rotate: [-8, -12, -8] }}
-            transition={{ duration: 18, repeat: Infinity }}
-            className="absolute left-[-12%] right-[-28%] top-[36%] h-64"
+            className="animate-beam-1 absolute left-[-12%] right-[-28%] top-[36%] h-64"
             style={{
               background:
                 "linear-gradient(120deg, rgba(56,189,248,0) 0%, rgba(56,189,248,0.22) 35%, rgba(168,85,247,0.16) 60%, rgba(190,242,100,0) 100%)",
               filter: "blur(18px)",
             }}
           />
-          <motion.div
+          <div
             aria-hidden
-            initial={{ opacity: 0.14, rotate: 12 }}
-            animate={{ opacity: [0.10, 0.22, 0.10], rotate: [10, 16, 10] }}
-            transition={{ duration: 22, repeat: Infinity }}
-            className="absolute left-[-20%] right-[-5%] top-[58%] h-56"
+            className="animate-beam-2 absolute left-[-20%] right-[-5%] top-[58%] h-56"
             style={{
               background:
                 "linear-gradient(120deg, rgba(129,140,248,0) 0%, rgba(129,140,248,0.20) 40%, rgba(56,189,248,0.18) 70%, rgba(56,189,248,0) 100%)",

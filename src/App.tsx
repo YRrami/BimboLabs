@@ -66,24 +66,18 @@ function BackgroundEffects() {
 
       {!isMobile && (
         <>
-          <motion.div
+          <div
             aria-hidden
-            initial={{ opacity: 0.4, rotate: -8 }}
-            animate={{ opacity: [0.3, 0.6, 0.3], rotate: [-6, -10, -6] }}
-            transition={{ duration: 18, repeat: Infinity }}
-            className="absolute left-[-10%] right-[-30%] top-[30%] h-64"
+            className="animate-beam-1 absolute left-[-10%] right-[-30%] top-[30%] h-64"
             style={{
               background:
                 "linear-gradient(120deg, rgba(56,189,248,0) 0%, rgba(56,189,248,0.26) 35%, rgba(190,242,100,0.16) 60%, rgba(190,242,100,0) 100%)",
               filter: "blur(14px)",
             }}
           />
-          <motion.div
+          <div
             aria-hidden
-            initial={{ opacity: 0.25, rotate: 12 }}
-            animate={{ opacity: [0.2, 0.5, 0.2], rotate: [10, 16, 10] }}
-            transition={{ duration: 22, repeat: Infinity }}
-            className="absolute left-[-20%] right-[-5%] top-[55%] h-56"
+            className="animate-beam-2 absolute left-[-20%] right-[-5%] top-[55%] h-56"
             style={{
               background:
                 "linear-gradient(120deg, rgba(129,140,248,0) 0%, rgba(129,140,248,0.3) 40%, rgba(56,189,248,0.28) 70%, rgba(56,189,248,0) 100%)",
@@ -91,22 +85,18 @@ function BackgroundEffects() {
             }}
           />
 
-          <motion.div
+          <div
             aria-hidden
-            animate={{ scale: [1, 1.18, 1], x: [0, 60, 0], y: [0, -40, 0] }}
-            transition={{ duration: 20, repeat: Infinity }}
-            className="absolute -top-40 left-[18%] h-[420px] w-[420px] rounded-full"
+            className="animate-orb-1 absolute -top-40 left-[18%] h-[420px] w-[420px] rounded-full"
             style={{
               background:
                 "radial-gradient(circle at center, rgba(129,140,248,0.55) 0%, rgba(56,189,248,0.2) 35%, transparent 70%)",
               filter: "blur(40px)",
             }}
           />
-          <motion.div
+          <div
             aria-hidden
-            animate={{ scale: [1, 1.15, 1], x: [0, -70, 20], y: [0, 50, 0] }}
-            transition={{ duration: 24, repeat: Infinity }}
-            className="absolute bottom-[-80px] right-[10%] h-[380px] w-[380px] rounded-full"
+            className="animate-orb-2 absolute bottom-[-80px] right-[10%] h-[380px] w-[380px] rounded-full"
             style={{
               background:
                 "radial-gradient(circle at center, rgba(52,211,153,0.4) 0%, rgba(96,165,250,0.25) 35%, transparent 70%)",
@@ -629,12 +619,9 @@ export default function Hero() {
       <header className="relative w-full h-240 overflow-hidden bg-[#050013] text-white mt-5">
         <BackgroundEffects />
 
-        <motion.div
+        <div
           aria-hidden
-          className="pointer-events-none absolute inset-0 z-10 opacity-[0.25]"
-          initial={{ backgroundPosition: "0px 0px" }}
-          animate={{ backgroundPosition: ["0px 0px", "36px 18px", "0px 0px"] }}
-          transition={{ duration: 12, repeat: Infinity }}
+          className="animate-grid pointer-events-none absolute inset-0 z-10 opacity-[0.25]"
           style={{
             backgroundImage:
               "linear-gradient(rgba(148,163,184,0.16) 1px, transparent 1px), linear-gradient(90deg, rgba(148,163,184,0.16) 1px, transparent 1px)",
