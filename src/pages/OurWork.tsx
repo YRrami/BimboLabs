@@ -1045,7 +1045,7 @@ export default function WorkPage() {
                       className="min-w-[280px] max-w-[280px] sm:min-w-[340px] sm:max-w-[340px] overflow-hidden rounded-[34px] border border-slate-200 bg-white shadow-[0_20px_70px_rgba(15,23,42,0.08)] transition hover:shadow-[0_35px_110px_rgba(15,23,42,0.12)]"
                     >
                       <div className="relative">
-                        <img src={v.src} alt={v.title} className="h-52 w-full object-cover" />
+                        <img src={v.src} alt={v.title} className="h-52 w-full object-cover" loading="lazy" decoding="async" />
                         <div
                           aria-hidden
                           className="pointer-events-none absolute inset-0 opacity-60"

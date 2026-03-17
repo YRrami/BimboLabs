@@ -556,7 +556,7 @@ function DarkFeatureHub() {
 
               <div className="lg:col-span-7">
                 <div className="relative overflow-hidden rounded-[34px] border border-white/10 bg-white/5 shadow-[0_30px_90px_rgba(0,0,0,0.45)]">
-                  <img src={hubMock} alt="Feature preview" className="block w-full select-none object-cover" draggable={false} />
+                  <img src={hubMock} alt="Feature preview" className="block w-full select-none object-cover" draggable={false} loading="lazy" decoding="async" />
                   <div
                     aria-hidden
                     className="pointer-events-none absolute inset-0 opacity-70"
@@ -710,8 +710,8 @@ export default function Hero() {
             className="mt-14 w-full"
           >
             <div className="relative mx-auto w-full max-w-3xl md:max-w-4xl">
-              <div className="overflow-hidden rounded-[18px] border border-white/14 bg-gradient-to-b from-white to-slate-50 shadow-[0_40px_120px_rgba(15,23,42,0.9)]">
-                <img src={mainMock} alt="Work preview" className="block w-full select-none" draggable={false} />
+                <div className="overflow-hidden rounded-[18px] border border-white/14 bg-gradient-to-b from-white to-slate-50 shadow-[0_40px_120px_rgba(15,23,42,0.9)]">
+                <img src={mainMock} alt="Work preview" className="block w-full select-none" draggable={false} loading="lazy" decoding="async" />
               </div>
 
               <motion.div
@@ -741,7 +741,7 @@ export default function Hero() {
                     <div className="text-[10px] font-medium text-emerald-600">pace + fewer issues</div>
                   </div>
                   <div className="h-12 w-[90px] overflow-hidden rounded-lg">
-                    <img src={chartMock} alt="Preview chart" className="h-full w-full object-cover" draggable={false} />
+                    <img src={chartMock} alt="Preview chart" className="h-full w-full object-cover" draggable={false} loading="lazy" decoding="async" />
                   </div>
                 </div>
 
