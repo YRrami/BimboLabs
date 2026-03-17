@@ -113,6 +113,17 @@ function useActiveSection(ids: string[]) {
   return active;
 }
 
+function useIsMobile() {
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+  return isMobile;
+}
+
 /* ===================== motion primitives ===================== */
 
 const fadeUp = {
@@ -145,6 +156,8 @@ function LightKicker({ children }: { children: React.ReactNode }) {
 }
 
 function UseCaseBackground() {
+  const isMobile = useIsMobile();
+
   return (
     <div className="pointer-events-none absolute inset-0 z-0">
       <div
@@ -169,31 +182,35 @@ function UseCaseBackground() {
         }}
       />
 
-      {/* ribbons */}
-      <motion.div
-        aria-hidden
-        initial={{ opacity: 0.16, rotate: -10 }}
-        animate={{ opacity: [0.12, 0.26, 0.12], rotate: [-8, -12, -8] }}
-        transition={{ duration: 18, repeat: Infinity }}
-        className="absolute left-[-12%] right-[-28%] top-[36%] h-64"
-        style={{
-          background:
-            "linear-gradient(120deg, rgba(56,189,248,0) 0%, rgba(56,189,248,0.22) 35%, rgba(168,85,247,0.16) 60%, rgba(190,242,100,0) 100%)",
-          filter: "blur(18px)",
-        }}
-      />
-      <motion.div
-        aria-hidden
-        initial={{ opacity: 0.14, rotate: 12 }}
-        animate={{ opacity: [0.10, 0.22, 0.10], rotate: [10, 16, 10] }}
-        transition={{ duration: 22, repeat: Infinity }}
-        className="absolute left-[-20%] right-[-5%] top-[58%] h-56"
-        style={{
-          background:
-            "linear-gradient(120deg, rgba(129,140,248,0) 0%, rgba(129,140,248,0.20) 40%, rgba(56,189,248,0.18) 70%, rgba(56,189,248,0) 100%)",
-          filter: "blur(20px)",
-        }}
-      />
+      {/* ribbons - disable on mobile */}
+      {!isMobile && (
+        <>
+          <motion.div
+            aria-hidden
+            initial={{ opacity: 0.16, rotate: -10 }}
+            animate={{ opacity: [0.12, 0.26, 0.12], rotate: [-8, -12, -8] }}
+            transition={{ duration: 18, repeat: Infinity }}
+            className="absolute left-[-12%] right-[-28%] top-[36%] h-64"
+            style={{
+              background:
+                "linear-gradient(120deg, rgba(56,189,248,0) 0%, rgba(56,189,248,0.22) 35%, rgba(168,85,247,0.16) 60%, rgba(190,242,100,0) 100%)",
+              filter: "blur(18px)",
+            }}
+          />
+          <motion.div
+            aria-hidden
+            initial={{ opacity: 0.14, rotate: 12 }}
+            animate={{ opacity: [0.10, 0.22, 0.10], rotate: [10, 16, 10] }}
+            transition={{ duration: 22, repeat: Infinity }}
+            className="absolute left-[-20%] right-[-5%] top-[58%] h-56"
+            style={{
+              background:
+                "linear-gradient(120deg, rgba(129,140,248,0) 0%, rgba(129,140,248,0.20) 40%, rgba(56,189,248,0.18) 70%, rgba(56,189,248,0) 100%)",
+              filter: "blur(20px)",
+            }}
+          />
+        </>
+      )}
     </div>
   );
 }
@@ -422,7 +439,6 @@ function LogosMarquee({ logos }: { logos: Logo[] }) {
             display: flex;
             align-items: center;
             width: max-content;
-            will-change: transform;
             animation: lp 20s linear infinite;
           }
           .lp-marquee:hover .lp-track { animation-play-state: paused; }

@@ -49,59 +49,72 @@ function ScrollProgress() {
 }
 
 function BackgroundEffects() {
+  // Detect if we're on mobile to disable expensive animations
+  const [isMobile, setIsMobile] = React.useState(false);
+  React.useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
   return (
     <div className="pointer-events-none absolute inset-0 z-0">
       <div className="absolute inset-0 bg-[#050013]" />
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_#3b27b5_0%,_#050013_45%,_#020007_80%)]" />
       <div className="absolute inset-x-[-25%] top-[16%] h-[520px] bg-[radial-gradient(circle_at_center,_rgba(129,140,248,0.95)_0%,_rgba(129,140,248,0.4)_40%,_rgba(15,23,42,0)_75%)] blur-3xl" />
 
-      <motion.div
-        aria-hidden
-        initial={{ opacity: 0.4, rotate: -8 }}
-        animate={{ opacity: [0.3, 0.6, 0.3], rotate: [-6, -10, -6] }}
-        transition={{ duration: 18, repeat: Infinity }}
-        className="absolute left-[-10%] right-[-30%] top-[30%] h-64"
-        style={{
-          background:
-            "linear-gradient(120deg, rgba(56,189,248,0) 0%, rgba(56,189,248,0.26) 35%, rgba(190,242,100,0.16) 60%, rgba(190,242,100,0) 100%)",
-          filter: "blur(14px)",
-        }}
-      />
-      <motion.div
-        aria-hidden
-        initial={{ opacity: 0.25, rotate: 12 }}
-        animate={{ opacity: [0.2, 0.5, 0.2], rotate: [10, 16, 10] }}
-        transition={{ duration: 22, repeat: Infinity }}
-        className="absolute left-[-20%] right-[-5%] top-[55%] h-56"
-        style={{
-          background:
-            "linear-gradient(120deg, rgba(129,140,248,0) 0%, rgba(129,140,248,0.3) 40%, rgba(56,189,248,0.28) 70%, rgba(56,189,248,0) 100%)",
-          filter: "blur(18px)",
-        }}
-      />
+      {!isMobile && (
+        <>
+          <motion.div
+            aria-hidden
+            initial={{ opacity: 0.4, rotate: -8 }}
+            animate={{ opacity: [0.3, 0.6, 0.3], rotate: [-6, -10, -6] }}
+            transition={{ duration: 18, repeat: Infinity }}
+            className="absolute left-[-10%] right-[-30%] top-[30%] h-64"
+            style={{
+              background:
+                "linear-gradient(120deg, rgba(56,189,248,0) 0%, rgba(56,189,248,0.26) 35%, rgba(190,242,100,0.16) 60%, rgba(190,242,100,0) 100%)",
+              filter: "blur(14px)",
+            }}
+          />
+          <motion.div
+            aria-hidden
+            initial={{ opacity: 0.25, rotate: 12 }}
+            animate={{ opacity: [0.2, 0.5, 0.2], rotate: [10, 16, 10] }}
+            transition={{ duration: 22, repeat: Infinity }}
+            className="absolute left-[-20%] right-[-5%] top-[55%] h-56"
+            style={{
+              background:
+                "linear-gradient(120deg, rgba(129,140,248,0) 0%, rgba(129,140,248,0.3) 40%, rgba(56,189,248,0.28) 70%, rgba(56,189,248,0) 100%)",
+              filter: "blur(18px)",
+            }}
+          />
 
-      <motion.div
-        aria-hidden
-        animate={{ scale: [1, 1.18, 1], x: [0, 60, 0], y: [0, -40, 0] }}
-        transition={{ duration: 20, repeat: Infinity }}
-        className="absolute -top-40 left-[18%] h-[420px] w-[420px] rounded-full"
-        style={{
-          background:
-            "radial-gradient(circle at center, rgba(129,140,248,0.55) 0%, rgba(56,189,248,0.2) 35%, transparent 70%)",
-          filter: "blur(40px)",
-        }}
-      />
-      <motion.div
-        aria-hidden
-        animate={{ scale: [1, 1.15, 1], x: [0, -70, 20], y: [0, 50, 0] }}
-        transition={{ duration: 24, repeat: Infinity }}
-        className="absolute bottom-[-80px] right-[10%] h-[380px] w-[380px] rounded-full"
-        style={{
-          background:
-            "radial-gradient(circle at center, rgba(52,211,153,0.4) 0%, rgba(96,165,250,0.25) 35%, transparent 70%)",
-          filter: "blur(40px)",
-        }}
-      />
+          <motion.div
+            aria-hidden
+            animate={{ scale: [1, 1.18, 1], x: [0, 60, 0], y: [0, -40, 0] }}
+            transition={{ duration: 20, repeat: Infinity }}
+            className="absolute -top-40 left-[18%] h-[420px] w-[420px] rounded-full"
+            style={{
+              background:
+                "radial-gradient(circle at center, rgba(129,140,248,0.55) 0%, rgba(56,189,248,0.2) 35%, transparent 70%)",
+              filter: "blur(40px)",
+            }}
+          />
+          <motion.div
+            aria-hidden
+            animate={{ scale: [1, 1.15, 1], x: [0, -70, 20], y: [0, 50, 0] }}
+            transition={{ duration: 24, repeat: Infinity }}
+            className="absolute bottom-[-80px] right-[10%] h-[380px] w-[380px] rounded-full"
+            style={{
+              background:
+                "radial-gradient(circle at center, rgba(52,211,153,0.4) 0%, rgba(96,165,250,0.25) 35%, transparent 70%)",
+              filter: "blur(40px)",
+            }}
+          />
+        </>
+      )}
     </div>
   );
 }
@@ -169,7 +182,7 @@ function LogoCarouselPillPro() {
             .lp-marquee { width: 100%; overflow: hidden; }
             .lp-marquee-track {
               display: flex; align-items: center; width: max-content;
-              will-change: transform; animation: lp-marquee 22s linear infinite;
+              animation: lp-marquee 22s linear infinite;
             }
             .lp-logo-item { flex: 0 0 auto; padding: 0 44px; display: grid; place-items: center; }
             .lp-logo { height: 42px; width: auto; object-fit: contain; opacity: 0.88; filter: grayscale(1);
