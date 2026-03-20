@@ -44,6 +44,13 @@ import { SectionShell } from "../components/layout/SiteLayout";
 import visualMock1 from "../assets/companies/cover.png";
 import visualMock2 from "../assets/companies/cover.png";
 import visualMock3 from "../assets/companies/cover.png";
+// optimized variants
+import cover320avif from "../assets/companies/optimized/cover-320.avif";
+import cover640avif from "../assets/companies/optimized/cover-640.avif";
+import cover1024avif from "../assets/companies/optimized/cover-1024.avif";
+import cover320webp from "../assets/companies/optimized/cover-320.webp";
+import cover640webp from "../assets/companies/optimized/cover-640.webp";
+import cover1024webp from "../assets/companies/optimized/cover-1024.webp";
 
 /* ===================== helpers ===================== */
 
@@ -1045,7 +1052,11 @@ export default function WorkPage() {
                       className="min-w-[280px] max-w-[280px] sm:min-w-[340px] sm:max-w-[340px] overflow-hidden rounded-[34px] border border-slate-200 bg-white shadow-[0_20px_70px_rgba(15,23,42,0.08)] transition hover:shadow-[0_35px_110px_rgba(15,23,42,0.12)]"
                     >
                       <div className="relative">
-                        <img src={v.src} alt={v.title} className="h-52 w-full object-cover" loading="lazy" decoding="async" />
+                        <picture>
+                          <source type="image/avif" srcSet={`${cover1024avif} 1024w, ${cover640avif} 640w, ${cover320avif} 320w`} sizes="(max-width:340px) 100vw, 340px" />
+                          <source type="image/webp" srcSet={`${cover1024webp} 1024w, ${cover640webp} 640w, ${cover320webp} 320w`} sizes="(max-width:340px) 100vw, 340px" />
+                          <img src={v.src} alt={v.title} className="h-52 w-full object-cover" loading="lazy" decoding="async" />
+                        </picture>
                         <div
                           aria-hidden
                           className="pointer-events-none absolute inset-0 opacity-60"

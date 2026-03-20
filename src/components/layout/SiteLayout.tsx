@@ -883,17 +883,9 @@ export function SiteLayout() {
     setTimeout(() => setCopied(false), 900);
   };
 
-  const [booting, setBooting] = useState(true);
-  const [showBootOverlay, setShowBootOverlay] = useState(true);
-
-  useEffect(() => {
-    const t1 = setTimeout(() => setBooting(false), 1200);
-    const t2 = setTimeout(() => setShowBootOverlay(false), 1500);
-    return () => {
-      clearTimeout(t1);
-      clearTimeout(t2);
-    };
-  }, []);
+  // Disable boot/loading overlay entirely for performance and to avoid blocking render
+  const [booting] = useState(false);
+  const [showBootOverlay] = useState(false);
 
   const contextValue: SiteContextValue = {
     scrollY,

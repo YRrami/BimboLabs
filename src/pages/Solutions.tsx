@@ -32,6 +32,13 @@ import { SectionShell, COLORS } from "../components/layout/SiteLayout";
 import svcEngineering from "../assets/companies/cover.png";
 import svcBrand from "../assets/companies/cover.png";
 import svcMarketing from "../assets/companies/cover.png";
+// optimized variants
+import cover320avif from "../assets/companies/optimized/cover-320.avif";
+import cover640avif from "../assets/companies/optimized/cover-640.avif";
+import cover1024avif from "../assets/companies/optimized/cover-1024.avif";
+import cover320webp from "../assets/companies/optimized/cover-320.webp";
+import cover640webp from "../assets/companies/optimized/cover-640.webp";
+import cover1024webp from "../assets/companies/optimized/cover-1024.webp";
 
 function cn(...classes: Array<string | false | null | undefined>) {
   return classes.filter(Boolean).join(" ");
@@ -278,13 +285,19 @@ function LightKicker({ children }: { children: React.ReactNode }) {
   );
 }
 
+type ImageVariants = {
+  avif?: { [width: string]: string };
+  webp?: { [width: string]: string };
+  fallback?: string;
+};
+
 type Pillar = {
   id: string;
   kicker: string;
   title: string;
   desc: string;
   icon: React.ReactNode;
-  image: string;
+  image: string | ImageVariants;
   bullets: string[];
   includedLabel: string;
   included: string[];
@@ -305,7 +318,7 @@ function ParallaxMedia({
   alt,
   accent,
 }: {
-  src: string;
+  src: string | ImageVariants;
   alt: string;
   accent: string;
 }) {
@@ -332,13 +345,31 @@ function ParallaxMedia({
         style={{ y }}
         className="group relative overflow-hidden rounded-[38px] border border-slate-200 bg-gradient-to-b from-white to-slate-50 shadow-[0_35px_110px_rgba(15,23,42,0.14)] transition hover:-translate-y-[2px] hover:shadow-[0_55px_140px_rgba(15,23,42,0.18)]"
       >
-        <img
-          src={src}
-          alt={alt}
-          className="block w-full select-none object-cover"
-          draggable={false}
-          loading="lazy"
-        />
+        {typeof src === 'string' ? (
+          <img src={src} alt={alt} className="block w-full select-none object-cover" draggable={false} loading="lazy" />
+        ) : (
+          <picture>
+            {src.avif && (
+              <source
+                type="image/avif"
+                srcSet={Object.entries(src.avif)
+                  .map(([w, p]) => `${p} ${w}w`)
+                  .join(', ')}
+                sizes="(max-width:1024px) 100vw, 1024px"
+              />
+            )}
+            {src.webp && (
+              <source
+                type="image/webp"
+                srcSet={Object.entries(src.webp)
+                  .map(([w, p]) => `${p} ${w}w`)
+                  .join(', ')}
+                sizes="(max-width:1024px) 100vw, 1024px"
+              />
+            )}
+            <img src={src.fallback} alt={alt} className="block w-full select-none object-cover" draggable={false} loading="lazy" />
+          </picture>
+        )}
         <div
           aria-hidden
           className="pointer-events-none absolute inset-0 opacity-70"
@@ -386,7 +417,11 @@ export default function SolutionsPage() {
         desc:
           "We plan, create, and run campaigns across the channels that matter—ad creative, content systems, and optimization with clear reporting.",
         icon: <Megaphone className="h-4 w-4" />,
-        image: svcMarketing,
+        image: {
+          avif: { '1024': cover1024avif, '640': cover640avif, '320': cover320avif },
+          webp: { '1024': cover1024webp, '640': cover640webp, '320': cover320webp },
+          fallback: svcMarketing,
+        },
         bullets: [
           "Paid ads (Meta / Google) + optimization",
           "Content creation (posts, reels, scripts, copy)",
@@ -409,7 +444,11 @@ export default function SolutionsPage() {
         desc:
           "A complete brand kit that stays consistent everywhere—web, ads, social, and product. Clear rules, reusable templates, and fast execution.",
         icon: <Palette className="h-4 w-4" />,
-        image: svcBrand,
+        image: {
+          avif: { '1024': cover1024avif, '640': cover640avif, '320': cover320avif },
+          webp: { '1024': cover1024webp, '640': cover640webp, '320': cover320webp },
+          fallback: svcBrand,
+        },
         bullets: [
           "Logo design + variations",
           "Brand identity (colors, typography, style)",
@@ -432,7 +471,11 @@ export default function SolutionsPage() {
         desc:
           "We build cross-platform apps, websites, and internal systems with clean architecture, performance-first UI, and reliable handoff.",
         icon: <Code2 className="h-4 w-4" />,
-        image: svcEngineering,
+        image: {
+          avif: { '1024': cover1024avif, '640': cover640avif, '320': cover320avif },
+          webp: { '1024': cover1024webp, '640': cover640webp, '320': cover320webp },
+          fallback: svcEngineering,
+        },
         bullets: [
           "Websites + landing pages",
           "Apps (cross-platform) + admin dashboards",
