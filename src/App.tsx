@@ -5,6 +5,7 @@ import {
   ArrowRight,
   Check,
   Sparkles,
+
   Wand2,
   Search,
   Users,
