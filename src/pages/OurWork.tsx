@@ -11,7 +11,6 @@
 
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import { motion, AnimatePresence } from "framer-motion";
 import {
   ArrowRight,
   ExternalLink,
@@ -75,19 +74,7 @@ const COLORS = {
   ink: "#0F172A",
 } as const;
 
-/* ===================== Motion ===================== */
-
-const fadeUp = {
-  hidden: { opacity: 0, y: 14 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.55 } },
-};
-
-const stagger = {
-  hidden: {},
-  show: { transition: { staggerChildren: 0.08, delayChildren: 0.06 } },
-};
-
-/* ------------------------------ Background (hero) ------------------------------ */
+/* ===================== Background (hero) ===================== */
 
 function SoftGridNoise() {
   return (
@@ -390,25 +377,15 @@ function useIsInView<T extends HTMLElement>(threshold = 0.35) {
 /* ===================== Toast ===================== */
 
 function Toast({ show, text }: { show: boolean; text: string }) {
+  if (!show) return null;
+  
   return (
-    <AnimatePresence>
-      {show && (
-        <motion.div
-          initial={{ opacity: 0, y: 12, scale: 0.98 }}
-          animate={{ opacity: 1, y: 0, scale: 1 }}
-          exit={{ opacity: 0, y: 10, scale: 0.98 }}
-          transition={{ duration: 0.22 }}
-          className="fixed bottom-6 left-1/2 z-[999] -translate-x-1/2"
-          role="status"
-          aria-live="polite"
-        >
-          <div className="flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 shadow-[0_20px_60px_rgba(15,23,42,0.18)]">
-            <CheckCircle2 className="h-4 w-4 text-slate-900" />
-            <span className="text-sm font-semibold text-slate-900">{text}</span>
-          </div>
-        </motion.div>
-      )}
-    </AnimatePresence>
+    <div className="fixed bottom-6 left-1/2 z-[999] -translate-x-1/2" role="status" aria-live="polite">
+      <div className="flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 shadow-[0_20px_60px_rgba(15,23,42,0.18)]">
+        <CheckCircle2 className="h-4 w-4 text-slate-900" />
+        <span className="text-sm font-semibold text-slate-900">{text}</span>
+      </div>
+    </div>
   );
 }
 
@@ -790,21 +767,19 @@ export default function WorkPage() {
 
             {!loaded && <div className="absolute inset-0 animate-pulse bg-[linear-gradient(120deg,rgba(255,255,255,.10),rgba(255,255,255,.04))]" />}
 
-            <AnimatePresence>
-              {showEmbedHint && !loaded && (
-                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 grid place-items-center bg-black/60 p-6">
-                  <div className="max-w-md rounded-3xl border border-white/15 bg-white/10 p-6 text-center text-white">
-                    <div className="text-sm font-black">Preview not loading</div>
-                    <p className="mt-2 text-sm text-white/80">Some sites block iframes. Use Open to view.</p>
-                    <div className="mt-4 flex justify-center">
-                      <a href={current.url} target="_blank" rel="noreferrer noopener" className="inline-flex items-center gap-2 rounded-xl bg-white px-5 py-3 text-sm font-semibold text-black hover:opacity-95">
-                        Open demo <ExternalLink className="h-4 w-4" />
-                      </a>
-                    </div>
+            {showEmbedHint && !loaded && (
+              <div className="absolute inset-0 grid place-items-center bg-black/60 p-6">
+                <div className="max-w-md rounded-3xl border border-white/15 bg-white/10 p-6 text-center text-white">
+                  <div className="text-sm font-black">Preview not loading</div>
+                  <p className="mt-2 text-sm text-white/80">Some sites block iframes. Use Open to view.</p>
+                  <div className="mt-4 flex justify-center">
+                    <a href={current.url} target="_blank" rel="noreferrer noopener" className="inline-flex items-center gap-2 rounded-xl bg-white px-5 py-3 text-sm font-semibold text-black hover:opacity-95">
+                      Open demo <ExternalLink className="h-4 w-4" />
+                    </a>
                   </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
+                </div>
+              </div>
+            )}
           </div>
         </div>
 
@@ -886,16 +861,9 @@ export default function WorkPage() {
           </div>
         </button>
 
-        <AnimatePresence initial={false}>
-          {open && (
-            <motion.div
-              initial={{ height: 0, opacity: 0 }}
-              animate={{ height: "auto", opacity: 1 }}
-              exit={{ height: 0, opacity: 0 }}
-              transition={{ duration: 0.22 }}
-              className="overflow-hidden"
-            >
-              <div className="px-6 pb-6">
+        {open && (
+          <div className="overflow-hidden">
+            <div className="px-6 pb-6">
                 <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
                   <div className="text-xs font-black tracking-[0.18em] text-slate-500">GOAL</div>
                   <p className="mt-2 text-sm text-slate-700">{cs.goal}</p>
@@ -919,9 +887,8 @@ export default function WorkPage() {
                   </div>
                 </div>
               </div>
-            </motion.div>
+            </div>
           )}
-        </AnimatePresence>
       </div>
     );
   }
@@ -938,23 +905,23 @@ export default function WorkPage() {
         <SoftGridNoise />
 
         <SectionShell className="relative z-30 pt-24 pb-14 sm:pt-28 sm:pb-16 md:pt-32 md:pb-20">
-          <motion.div variants={stagger} initial="hidden" animate="show" className="mx-auto max-w-4xl text-center">
-            <motion.div variants={fadeUp}>
+          <div className="mx-auto max-w-4xl text-center">
+            <div>
               <DarkKicker>
                 <Eye className="h-4 w-4" /> Our work
               </DarkKicker>
-            </motion.div>
+            </div>
 
-            <motion.h1 variants={fadeUp} className="mt-5 text-balance text-4xl sm:text-5xl md:text-6xl font-black tracking-tight">
+            <h1 className="mt-5 text-balance text-4xl sm:text-5xl md:text-6xl font-black tracking-tight">
               Real work. Clear outcomes.
-            </motion.h1>
+            </h1>
 
-            <motion.p variants={fadeUp} className="mt-4 text-balance text-sm leading-relaxed text-slate-200/90 sm:text-base md:text-lg">
+            <p className="mt-4 text-balance text-sm leading-relaxed text-slate-200/90 sm:text-base md:text-lg">
               We help SMEs and startups in Egypt and outside Egypt launch premium visuals, conversion-ready pages, and measurable growth workflows.
-            </motion.p>
+            </p>
 
             {/* minimal highlights strip */}
-            <motion.div variants={fadeUp} className="mt-8 grid gap-3 sm:grid-cols-3">
+            <div className="mt-8 grid gap-3 sm:grid-cols-3">
               {HIGHLIGHTS.map((h) => (
                 <div key={h.label} className="rounded-2xl border border-white/10 bg-white/5 px-5 py-4 backdrop-blur">
                   <div className="flex items-center gap-2 text-[11px] uppercase tracking-[0.22em] text-white/60">
@@ -965,10 +932,10 @@ export default function WorkPage() {
                   <div className="mt-1 text-xs text-white/60">{h.note}</div>
                 </div>
               ))}
-            </motion.div>
+            </div>
 
             {/* view switch */}
-            <motion.div variants={fadeUp} className="mt-10 flex justify-center">
+            <div className="mt-10 flex justify-center">
               <Segmented
                 value={view}
                 onChange={(v: ViewMode) => setView(v)}
@@ -978,117 +945,96 @@ export default function WorkPage() {
                   { label: "Visuals", icon: <Palette className="h-4 w-4" /> },
                 ]}
               />
-            </motion.div>
+            </div>
 
-            <motion.div variants={fadeUp} className="mt-10 h-px w-full bg-gradient-to-r from-transparent via-white/20 to-transparent" />
-          </motion.div>
+            <div className="mt-10 h-px w-full bg-gradient-to-r from-transparent via-white/20 to-transparent" />
+          </div>
         </SectionShell>
       </section>
 
       {/* CONTENT */}
       <section className="w-full bg-white text-slate-900">
         <div className="mx-auto max-w-6xl px-4 py-14 sm:px-6 md:py-16">
-          <AnimatePresence mode="wait" initial={false}>
-            {view === "Demos" ? (
-              <motion.div
-                key="demos"
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: 10 }}
-                transition={{ duration: 0.22 }}
-              >
-                <div className="mb-8 text-center">
-                  <LightKicker>DEMOS</LightKicker>
-                  <h2 className="mt-4 text-balance text-3xl font-black tracking-tight sm:text-4xl">Browse & preview</h2>
-                  <p className="mt-3 text-slate-600">Filter by category, then preview in desktop/tablet/mobile.</p>
-                </div>
+          {view === "Demos" ? (
+            <div key="demos">
+              <div className="mb-8 text-center">
+                <LightKicker>DEMOS</LightKicker>
+                <h2 className="mt-4 text-balance text-3xl font-black tracking-tight sm:text-4xl">Browse & preview</h2>
+                <p className="mt-3 text-slate-600">Filter by category, then preview in desktop/tablet/mobile.</p>
+              </div>
 
-                <div ref={demosRef} className="grid grid-cols-1 gap-6 lg:grid-cols-[360px_1fr] sm:gap-8">
-                  <Navigator />
-                  <IframePreview />
-                </div>
-              </motion.div>
-            ) : null}
+              <div ref={demosRef} className="grid grid-cols-1 gap-6 lg:grid-cols-[360px_1fr] sm:gap-8">
+                <Navigator />
+                <IframePreview />
+              </div>
+            </div>
+          ) : null}
 
-            {view === "Case Studies" ? (
-              <motion.div
-                key="case"
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: 10 }}
-                transition={{ duration: 0.22 }}
-              >
-                <div className="mb-10 text-center">
-                  <LightKicker>CASE STUDIES</LightKicker>
-                  <h2 className="mt-4 text-balance text-3xl font-black tracking-tight sm:text-4xl">Scannable. Measurable. Clear.</h2>
-                  <p className="mt-3 text-slate-600">Goal → what we did → key metrics. Expand to see details.</p>
-                </div>
+          {view === "Case Studies" ? (
+            <div key="case">
+              <div className="mb-10 text-center">
+                <LightKicker>CASE STUDIES</LightKicker>
+                <h2 className="mt-4 text-balance text-3xl font-black tracking-tight sm:text-4xl">Scannable. Measurable. Clear.</h2>
+                <p className="mt-3 text-slate-600">Goal → what we did → key metrics. Expand to see details.</p>
+              </div>
 
-                <div className="space-y-4">
-                  {CASE_STUDIES.map((cs) => (
-                    <CaseStudyRow key={cs.id} cs={cs} />
-                  ))}
-                </div>
-              </motion.div>
-            ) : null}
+              <div className="space-y-4">
+                {CASE_STUDIES.map((cs) => (
+                  <CaseStudyRow key={cs.id} cs={cs} />
+                ))}
+              </div>
+            </div>
+          ) : null}
 
-            {view === "Visuals" ? (
-              <motion.div
-                key="visuals"
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: 10 }}
-                transition={{ duration: 0.22 }}
-              >
-                <div className="mb-10 text-center">
-                  <LightKicker>VISUALS</LightKicker>
-                  <h2 className="mt-4 text-balance text-3xl font-black tracking-tight sm:text-4xl">Design output that looks premium</h2>
-                  <p className="mt-3 text-slate-600">Ads, branding, and landing visuals. Replace mocks with your real assets.</p>
-                </div>
+          {view === "Visuals" ? (
+            <div key="visuals">
+              <div className="mb-10 text-center">
+                <LightKicker>VISUALS</LightKicker>
+                <h2 className="mt-4 text-balance text-3xl font-black tracking-tight sm:text-4xl">Design output that looks premium</h2>
+                <p className="mt-3 text-slate-600">Ads, branding, and landing visuals. Replace mocks with your real assets.</p>
+              </div>
 
-                <div className="flex gap-5 overflow-x-auto pb-2 [-webkit-overflow-scrolling:touch]">
-                  {VISUALS.map((v) => (
-                    <motion.div
-                      key={v.title}
-                      whileHover={{ y: -3 }}
-                      className="min-w-[280px] max-w-[280px] sm:min-w-[340px] sm:max-w-[340px] overflow-hidden rounded-[34px] border border-slate-200 bg-white shadow-[0_20px_70px_rgba(15,23,42,0.08)] transition hover:shadow-[0_35px_110px_rgba(15,23,42,0.12)]"
-                    >
-                      <div className="relative">
-                        <picture>
-                          <source type="image/avif" srcSet={`${cover1024avif} 1024w, ${cover640avif} 640w, ${cover320avif} 320w`} sizes="(max-width:340px) 100vw, 340px" />
-                          <source type="image/webp" srcSet={`${cover1024webp} 1024w, ${cover640webp} 640w, ${cover320webp} 320w`} sizes="(max-width:340px) 100vw, 340px" />
-                          <img src={v.src} alt={v.title} className="h-52 w-full object-cover" loading="lazy" decoding="async" />
-                        </picture>
-                        <div
-                          aria-hidden
-                          className="pointer-events-none absolute inset-0 opacity-60"
-                          style={{
-                            background:
-                              "radial-gradient(circle at 30% 10%, rgba(79,70,229,0.14) 0%, rgba(56,189,248,0.08) 30%, transparent 60%)",
-                          }}
-                        />
+              <div className="flex gap-5 overflow-x-auto pb-2 [-webkit-overflow-scrolling:touch]">
+                {VISUALS.map((v) => (
+                  <div
+                    key={v.title}
+                    className="min-w-[280px] max-w-[280px] sm:min-w-[340px] sm:max-w-[340px] overflow-hidden rounded-[34px] border border-slate-200 bg-white shadow-[0_20px_70px_rgba(15,23,42,0.08)] transition hover:shadow-[0_35px_110px_rgba(15,23,42,0.12)]"
+                  >
+                    <div className="relative">
+                      <picture>
+                        <source type="image/avif" srcSet={`${cover1024avif} 1024w, ${cover640avif} 640w, ${cover320avif} 320w`} sizes="(max-width:340px) 100vw, 340px" />
+                        <source type="image/webp" srcSet={`${cover1024webp} 1024w, ${cover640webp} 640w, ${cover320webp} 320w`} sizes="(max-width:340px) 100vw, 340px" />
+                        <img src={v.src} alt={v.title} className="h-52 w-full object-cover" loading="lazy" decoding="async" />
+                      </picture>
+                      <div
+                        aria-hidden
+                        className="pointer-events-none absolute inset-0 opacity-60"
+                        style={{
+                          background:
+                            "radial-gradient(circle at 30% 10%, rgba(79,70,229,0.14) 0%, rgba(56,189,248,0.08) 30%, transparent 60%)",
+                        }}
+                      />
+                    </div>
+
+                    <div className="p-6">
+                      <div className="flex items-center justify-between gap-3">
+                        <div className="text-sm font-black text-slate-900">{v.title}</div>
+                        <span className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-[11px] font-semibold text-slate-700">
+                          {v.kind}
+                        </span>
                       </div>
 
-                      <div className="p-6">
-                        <div className="flex items-center justify-between gap-3">
-                          <div className="text-sm font-black text-slate-900">{v.title}</div>
-                          <span className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-[11px] font-semibold text-slate-700">
-                            {v.kind}
-                          </span>
-                        </div>
-
-                        <div className="mt-3 flex flex-wrap gap-2">
-                          {v.tags.map((t) => (
-                            <Chip key={t}>{t}</Chip>
-                          ))}
-                        </div>
+                      <div className="mt-3 flex flex-wrap gap-2">
+                        {v.tags.map((t) => (
+                          <Chip key={t}>{t}</Chip>
+                        ))}
                       </div>
-                    </motion.div>
-                  ))}
-                </div>
-              </motion.div>
-            ) : null}
-          </AnimatePresence>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ) : null}
 
           {/* Single bottom CTA (minimal) */}
           <div className="mt-14 rounded-[40px] border border-slate-200 bg-gradient-to-b from-white to-slate-50 p-8 text-center shadow-[0_30px_90px_rgba(15,23,42,0.10)] sm:p-10">

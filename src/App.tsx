@@ -8,7 +8,7 @@
 // You can tweak brand name "Anonvic" if needed.
 
 import React, { useMemo, useState } from "react";
-import { motion, useScroll, useSpring } from "framer-motion";
+// Animations completely removed for performance
 import {
   ArrowRight,
   Check,
@@ -79,13 +79,10 @@ function cn(...classes: Array<string | false | null | undefined>) {
 }
 
 function ScrollProgress() {
-  const { scrollYProgress } = useScroll();
-  const scaleX = useSpring(scrollYProgress, { stiffness: 120, damping: 20, mass: 0.2 });
   return (
-    <motion.div
+    <div
       aria-hidden
-      className="fixed left-0 right-0 top-0 z-[60] h-[3px] origin-left bg-gradient-to-r from-indigo-400 via-sky-300 to-lime-300"
-      style={{ scaleX }}
+      className="fixed left-0 right-0 top-0 z-[60] h-[3px] origin-left bg-gradient-to-r from-indigo-400 via-sky-300 to-lime-300 w-0"
     />
   );
 }
@@ -191,15 +188,11 @@ function LogoCarouselPillPro() {
   return (
     <section className="w-full bg-white py-10 ">
       <div className="mx-auto max-w-7xl px-4 sm:px-">
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, amount: 0.35 }}
-          transition={{ duration: 0.5 }}
+        <div
           className="rounded-[44px] bg-[#F3F0FF] px-6 py-10 shadow-[0_30px_90px_rgba(15,23,42,0.10)] sm:px-10"
         >
           <div className="relative overflow-hidden rounded-[36px]">
-            <div aria-hidden className="lp-shine pointer-events-none absolute inset-0 z-10 opacity-35" />
+            <div aria-hidden className="pointer-events-none absolute inset-0 z-10 opacity-0" />
             <div aria-hidden className="pointer-events-none absolute inset-y-0 left-0 z-20 w-28 bg-gradient-to-r from-[#F3F0FF] to-transparent" />
             <div aria-hidden className="pointer-events-none absolute inset-y-0 right-0 z-20 w-28 bg-gradient-to-l from-[#F3F0FF] to-transparent" />
 
@@ -218,7 +211,6 @@ function LogoCarouselPillPro() {
             .lp-marquee { width: 100%; overflow: hidden; }
             .lp-marquee-track {
               display: flex; align-items: center; width: max-content;
-              animation: lp-marquee 22s linear infinite;
             }
             .lp-logo-item { flex: 0 0 auto; padding: 0 44px; display: grid; place-items: center; }
             .lp-logo { height: 42px; width: auto; object-fit: contain; opacity: 0.88; filter: grayscale(1);
@@ -226,17 +218,9 @@ function LogoCarouselPillPro() {
             }
             .lp-logo-item:hover .lp-logo { opacity: 1; filter: grayscale(0); transform: translateY(-1px) scale(1.03); }
 
-            .lp-shine {
-              background: linear-gradient(120deg, transparent 0%, rgba(255,255,255,0.35) 12%, transparent 22%);
-              transform: translateX(-60%); animation: lp-shine 6.5s ease-in-out infinite;
-            }
-            @keyframes lp-shine { 0% { transform: translateX(-60%); } 55% { transform: translateX(60%); } 100% { transform: translateX(60%); } }
-            @keyframes lp-marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
-
             @media (max-width: 640px) { .lp-logo-item { padding: 0 26px; } .lp-logo { height: 34px; } }
-            @media (prefers-reduced-motion: reduce) { .lp-marquee-track { animation: none; } .lp-shine { animation: none; opacity: 0; } }
           `}</style>
-        </motion.div>
+        </div>
       </div>
     </section>
   );
@@ -506,12 +490,8 @@ function MinimalPackages() {
             const price = annual ? p.priceAnnual : p.priceMonthly;
 
             return (
-              <motion.div
+              <div
                 key={p.name}
-                initial={{ opacity: 0, y: 14 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, amount: 0.25 }}
-                transition={{ duration: 0.55 }}
                 className={cn(
                   "relative flex h-full flex-col overflow-hidden rounded-[34px] border bg-white p-7",
                   "shadow-[0_20px_70px_rgba(15,23,42,0.08)] transition hover:-translate-y-[2px] hover:shadow-[0_35px_110px_rgba(15,23,42,0.12)]",
@@ -584,7 +564,7 @@ function MinimalPackages() {
                     <Sparkles className="h-4 w-4" /> Flexible scope • Fast pace
                   </div>
                 </div>
-              </motion.div>
+              </div>
             );
           })}
         </div>
@@ -652,18 +632,14 @@ function DarkFeatureHub() {
 
           <div className="mt-8 grid gap-6 md:grid-cols-3">
             {cards.map((c) => (
-              <motion.div
+              <div
                 key={c.title}
-                initial={{ opacity: 0, y: 12 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, amount: 0.25 }}
-                transition={{ duration: 0.5 }}
                 className="rounded-[28px] border border-white/10 bg-white/5 p-7 shadow-[0_30px_90px_rgba(0,0,0,0.35)]"
               >
                 <div className="inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-white/10 text-white">{c.icon}</div>
                 <div className="mt-5 text-lg font-extrabold tracking-tight">{c.title}</div>
                 <div className="mt-2 text-sm leading-relaxed text-white/70">{c.desc}</div>
-              </motion.div>
+              </div>
             ))}
           </div>
 
@@ -713,10 +689,7 @@ export default function Hero() {
         <div className="pointer-events-none absolute inset-0 z-20 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.10]" />
 
         <div className="relative z-30 mx-auto flex max-w-6xl flex-col items-center px-4 pb-20 pt-36 text-center sm:px-6 lg:pt-44">
-          <motion.h1
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.45 }}
+          <h1
             className="text-balance text-4xl font-black leading-tight tracking-tight sm:text-5xl md:text-6xl lg:text-[4.1rem]"
           >
             Software, marketing,
@@ -725,29 +698,20 @@ export default function Hero() {
               <span className="bg-gradient-to-r from-slate-50 via-sky-100 to-lime-300 bg-clip-text text-transparent">
                 and brand — delivered fast.
               </span>
-              <motion.span
-                className="absolute -bottom-3 left-1/3 right-1/3 h-[3px] rounded-full bg-gradient-to-r from-indigo-400 via-sky-300 to-lime-300 blur-[2px]"
-                initial={{ scaleX: 0 }}
-                animate={{ scaleX: 1 }}
-                transition={{ delay: 0.4, duration: 0.6 }}
+              <span
+                className="absolute -bottom-3 left-1/3 right-1/3 h-[3px] rounded-full bg-gradient-to-r from-indigo-400 via-sky-300 to-lime-300 blur-[2px] w-full"
               />
             </span>
-          </motion.h1>
+          </h1>
 
-          <motion.p
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.12, duration: 0.45 }}
+          <p
             className="mt-5 max-w-2xl text-balance text-sm leading-relaxed text-slate-200/90 sm:text-base md:text-lg"
           >
             We’re a cost-efficient software + marketing company. We use advanced AI and human expertise to reduce errors, move fast,
             and stay flexible while you scale.
-          </motion.p>
+          </p>
 
-          <motion.form
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.22, duration: 0.45 }}
+          <form
             onSubmit={(e) => e.preventDefault()}
             className="mt-8 flex w-full max-w-xl flex-col items-stretch gap-3 rounded-2xl border border-white/10 bg-black/40 p-2 shadow-[0_20px_70px_rgba(0,0,0,0.75)] sm:flex-row sm:items-center"
           >
@@ -766,7 +730,7 @@ export default function Hero() {
               Get a proposal
               <ArrowRight className="h-4 w-4" />
             </button>
-          </motion.form>
+          </form>
 
           {/* trust strip (content update) */}
           <div className="mt-6 flex flex-wrap justify-center gap-2 text-xs text-white/70">
@@ -783,10 +747,7 @@ export default function Hero() {
             ))}
           </div>
 
-          <motion.div
-            initial={{ opacity: 0, y: 26, scale: 0.98 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            transition={{ delay: 0.45, duration: 0.55 }}
+          <div
             className="mt-14 w-full"
           >
             <div className="relative mx-auto w-full max-w-3xl md:max-w-4xl">
@@ -798,11 +759,7 @@ export default function Hero() {
                 </picture>
               </div>
 
-              <motion.div
-                initial={{ opacity: 0, y: 30, scale: 0.9 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                transition={{ delay: 0.6, duration: 0.5 }}
-                whileHover={{ y: -4, scale: 1.03 }}
+              <div
                 className="
                   absolute bottom-4 left-1/2 w-[72%] max-w-[280px]
                   -translate-x-1/2 rounded-2xl border border-white/60
@@ -836,9 +793,9 @@ export default function Hero() {
                 <p className="mt-2 text-[10px] leading-snug text-slate-600">
                   AI automation + human checks to keep releases clean.
                 </p>
-              </motion.div>
+              </div>
             </div>
-          </motion.div>
+          </div>
         </div>
       </header>
 

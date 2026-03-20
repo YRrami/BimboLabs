@@ -11,7 +11,6 @@
 import * as React from "react";
 import { useMemo, useRef } from "react";
 import { Link } from "react-router-dom";
-import { motion, useScroll, useTransform } from "framer-motion";
 import {
   ArrowRight,
   Check,
@@ -50,18 +49,6 @@ const withAlpha = (color: string, alpha: number): string => {
   const g = parseInt(hex.slice(2, 4), 16);
   const b = parseInt(hex.slice(4, 6), 16);
   return `rgba(${r}, ${g}, ${b}, ${alpha})`;
-};
-
-const fadeUp = {
-  hidden: { opacity: 0, y: 14 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.55 } },
-};
-
-const stagger = {
-  hidden: {},
-  show: {
-    transition: { staggerChildren: 0.08, delayChildren: 0.06 },
-  },
 };
 
 function useIsMobile() {
@@ -155,11 +142,7 @@ function LogoCarouselPill({ logos }: { logos: Logo[] }) {
   return (
     <section className="w-full bg-white">
       <div className="mx-auto max-w-6xl px-4 py-10 sm:px-6">
-        <motion.div
-          variants={fadeUp}
-          initial="hidden"
-          whileInView="show"
-          viewport={{ once: true, amount: 0.35 }}
+        <div
           className="rounded-[46px] bg-[#F3F0FF] px-6 py-10 shadow-[0_30px_90px_rgba(15,23,42,0.10)] sm:px-10"
         >
           <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
@@ -266,7 +249,7 @@ function LogoCarouselPill({ logos }: { logos: Logo[] }) {
               }
             `}</style>
           </div>
-        </motion.div>
+        </div>
       </div>
     </section>
   );
@@ -325,11 +308,6 @@ function ParallaxMedia({
   accent: string;
 }) {
   const ref = useRef<HTMLDivElement | null>(null);
-  const { scrollYProgress } = useScroll({
-    target: ref,
-    offset: ["0.9 1", "0.1 0"],
-  });
-  const y = useTransform(scrollYProgress, [0, 1], [10, -10]);
 
   return (
     <div ref={ref} className="relative">
@@ -343,8 +321,7 @@ function ParallaxMedia({
           )}, transparent 65%)`,
         }}
       />
-      <motion.div
-        style={{ y }}
+      <div
         className="group relative overflow-hidden rounded-[38px] border border-slate-200 bg-gradient-to-b from-white to-slate-50 shadow-[0_35px_110px_rgba(15,23,42,0.14)] transition hover:-translate-y-[2px] hover:shadow-[0_55px_140px_rgba(15,23,42,0.18)]"
       >
         {typeof src === 'string' ? (
@@ -390,7 +367,7 @@ function ParallaxMedia({
               "linear-gradient(to top, rgba(15,23,42,0.08), transparent)",
           }}
         />
-      </motion.div>
+      </div>
     </div>
   );
 }
@@ -558,13 +535,12 @@ export default function SolutionsPage() {
 
         <SectionShell className="relative z-30 pt-24 pb-16 sm:pt-28 sm:pb-20 md:pt-32 md:pb-24">
           <div className="grid gap-12 lg:grid-cols-12 lg:items-center">
-            <motion.div variants={stagger} initial="hidden" animate="show" className="lg:col-span-6">
-              <motion.div variants={fadeUp}>
+            <div className="lg:col-span-6">
+              <div>
                 <DarkKicker>Solutions</DarkKicker>
-              </motion.div>
+              </div>
 
-              <motion.h1
-                variants={fadeUp}
+              <h1
                 className="mt-5 text-balance text-4xl font-black leading-tight tracking-tight sm:text-5xl md:text-6xl"
               >
                 Everything you need to{" "}
@@ -572,18 +548,17 @@ export default function SolutionsPage() {
                   build, brand, and grow
                 </span>
                 .
-              </motion.h1>
+              </h1>
 
-              <motion.p
-                variants={fadeUp}
+              <p
                 className="mt-5 max-w-xl text-balance text-sm leading-relaxed text-slate-200/90 sm:text-base md:text-lg"
               >
                 Marketing solutions (ads + content), brand management (logos + identity),
                 software (apps + websites + systems), and business consulting
                 (strategies, SWOT, feasibility, and case studies).
-              </motion.p>
+              </p>
 
-              <motion.div variants={fadeUp} className="mt-8 flex flex-wrap items-center gap-3">
+              <div className="mt-8 flex flex-wrap items-center gap-3">
                 <Link
                   to="/contact"
                   className="inline-flex items-center gap-2 rounded-xl bg-[#c7f36b] px-6 py-3 text-sm font-semibold text-black shadow-[0_12px_40px_rgba(190,242,100,0.35)] transition hover:translate-y-[1px] hover:bg-[#d4ff80]"
@@ -596,9 +571,9 @@ export default function SolutionsPage() {
                 >
                   View packages <ArrowRight className="h-4 w-4" />
                 </a>
-              </motion.div>
+              </div>
 
-              <motion.div variants={fadeUp} className="mt-10 grid gap-3 sm:grid-cols-3">
+              <div className="mt-10 grid gap-3 sm:grid-cols-3">
                 {[
                   { icon: <Zap className="h-4 w-4" />, label: "Fast delivery", value: "ship weekly" },
                   { icon: <Gauge className="h-4 w-4" />, label: "Performance", value: "speed-first" },
@@ -614,13 +589,10 @@ export default function SolutionsPage() {
                     <div className="mt-3 text-lg font-semibold text-white">{x.value}</div>
                   </div>
                 ))}
-              </motion.div>
-            </motion.div>
+              </div>
+            </div>
 
-            <motion.div
-              initial={{ opacity: 0, y: 14 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.08 }}
+            <div
               className="lg:col-span-6"
             >
               <div className="relative">
@@ -662,10 +634,9 @@ export default function SolutionsPage() {
                         icon: <BarChart3 className="h-4 w-4" />,
                         tint: "rgba(190,242,100,0.18)",
                       },
-                    ].map((c, i) => (
-                      <motion.div
+                    ].map((c) => (
+                      <div
                         key={c.title}
-                        whileHover={{ y: -2 }}
                         className={cn(
                           "group rounded-3xl border border-white/10 bg-white/[0.05] p-5 transition",
                           "hover:bg-white/[0.08] hover:border-white/25"
@@ -688,11 +659,8 @@ export default function SolutionsPage() {
                         </div>
 
                         <div className="mt-4 h-1.5 w-full overflow-hidden rounded-full bg-white/10">
-                          <motion.div
+                          <div
                             aria-hidden
-                            initial={{ x: "-60%" }}
-                            animate={{ x: ["-60%", "0%", "-60%"] }}
-                            transition={{ duration: 6 + i * 0.9, repeat: Infinity }}
                             className="h-full w-[55%] rounded-full"
                             style={{
                               background:
@@ -700,7 +668,7 @@ export default function SolutionsPage() {
                             }}
                           />
                         </div>
-                      </motion.div>
+                      </div>
                     ))}
                   </div>
 
@@ -721,26 +689,20 @@ export default function SolutionsPage() {
                   </div>
                 </div>
 
-                <motion.div
-                  aria-hidden
-                  animate={{ y: [0, -8, 0] }}
-                  transition={{ duration: 6, repeat: Infinity }}
+                <div
                   className="hidden sm:block absolute -left-6 top-10 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 backdrop-blur"
                 >
                   <div className="text-[11px] uppercase tracking-[0.22em] text-white/60">Business</div>
                   <div className="mt-1 text-sm font-semibold text-white">SWOT + feasibility</div>
-                </motion.div>
-                <motion.div
-                  aria-hidden
-                  animate={{ y: [0, 8, 0] }}
-                  transition={{ duration: 7, repeat: Infinity }}
+                </div>
+                <div
                   className="hidden sm:block absolute -right-5 bottom-10 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 backdrop-blur"
                 >
                   <div className="text-[11px] uppercase tracking-[0.22em] text-white/60">Marketing</div>
                   <div className="mt-1 text-sm font-semibold text-white">ads + content</div>
-                </motion.div>
+                </div>
               </div>
-            </motion.div>
+            </div>
           </div>
         </SectionShell>
       </section>
@@ -771,42 +733,38 @@ export default function SolutionsPage() {
                     idx % 2 === 1 && "lg:[&>div:first-child]:order-2"
                   )}
                 >
-                  <motion.div
-                    variants={stagger}
-                    initial="hidden"
-                    whileInView="show"
-                    viewport={{ once: true, amount: 0.25 }}
+                  <div
                     className="lg:col-span-5"
                   >
-                    <motion.div variants={fadeUp}>
+                    <div>
                       <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-semibold tracking-[0.14em] text-slate-700">
                         <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-slate-900 text-white">
                           {p.icon}
                         </span>
                         {p.kicker.toUpperCase()}
                       </div>
-                    </motion.div>
+                    </div>
 
-                    <motion.h3 variants={fadeUp} className="text-balance text-3xl font-black tracking-tight sm:text-4xl">
+                    <h3 className="text-balance text-3xl font-black tracking-tight sm:text-4xl">
                       {p.title}
-                    </motion.h3>
+                    </h3>
 
-                    <motion.p variants={fadeUp} className="mt-4 text-base leading-relaxed text-slate-600 sm:text-lg">
+                    <p className="mt-4 text-base leading-relaxed text-slate-600 sm:text-lg">
                       {p.desc}
-                    </motion.p>
+                    </p>
 
-                    <motion.ul variants={stagger} className="mt-6 space-y-3">
+                    <ul className="mt-6 space-y-3">
                       {p.bullets.map((b) => (
-                        <motion.li key={b} variants={fadeUp} className="flex gap-3 text-sm text-slate-700 sm:text-base">
+                        <li key={b} className="flex gap-3 text-sm text-slate-700 sm:text-base">
                           <span className="mt-0.5 inline-flex h-6 w-6 items-center justify-center rounded-full bg-slate-900 text-white">
                             <Check className="h-4 w-4" />
                           </span>
                           <span className="leading-relaxed">{b}</span>
-                        </motion.li>
+                        </li>
                       ))}
-                    </motion.ul>
+                    </ul>
 
-                    <motion.div variants={fadeUp} className="mt-7 rounded-3xl border border-slate-200 bg-white p-5 shadow-[0_20px_70px_rgba(15,23,42,0.06)]">
+                    <div className="mt-7 rounded-3xl border border-slate-200 bg-white p-5 shadow-[0_20px_70px_rgba(15,23,42,0.06)]">
                       <div className="text-xs font-black tracking-[0.18em] text-slate-500">
                         {p.includedLabel.toUpperCase()}
                       </div>
@@ -820,9 +778,9 @@ export default function SolutionsPage() {
                           </span>
                         ))}
                       </div>
-                    </motion.div>
+                    </div>
 
-                    <motion.div variants={fadeUp} className="mt-7 flex flex-wrap items-center gap-3">
+                    <div className="mt-7 flex flex-wrap items-center gap-3">
                       <Link
                         to="/contact"
                         className="inline-flex items-center gap-2 rounded-xl bg-slate-900 px-5 py-3 text-sm font-semibold text-white transition hover:opacity-95"
@@ -835,18 +793,14 @@ export default function SolutionsPage() {
                       >
                         See packages <ArrowRight className="h-4 w-4" />
                       </a>
-                    </motion.div>
-                  </motion.div>
+                    </div>
+                  </div>
 
-                  <motion.div
-                    variants={fadeUp}
-                    initial="hidden"
-                    whileInView="show"
-                    viewport={{ once: true, amount: 0.25 }}
+                  <div
                     className="lg:col-span-7"
                   >
                     <ParallaxMedia src={p.image} alt={`${p.kicker} preview`} accent={p.accent} />
-                  </motion.div>
+                  </div>
                 </div>
               </div>
             ))}
@@ -869,13 +823,8 @@ export default function SolutionsPage() {
 
           <div className="mt-12 grid gap-6 md:grid-cols-3">
             {plans.map((p, i) => (
-              <motion.div
+              <div
                 key={p.name}
-                initial={{ opacity: 0, y: 14 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, amount: 0.25 }}
-                transition={{ duration: 0.55 }}
-                whileHover={{ y: -3 }}
                 className={cn(
                   "relative flex h-full flex-col overflow-hidden rounded-[34px] border bg-white p-7",
                   "shadow-[0_20px_70px_rgba(15,23,42,0.08)] transition hover:shadow-[0_35px_110px_rgba(15,23,42,0.12)]",
@@ -938,7 +887,7 @@ export default function SolutionsPage() {
                     <Sparkles className="h-4 w-4" /> We can combine packages
                   </div>
                 </div>
-              </motion.div>
+              </div>
             ))}
           </div>
         </div>
