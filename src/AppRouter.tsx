@@ -58,8 +58,8 @@ function Fallback({ message = "Loading…" }: { message?: string }) {
       <div
         className="absolute inset-0 -z-10"
         style={{
-          backdropFilter: "blur(12px)",
-          WebkitBackdropFilter: "blur(12px)",
+          backdropFilter: "none",
+          WebkitBackdropFilter: "none",
           background:
             "radial-gradient(1200px 600px at 10% -10%, rgba(79,70,229,0.20) 0%, rgba(79,70,229,0.00) 60%)," +
             "radial-gradient(900px 500px at 110% 10%, rgba(168,85,247,0.18) 0%, rgba(168,85,247,0.00) 60%)," +
@@ -84,7 +84,7 @@ function Fallback({ message = "Loading…" }: { message?: string }) {
       {/* Center card */}
       <div className="grid h-full place-items-center px-6">
         <motion.div
-          className="w-full max-w-md rounded-2xl border border-white/10 bg-white/5 p-6 shadow-2xl backdrop-blur-xl"
+          className="w-full max-w-md rounded-2xl border border-white/10 bg-white/5 p-6 shadow-2xl"
           initial={{ y: 12, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.35 }}

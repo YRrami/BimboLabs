@@ -128,11 +128,11 @@ function UseCaseBackground() {
       <div className="absolute inset-0" style={{ background: COLORS.bg }} />
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(99,102,241,0.62)_0%,_rgba(5,0,19,1)_45%,_rgba(2,0,7,1)_80%)]" />
       <div
-        className="absolute -top-24 left-[10%] h-[460px] w-[460px] rounded-full blur-3xl"
+        className="absolute -top-24 left-[10%] h-[460px] w-[460px] rounded-full blur-sm"
         style={{ background: "radial-gradient(circle, rgba(56,189,248,0.28), transparent 68%)" }}
       />
       <div
-        className="absolute top-[6%] right-[6%] h-[460px] w-[460px] rounded-full blur-3xl"
+        className="absolute top-[6%] right-[6%] h-[460px] w-[460px] rounded-full blur-sm"
         style={{ background: "radial-gradient(circle, rgba(190,242,100,0.16), transparent 70%)" }}
       />
 
@@ -144,7 +144,8 @@ function UseCaseBackground() {
             style={{
               background:
                 "linear-gradient(120deg, rgba(56,189,248,0) 0%, rgba(56,189,248,0.22) 35%, rgba(168,85,247,0.16) 60%, rgba(190,242,100,0) 100%)",
-              filter: "blur(18px)",
+              filter: "blur(0px)",
+              opacity: 0.03,
             }}
           />
           <div
@@ -153,7 +154,8 @@ function UseCaseBackground() {
             style={{
               background:
                 "linear-gradient(120deg, rgba(129,140,248,0) 0%, rgba(129,140,248,0.20) 40%, rgba(56,189,248,0.18) 70%, rgba(56,189,248,0) 100%)",
-              filter: "blur(20px)",
+              filter: "blur(0px)",
+              opacity: 0.03,
             }}
           />
         </>
@@ -791,7 +793,7 @@ export default function WorkPage() {
             <AnimatePresence>
               {showEmbedHint && !loaded && (
                 <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 grid place-items-center bg-black/60 p-6">
-                  <div className="max-w-md rounded-3xl border border-white/15 bg-white/10 p-6 text-center text-white backdrop-blur-xl">
+                  <div className="max-w-md rounded-3xl border border-white/15 bg-white/10 p-6 text-center text-white">
                     <div className="text-sm font-black">Preview not loading</div>
                     <p className="mt-2 text-sm text-white/80">Some sites block iframes. Use Open to view.</p>
                     <div className="mt-4 flex justify-center">

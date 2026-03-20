@@ -105,14 +105,14 @@ function UseCaseBackground() {
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(99,102,241,0.60)_0%,_rgba(5,0,19,1)_45%,_rgba(2,0,7,1)_80%)]" />
 
       <div
-        className="absolute -top-24 left-[10%] h-[420px] w-[420px] rounded-full blur-3xl"
+        className="absolute -top-24 left-[10%] h-[420px] w-[420px] rounded-full blur-sm"
         style={{
           background:
             "radial-gradient(circle, rgba(56,189,248,0.28), transparent 68%)",
         }}
       />
       <div
-        className="absolute top-[10%] right-[6%] h-[420px] w-[420px] rounded-full blur-3xl"
+        className="absolute top-[10%] right-[6%] h-[420px] w-[420px] rounded-full blur-sm"
         style={{
           background:
             "radial-gradient(circle, rgba(190,242,100,0.18), transparent 70%)",
@@ -127,7 +127,8 @@ function UseCaseBackground() {
             style={{
               background:
                 "linear-gradient(120deg, rgba(56,189,248,0) 0%, rgba(56,189,248,0.22) 35%, rgba(168,85,247,0.16) 60%, rgba(190,242,100,0) 100%)",
-              filter: "blur(18px)",
+              filter: "blur(0px)",
+              opacity: 0.03,
             }}
           />
           <div
@@ -136,7 +137,8 @@ function UseCaseBackground() {
             style={{
               background:
                 "linear-gradient(120deg, rgba(129,140,248,0) 0%, rgba(129,140,248,0.20) 40%, rgba(56,189,248,0.18) 70%, rgba(56,189,248,0) 100%)",
-              filter: "blur(20px)",
+              filter: "blur(0px)",
+              opacity: 0.03,
             }}
           />
         </>
@@ -218,7 +220,7 @@ function LogoCarouselPill({ logos }: { logos: Logo[] }) {
                 background: rgba(255,255,255,0.72);
                 border: 1px solid rgba(15,23,42,0.09);
                 box-shadow: 0 14px 40px rgba(15,23,42,0.06);
-                backdrop-filter: blur(10px);
+                backdrop-filter: none;
                 transition: transform 220ms ease, box-shadow 220ms ease, border-color 220ms ease;
               }
               .lp-logo-chip:hover {
@@ -333,7 +335,7 @@ function ParallaxMedia({
     <div ref={ref} className="relative">
       <div
         aria-hidden
-        className="pointer-events-none absolute -inset-4 rounded-[44px] blur-2xl"
+        className="pointer-events-none absolute -inset-4 rounded-[44px] blur-sm"
         style={{
           background: `radial-gradient(circle at 30% 10%, ${withAlpha(
             accent,
@@ -622,9 +624,9 @@ export default function SolutionsPage() {
               className="lg:col-span-6"
             >
               <div className="relative">
-                <div className="absolute -inset-8 rounded-[44px] bg-white/5 blur-3xl" />
+                <div className="absolute -inset-8 rounded-[44px] bg-white/5 blur-sm" />
 
-                <div className="relative rounded-[40px] border border-white/10 bg-black/25 p-5 shadow-[0_30px_120px_rgba(0,0,0,0.65)] backdrop-blur-2xl sm:p-6">
+                <div className="relative rounded-[40px] border border-white/10 bg-black/25 p-5 shadow-[0_30px_120px_rgba(0,0,0,0.65)] sm:p-6">
                   <div className="flex items-center justify-between gap-3">
                     <div className="text-xs font-black tracking-[0.18em] text-white/55">
                       SOLUTIONS SNAPSHOT

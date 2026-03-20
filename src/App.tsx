@@ -104,7 +104,7 @@ function BackgroundEffects() {
     <div className="pointer-events-none absolute inset-0 z-0">
       <div className="absolute inset-0 bg-[#050013]" />
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_#3b27b5_0%,_#050013_45%,_#020007_80%)]" />
-      <div className="absolute inset-x-[-25%] top-[16%] h-[520px] bg-[radial-gradient(circle_at_center,_rgba(129,140,248,0.95)_0%,_rgba(129,140,248,0.4)_40%,_rgba(15,23,42,0)_75%)] blur-3xl" />
+      <div className="absolute inset-x-[-25%] top-[16%] h-[520px] bg-[radial-gradient(circle_at_center,_rgba(129,140,248,0.95)_0%,_rgba(129,140,248,0.4)_40%,_rgba(15,23,42,0)_75%)] blur-sm" />
 
       {!isMobile && (
         <>
@@ -114,8 +114,8 @@ function BackgroundEffects() {
             style={{
               background:
                 "linear-gradient(120deg, rgba(56,189,248,0) 0%, rgba(56,189,248,0.26) 35%, rgba(190,242,100,0.16) 60%, rgba(190,242,100,0) 100%)",
-              filter: "blur(6px)",
-              opacity: 0.08,
+              filter: "blur(0px)",
+              opacity: 0.03,
             }}
           />
           <div
@@ -124,8 +124,8 @@ function BackgroundEffects() {
             style={{
               background:
                 "linear-gradient(120deg, rgba(129,140,248,0) 0%, rgba(129,140,248,0.3) 40%, rgba(56,189,248,0.28) 70%, rgba(56,189,248,0) 100%)",
-              filter: "blur(8px)",
-              opacity: 0.06,
+              filter: "blur(0px)",
+              opacity: 0.03,
             }}
           />
 
@@ -135,8 +135,8 @@ function BackgroundEffects() {
             style={{
               background:
                 "radial-gradient(circle at center, rgba(129,140,248,0.55) 0%, rgba(56,189,248,0.2) 35%, transparent 70%)",
-              filter: "blur(20px)",
-              opacity: 0.06,
+              filter: "blur(0px)",
+              opacity: 0.02,
             }}
           />
           <div
@@ -145,8 +145,8 @@ function BackgroundEffects() {
             style={{
               background:
                 "radial-gradient(circle at center, rgba(52,211,153,0.4) 0%, rgba(96,165,250,0.25) 35%, transparent 70%)",
-              filter: "blur(20px)",
-              opacity: 0.06,
+              filter: "blur(0px)",
+              opacity: 0.02,
             }}
           />
         </>
@@ -606,10 +606,10 @@ function DarkFeatureHub() {
   return (
     <section className="w-full bg-[#050013] text-white">
       <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6 md:py-20">
-        <div className="rounded-[44px] border border-white/10 bg-white/5 p-5 shadow-[0_40px_120px_rgba(0,0,0,0.45)] backdrop-blur-2xl sm:p-10">
+        <div className="rounded-[44px] border border-white/10 bg-white/5 p-5 shadow-[0_40px_120px_rgba(0,0,0,0.45)] sm:p-10">
           <div className="relative overflow-hidden rounded-[36px] border border-white/10 bg-gradient-to-r from-white/5 via-white/6 to-white/5 p-7 sm:p-10">
-            <div aria-hidden className="pointer-events-none absolute -left-24 -top-24 h-80 w-80 rounded-full bg-[radial-gradient(circle_at_center,_rgba(190,242,100,0.30)_0%,transparent_65%)] blur-2xl" />
-            <div aria-hidden className="pointer-events-none absolute -right-24 -bottom-24 h-80 w-80 rounded-full bg-[radial-gradient(circle_at_center,_rgba(56,189,248,0.30)_0%,transparent_65%)] blur-2xl" />
+            <div aria-hidden className="pointer-events-none absolute -left-24 -top-24 h-80 w-80 rounded-full bg-[radial-gradient(circle_at_center,_rgba(190,242,100,0.30)_0%,transparent_65%)] blur-sm" />
+            <div aria-hidden className="pointer-events-none absolute -right-24 -bottom-24 h-80 w-80 rounded-full bg-[radial-gradient(circle_at_center,_rgba(56,189,248,0.30)_0%,transparent_65%)] blur-sm" />
 
             <div className="relative grid gap-10 lg:grid-cols-12 lg:items-center">
               <div className="lg:col-span-5">
@@ -658,7 +658,7 @@ function DarkFeatureHub() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, amount: 0.25 }}
                 transition={{ duration: 0.5 }}
-                className="rounded-[28px] border border-white/10 bg-white/5 p-7 shadow-[0_30px_90px_rgba(0,0,0,0.35)] backdrop-blur-2xl"
+                className="rounded-[28px] border border-white/10 bg-white/5 p-7 shadow-[0_30px_90px_rgba(0,0,0,0.35)]"
               >
                 <div className="inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-white/10 text-white">{c.icon}</div>
                 <div className="mt-5 text-lg font-extrabold tracking-tight">{c.title}</div>
@@ -749,7 +749,7 @@ export default function Hero() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.22, duration: 0.45 }}
             onSubmit={(e) => e.preventDefault()}
-            className="mt-8 flex w-full max-w-xl flex-col items-stretch gap-3 rounded-2xl border border-white/10 bg-black/40 p-2 shadow-[0_20px_70px_rgba(0,0,0,0.75)] backdrop-blur-2xl sm:flex-row sm:items-center"
+            className="mt-8 flex w-full max-w-xl flex-col items-stretch gap-3 rounded-2xl border border-white/10 bg-black/40 p-2 shadow-[0_20px_70px_rgba(0,0,0,0.75)] sm:flex-row sm:items-center"
           >
             <input
               type="email"
@@ -807,7 +807,7 @@ export default function Hero() {
                   absolute bottom-4 left-1/2 w-[72%] max-w-[280px]
                   -translate-x-1/2 rounded-2xl border border-white/60
                   bg-white/25 p-4 text-left text-[11px] text-slate-900
-                  shadow-[0_18px_45px_rgba(15,23,42,0.55)] backdrop-blur-2xl
+                  shadow-[0_18px_45px_rgba(15,23,42,0.55)]
                   sm:left-auto sm:right-4 sm:bottom-5 sm:translate-x-0 sm:w-[250px]
                   lg:right-[-24px] lg:bottom-6
                 "

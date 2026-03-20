@@ -93,11 +93,11 @@ function HeroBackground() {
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(99,102,241,0.58)_0%,_rgba(5,0,19,1)_48%,_rgba(2,0,7,1)_82%)]" />
 
       <div
-        className="absolute -top-28 left-[8%] h-[520px] w-[520px] rounded-full blur-3xl"
+        className="absolute -top-28 left-[8%] h-[520px] w-[520px] rounded-full blur-sm"
         style={{ background: "radial-gradient(circle, rgba(56,189,248,0.28), transparent 70%)" }}
       />
       <div
-        className="absolute top-[4%] right-[6%] h-[520px] w-[520px] rounded-full blur-3xl"
+        className="absolute top-[4%] right-[6%] h-[520px] w-[520px] rounded-full blur-sm"
         style={{ background: "radial-gradient(circle, rgba(190,242,100,0.14), transparent 72%)" }}
       />
 
@@ -166,7 +166,7 @@ function TestimonialsCarousel() {
   }, [inView, setActive]);
 
   return (
-    <div ref={ref} className="rounded-[34px] border border-white/12 bg-white/[0.04] p-6 backdrop-blur-xl sm:p-7">
+    <div ref={ref} className="rounded-[34px] border border-white/12 bg-white/[0.04] p-6 sm:p-7">
       <div className="flex items-center justify-between gap-3">
         <div className="text-[11px] uppercase tracking-[0.22em] text-white/55">What partners say</div>
         <button
@@ -350,7 +350,7 @@ function ContactForm() {
   };
 
   return (
-    <div className="rounded-[34px] border border-white/12 bg-white/[0.04] p-6 backdrop-blur-2xl sm:p-8">
+    <div className="rounded-[34px] border border-white/12 bg-white/[0.04] p-6 sm:p-8">
       <div className="flex items-start justify-between gap-3">
         <div>
           <div className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-4 py-2 text-[11px] uppercase tracking-[0.22em] text-white/70">
@@ -710,7 +710,7 @@ export default function ContactPage() {
             <div className="grid gap-8 lg:grid-cols-12 lg:items-start">
               {/* left */}
               <div className="lg:col-span-5 space-y-6">
-                <div className="rounded-[34px] border border-white/12 bg-white/[0.04] p-6 backdrop-blur-xl">
+                <div className="rounded-[34px] border border-white/12 bg-white/[0.04] p-6">
                   <div className="text-[11px] uppercase tracking-[0.22em] text-white/55">What to include</div>
                   <ul className="mt-4 space-y-3 text-sm text-white/75">
                     {[
@@ -786,7 +786,7 @@ export default function ContactPage() {
                   text: "Weekly demos + written recaps so stakeholders always know what shipped and what’s next.",
                 },
               ].map((c) => (
-                <div key={c.title} className="rounded-3xl border border-white/12 bg-white/[0.04] p-6 backdrop-blur-xl">
+                <div key={c.title} className="rounded-3xl border border-white/12 bg-white/[0.04] p-6">
                   <div className="flex items-center gap-3">
                     <span
                       className="grid h-11 w-11 place-items-center rounded-2xl border border-white/15"

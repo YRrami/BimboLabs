@@ -168,14 +168,14 @@ function UseCaseBackground() {
 
       {/* spotlights */}
       <div
-        className="absolute -top-24 left-[10%] h-[520px] w-[520px] rounded-full blur-3xl"
+        className="absolute -top-24 left-[10%] h-[520px] w-[520px] rounded-full blur-sm"
         style={{
           background:
             "radial-gradient(circle, rgba(56,189,248,0.30), transparent 68%)",
         }}
       />
       <div
-        className="absolute top-[6%] right-[6%] h-[520px] w-[520px] rounded-full blur-3xl"
+        className="absolute top-[6%] right-[6%] h-[520px] w-[520px] rounded-full blur-sm"
         style={{
           background:
             "radial-gradient(circle, rgba(190,242,100,0.16), transparent 70%)",
@@ -191,7 +191,8 @@ function UseCaseBackground() {
             style={{
               background:
                 "linear-gradient(120deg, rgba(56,189,248,0) 0%, rgba(56,189,248,0.22) 35%, rgba(168,85,247,0.16) 60%, rgba(190,242,100,0) 100%)",
-              filter: "blur(18px)",
+              filter: "blur(0px)",
+              opacity: 0.03,
             }}
           />
           <div
@@ -200,7 +201,8 @@ function UseCaseBackground() {
             style={{
               background:
                 "linear-gradient(120deg, rgba(129,140,248,0) 0%, rgba(129,140,248,0.20) 40%, rgba(56,189,248,0.18) 70%, rgba(56,189,248,0) 100%)",
-              filter: "blur(20px)",
+              filter: "blur(0px)",
+              opacity: 0.03,
             }}
           />
         </>
@@ -445,7 +447,7 @@ function LogosMarquee({ logos }: { logos: Logo[] }) {
             background: rgba(255,255,255,0.72);
             border: 1px solid rgba(15,23,42,0.09);
             box-shadow: 0 14px 40px rgba(15,23,42,0.06);
-            backdrop-filter: blur(10px);
+            backdrop-filter: none;
             transition: transform 220ms ease, box-shadow 220ms ease, border-color 220ms ease;
           }
           .lp-chip:hover {
@@ -897,7 +899,7 @@ export default function AboutPage() {
       {/* Sticky in-page nav (white sections) */}
       <div className="w-full bg-white">
         <div className="mx-auto max-w-6xl px-4 sm:px-6">
-          <div className="sticky top-16 z-40 -mx-4 border-b border-slate-200 bg-white/85 px-4 py-3 backdrop-blur sm:-mx-6 sm:px-6">
+          <div className="sticky top-16 z-40 -mx-4 border-b border-slate-200 bg-white/85 px-4 py-3 sm:-mx-6 sm:px-6">
             <div className="flex flex-wrap items-center gap-2">
               {[
                 ["overview", "Overview"],
@@ -1257,7 +1259,7 @@ export default function AboutPage() {
 
         <div className="relative px-4 sm:px-6 md:px-8 py-16 sm:py-20">
           <div className="mx-auto w-full max-w-6xl">
-            <div className="rounded-[44px] border border-white/10 bg-white/[0.04] p-8 shadow-[0_40px_120px_rgba(0,0,0,0.55)] backdrop-blur-2xl sm:p-10">
+            <div className="rounded-[44px] border border-white/10 bg-white/[0.04] p-8 shadow-[0_40px_120px_rgba(0,0,0,0.55)] sm:p-10">
               <div className="mx-auto max-w-3xl text-center">
                 <div className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-4 py-2 text-[11px] uppercase tracking-[0.22em] text-white/70">
                   <ShieldCheck className="h-4 w-4" /> Next step

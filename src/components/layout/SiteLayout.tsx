@@ -109,7 +109,7 @@ function GlobalBackground() {
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_#3b27b5_0%,_#050013_45%,_#020007_80%)]" />
 
       {/* central hero glow */}
-      <div className="absolute inset-x-[-25%] top-[8%] h-[520px] bg-[radial-gradient(circle_at_center,_rgba(129,140,248,0.95)_0%,_rgba(129,140,248,0.4)_40%,_rgba(15,23,42,0)_75%)] blur-3xl" />
+      <div className="absolute inset-x-[-25%] top-[8%] h-[520px] bg-[radial-gradient(circle_at_center,_rgba(129,140,248,0.95)_0%,_rgba(129,140,248,0.4)_40%,_rgba(15,23,42,0)_75%)] blur-sm" />
 
       {/* animated beams */}
       <motion.div
@@ -121,7 +121,8 @@ function GlobalBackground() {
         style={{
           background:
             "linear-gradient(120deg, rgba(56,189,248,0) 0%, rgba(56,189,248,0.26) 35%, rgba(190,242,100,0.16) 60%, rgba(190,242,100,0) 100%)",
-          filter: "blur(14px)",
+          filter: "blur(0px)",
+          opacity: 0.03,
         }}
       />
       <motion.div
@@ -133,7 +134,8 @@ function GlobalBackground() {
         style={{
           background:
             "linear-gradient(120deg, rgba(129,140,248,0) 0%, rgba(129,140,248,0.3) 40%, rgba(56,189,248,0.28) 70%, rgba(56,189,248,0) 100%)",
-          filter: "blur(18px)",
+          filter: "blur(0px)",
+          opacity: 0.03,
         }}
       />
 
@@ -150,7 +152,8 @@ function GlobalBackground() {
         style={{
           background:
             "radial-gradient(circle at center, rgba(129,140,248,0.55) 0%, rgba(56,189,248,0.2) 35%, transparent 70%)",
-          filter: "blur(40px)",
+          filter: "blur(0px)",
+          opacity: 0.02,
         }}
       />
       <motion.div
@@ -165,7 +168,8 @@ function GlobalBackground() {
         style={{
           background:
             "radial-gradient(circle at center, rgba(52,211,153,0.4) 0%, rgba(96,165,250,0.25) 35%, transparent 70%)",
-          filter: "blur(40px)",
+          filter: "blur(0px)",
+          opacity: 0.02,
         }}
       />
 
@@ -250,7 +254,7 @@ export function Navbar({ scrolled = false }: { scrolled?: boolean }) {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-40 pointer-events-none bg-black/55 backdrop-blur-2xl transition-opacity"
+            className="fixed inset-0 z-40 pointer-events-none bg-black/55 transition-opacity"
           />
         )}
       </AnimatePresence>
@@ -286,7 +290,7 @@ export function Navbar({ scrolled = false }: { scrolled?: boolean }) {
         {/* Main Navbar */}
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-3">
           <motion.div
-            className="rounded-2xl border transition-all duration-300 bg-black/60 backdrop-blur-2xl"
+            className="rounded-2xl border transition-all duration-300 bg-black/60"
             style={{
               backgroundColor: scrolled
                 ? "rgba(5, 5, 15, 0.90)"
@@ -332,7 +336,7 @@ export function Navbar({ scrolled = false }: { scrolled?: boolean }) {
                           <span className="relative z-10">{item.label}</span>
 
                           {/* subtle glow on hover */}
-                          <span className="pointer-events-none absolute inset-0 rounded-xl bg-gradient-to-r from-white/6 via-white/3 to-transparent opacity-0 blur-md transition-opacity group-hover:opacity-100" />
+                          <span className="pointer-events-none absolute inset-0 rounded-xl bg-gradient-to-r from-white/6 via-white/3 to-transparent opacity-0 blur-sm transition-opacity group-hover:opacity-100" />
 
                           {/* active underline using layoutId for smooth slide */}
                           {isActive && (
@@ -365,7 +369,7 @@ export function Navbar({ scrolled = false }: { scrolled?: boolean }) {
                       initial={{ x: "-120%" }}
                       whileHover={{ x: "120%" }}
                       transition={{ duration: 0.8 }}
-                      className="pointer-events-none absolute inset-y-0 w-2/3 bg-white/20 blur-xl"
+                      className="pointer-events-none absolute inset-y-0 w-2/3 bg-white/20 blur-sm"
                     />
                   </Link>
                 </motion.div>
@@ -374,7 +378,7 @@ export function Navbar({ scrolled = false }: { scrolled?: boolean }) {
               {/* Mobile Menu Button */}
               <motion.button
                 whileTap={{ scale: 0.9 }}
-                className="lg:hidden p-2 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-all backdrop-blur-md"
+                className="lg:hidden p-2 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-all"
                 onClick={() => setIsMenuOpen((v) => !v)}
                 aria-label="Toggle menu"
               >
@@ -392,7 +396,7 @@ export function Navbar({ scrolled = false }: { scrolled?: boolean }) {
                   transition={{ duration: 0.3 }}
                   className="lg:hidden overflow-hidden border-t border-white/10"
                 >
-                  <div className="px-4 py-6 space-y-2 bg-black/90 backdrop-blur-2xl">
+                  <div className="px-4 py-6 space-y-2 bg-black/90">
                     {SITE.nav.map((item, idx) => (
                       <NavLink
                         key={item.path}
@@ -512,7 +516,7 @@ function Footer() {
             opacity: [0.3, 0.5, 0.3],
           }}
           transition={{ duration: 8, repeat: Infinity }}
-          className="absolute top-0 left-1/4 w-96 h-96 bg-indigo-500/20 rounded-full blur-3xl"
+          className="absolute top-0 left-1/4 w-96 h-96 bg-indigo-500/20 rounded-full blur-sm"
         />
         <motion.div
           animate={{
@@ -520,7 +524,7 @@ function Footer() {
             opacity: [0.2, 0.4, 0.2],
           }}
           transition={{ duration: 10, repeat: Infinity }}
-          className="absolute bottom-0 right-1/4 w-96 h-96 bg-purple-500/20 rounded-full blur-3xl"
+          className="absolute bottom-0 right-1/4 w-96 h-96 bg-purple-500/20 rounded-full blur-sm"
         />
       </div>
 
@@ -661,7 +665,7 @@ function Footer() {
             </div>
 
             {/* Decorative Element */}
-            <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-indigo-500/30 to-purple-500/30 rounded-full blur-3xl" />
+            <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-indigo-500/30 to-purple-500/30 rounded-full blur-sm" />
           </div>
         </div>
 
@@ -717,7 +721,7 @@ function LoadingOverlay({ show, booting }: { show: boolean; booting: boolean }) 
               style={{
                 background:
                   "linear-gradient(120deg, rgba(56,189,248,0) 0%, rgba(56,189,248,0.26) 35%, rgba(190,242,100,0.16) 60%, rgba(190,242,100,0) 100%)",
-                filter: "blur(18px)",
+                filter: "blur(0px)",
               }}
             />
             <motion.div
@@ -733,7 +737,7 @@ function LoadingOverlay({ show, booting }: { show: boolean; booting: boolean }) 
               style={{
                 background:
                   "radial-gradient(circle at center, rgba(129,140,248,0.6) 0%, rgba(56,189,248,0.25) 35%, transparent 70%)",
-                filter: "blur(32px)",
+                filter: "blur(0px)",
               }}
             />
             <motion.div
@@ -765,7 +769,7 @@ function LoadingOverlay({ show, booting }: { show: boolean; booting: boolean }) 
                 aria-hidden
                 animate={{ rotate: 360 }}
                 transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
-                className="absolute inset-[-18px] rounded-3xl border border-white/8 bg-gradient-to-tr from-indigo-500/25 via-purple-500/15 to-sky-400/30 blur-md"
+                className="absolute inset-[-18px] rounded-3xl border border-white/8 bg-gradient-to-tr from-indigo-500/25 via-purple-500/15 to-sky-400/30 blur-sm"
               />
               {/* orbiting dots */}
               <motion.div
