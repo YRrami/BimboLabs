@@ -45,6 +45,7 @@
     "rimraf": "^6.0.1",
     "sharp": "^0.34.5",
     "tailwindcss": "^4.1.13",
+    "terser": "^5.46.1",
     "typescript": "~5.8.3",
     "typescript-eslint": "^8.39.1",
     "vercel": "^25.2.0",
