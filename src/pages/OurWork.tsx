@@ -43,13 +43,6 @@ import { SectionShell } from "../components/layout/SiteLayout";
 import visualMock1 from "../assets/companies/cover.png";
 import visualMock2 from "../assets/companies/cover.png";
 import visualMock3 from "../assets/companies/cover.png";
-// optimized variants
-import cover320avif from "../assets/companies/optimized/cover-320.avif";
-import cover640avif from "../assets/companies/optimized/cover-640.avif";
-import cover1024avif from "../assets/companies/optimized/cover-1024.avif";
-import cover320webp from "../assets/companies/optimized/cover-320.webp";
-import cover640webp from "../assets/companies/optimized/cover-640.webp";
-import cover1024webp from "../assets/companies/optimized/cover-1024.webp";
 
 /* ===================== helpers ===================== */
 
@@ -1002,8 +995,6 @@ export default function WorkPage() {
                   >
                     <div className="relative">
                       <picture>
-                        <source type="image/avif" srcSet={`${cover1024avif} 1024w, ${cover640avif} 640w, ${cover320avif} 320w`} sizes="(max-width:340px) 100vw, 340px" />
-                        <source type="image/webp" srcSet={`${cover1024webp} 1024w, ${cover640webp} 640w, ${cover320webp} 320w`} sizes="(max-width:340px) 100vw, 340px" />
                         <img src={v.src} alt={v.title} className="h-52 w-full object-cover" loading="lazy" decoding="async" />
                       </picture>
                       <div

@@ -13,7 +13,7 @@
 // Uses: SectionShell + COLORS from SiteLayout (global theme consistency)
 
 import * as React from "react";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import {
   motion,
@@ -353,133 +353,6 @@ const faqs = [
   },
 ];
 
-/* ===================== logos ===================== */
-
-const fileNameToTitle = (p: string) => {
-  const base = p.split("/").pop() || "";
-  const name = base.replace(/\.[a-zA-Z0-9]+$/, "");
-  return name.replace(/[-_]+/g, " ").replace(/\b\w/g, (m) => m.toUpperCase()).trim();
-};
-type Logo = { alt: string; src: string };
-
-function useCompanyLogos(): Logo[] {
-  return useMemo(() => {
-    const g1 = import.meta.glob<string>("../assets/companies/*.{png,jpg,jpeg,svg,webp}", {
-      eager: true,
-      query: "?url",
-      import: "default",
-    }) as Record<string, string>;
-
-    const g2 = import.meta.glob<string>("../companies/*.{png,jpg,jpeg,svg,webp}", {
-      eager: true,
-      query: "?url",
-      import: "default",
-    }) as Record<string, string>;
-
-    const merged = { ...g1, ...g2 };
-    const locals = Object.entries(merged)
-      .sort(([a], [b]) => a.localeCompare(b))
-      .map(([path, url]) => ({ alt: fileNameToTitle(path), src: url }));
-
-    if (locals.length) return locals;
-
-    return [
-      { alt: "Zapier", src: "https://cdn.simpleicons.org/zapier/000000" },
-      { alt: "Shopify", src: "https://cdn.simpleicons.org/shopify/000000" },
-      { alt: "Vimeo", src: "https://cdn.simpleicons.org/vimeo/000000" },
-      { alt: "SoundCloud", src: "https://cdn.simpleicons.org/soundcloud/000000" },
-      { alt: "eBay", src: "https://cdn.simpleicons.org/ebay/000000" },
-      { alt: "Notion", src: "https://cdn.simpleicons.org/notion/000000" },
-      { alt: "Slack", src: "https://cdn.simpleicons.org/slack/000000" },
-    ];
-  }, []);
-}
-
-function LogosMarquee({ logos }: { logos: Logo[] }) {
-  const reduced = usePrefersReducedMotion();
-  const track = useMemo(() => [...logos, ...logos], [logos]);
-
-  return (
-    <div className="rounded-[46px] bg-[#F3F0FF] px-6 py-10 shadow-[0_30px_90px_rgba(15,23,42,0.10)] sm:px-10">
-      <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
-        <div className="text-xs font-black tracking-[0.18em] text-slate-600">
-          TRUSTED BY TEAMS & BRANDS
-        </div>
-        <div className="text-xs text-slate-500">
-          {reduced ? "Reduced motion" : "Auto-scroll • hover to pause"}
-        </div>
-      </div>
-
-      <div className="relative overflow-hidden rounded-[40px]">
-        <div aria-hidden className="pointer-events-none absolute inset-y-0 left-0 z-20 w-28 bg-gradient-to-r from-[#F3F0FF] to-transparent" />
-        <div aria-hidden className="pointer-events-none absolute inset-y-0 right-0 z-20 w-28 bg-gradient-to-l from-[#F3F0FF] to-transparent" />
-
-        <div className="lp-marquee" aria-label="Previous clients">
-          <div className={cn("lp-track", reduced && "lp-paused")}>
-            {track.map((l, i) => (
-              <div key={`${l.alt}-${i}`} className="lp-item">
-                <div className="lp-chip">
-                  <img src={l.src} alt={l.alt} className="lp-logo" draggable={false} loading="lazy" />
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <style>{`
-          .lp-marquee { width: 100%; overflow: hidden; }
-          .lp-track {
-            display: flex;
-            align-items: center;
-            width: max-content;
-            animation: lp 20s linear infinite;
-          }
-          .lp-marquee:hover .lp-track { animation-play-state: paused; }
-          .lp-paused { animation: none !important; }
-          .lp-item { flex: 0 0 auto; padding: 0 18px; display: grid; place-items: center; }
-          .lp-chip {
-            height: 66px;
-            min-width: 150px;
-            padding: 0 22px;
-            display: grid;
-            place-items: center;
-            border-radius: 999px;
-            background: rgba(255,255,255,0.72);
-            border: 1px solid rgba(15,23,42,0.09);
-            box-shadow: 0 14px 40px rgba(15,23,42,0.06);
-            backdrop-filter: none;
-            transition: transform 220ms ease, box-shadow 220ms ease, border-color 220ms ease;
-          }
-          .lp-chip:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 22px 60px rgba(15,23,42,0.12);
-            border-color: rgba(15,23,42,0.14);
-          }
-          .lp-logo {
-            height: 36px;
-            width: auto;
-            object-fit: contain;
-            opacity: 0.92;
-            filter: grayscale(1);
-            transition: opacity 220ms ease, filter 220ms ease, transform 220ms ease;
-          }
-          .lp-chip:hover .lp-logo {
-            opacity: 1;
-            filter: grayscale(0);
-            transform: scale(1.02);
-          }
-          @keyframes lp { 0% { transform: translateX(0) } 100% { transform: translateX(-50%) } }
-          @media (max-width: 640px) {
-            .lp-item { padding: 0 10px; }
-            .lp-chip { height: 58px; min-width: 128px; padding: 0 16px; }
-            .lp-logo { height: 30px; }
-          }
-        `}</style>
-      </div>
-    </div>
-  );
-}
-
 /* ===================== count up ===================== */
 
 function useCountUp({
@@ -804,9 +677,8 @@ function ScrollProgressBar({ progress }: { progress: MotionValue<number> }) {
 
 export default function AboutPage() {
   const reduced = usePrefersReducedMotion();
-  const logos = useCompanyLogos();
 
-  const sectionIds = ["overview", "process", "leadership", "clients", "testimonials", "faq"];
+  const sectionIds = ["overview", "process", "leadership", "testimonials", "faq"];
   const active = useActiveSection(sectionIds);
 
   // scroll progress across the whole page
@@ -905,7 +777,6 @@ export default function AboutPage() {
                 ["overview", "Overview"],
                 ["process", "Process"],
                 ["leadership", "Leadership"],
-                ["clients", "Clients"],
                 ["testimonials", "Testimonials"],
                 ["faq", "FAQ"],
               ].map(([id, label]) => {
@@ -1198,10 +1069,6 @@ export default function AboutPage() {
             <p className="mt-4 text-slate-600 sm:text-lg">
               If you add logos to <code className="font-mono">src/assets/companies</code>, they auto-load here.
             </p>
-          </div>
-
-          <div className="mt-10">
-            <LogosMarquee logos={logos} />
           </div>
         </div>
       </section>

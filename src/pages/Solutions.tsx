@@ -31,13 +31,6 @@ import { SectionShell, COLORS } from "../components/layout/SiteLayout";
 import svcEngineering from "../assets/companies/cover.png";
 import svcBrand from "../assets/companies/cover.png";
 import svcMarketing from "../assets/companies/cover.png";
-// optimized variants
-import cover320avif from "../assets/companies/optimized/cover-320.avif";
-import cover640avif from "../assets/companies/optimized/cover-640.avif";
-import cover1024avif from "../assets/companies/optimized/cover-1024.avif";
-import cover320webp from "../assets/companies/optimized/cover-320.webp";
-import cover640webp from "../assets/companies/optimized/cover-640.webp";
-import cover1024webp from "../assets/companies/optimized/cover-1024.webp";
 
 function cn(...classes: Array<string | false | null | undefined>) {
   return classes.filter(Boolean).join(" ");
@@ -396,11 +389,7 @@ export default function SolutionsPage() {
         desc:
           "We plan, create, and run campaigns across the channels that matter—ad creative, content systems, and optimization with clear reporting.",
         icon: <Megaphone className="h-4 w-4" />,
-        image: {
-          avif: { '1024': cover1024avif, '640': cover640avif, '320': cover320avif },
-          webp: { '1024': cover1024webp, '640': cover640webp, '320': cover320webp },
-          fallback: svcMarketing,
-        },
+        image: svcMarketing,
         bullets: [
           "Paid ads (Meta / Google) + optimization",
           "Content creation (posts, reels, scripts, copy)",
@@ -423,11 +412,7 @@ export default function SolutionsPage() {
         desc:
           "A complete brand kit that stays consistent everywhere—web, ads, social, and product. Clear rules, reusable templates, and fast execution.",
         icon: <Palette className="h-4 w-4" />,
-        image: {
-          avif: { '1024': cover1024avif, '640': cover640avif, '320': cover320avif },
-          webp: { '1024': cover1024webp, '640': cover640webp, '320': cover320webp },
-          fallback: svcBrand,
-        },
+        image: svcBrand,
         bullets: [
           "Logo design + variations",
           "Brand identity (colors, typography, style)",
@@ -450,11 +435,7 @@ export default function SolutionsPage() {
         desc:
           "We build cross-platform apps, websites, and internal systems with clean architecture, performance-first UI, and reliable handoff.",
         icon: <Code2 className="h-4 w-4" />,
-        image: {
-          avif: { '1024': cover1024avif, '640': cover640avif, '320': cover320avif },
-          webp: { '1024': cover1024webp, '640': cover640webp, '320': cover320webp },
-          fallback: svcEngineering,
-        },
+        image: svcEngineering,
         bullets: [
           "Websites + landing pages",
           "Apps (cross-platform) + admin dashboards",
